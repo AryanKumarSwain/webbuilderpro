@@ -11,6 +11,7 @@ const {
     uploadVideoHandler,
 } = require('./content.controller');
 const { protect, isAdmin } = require('../../middlewares/auth.middleware');
+const { requireActivePlan } = require('../../middlewares/plan.middleware');
 const { uploadContentImage, uploadPdf, uploadVideo } = require('../../config/cloudinary');
 const { checkStorageLimitMiddleware } = require('../../utils/storage.utils');
 // ── Public Routes ────────────────────────────────────
@@ -21,11 +22,11 @@ router.get('/public/:schoolId/:moduleKey', getPublicModuleContent);
 router.use(protect);
 router.use(isAdmin);
 
-router.post('/upload-image', checkStorageLimitMiddleware, uploadContentImage.single('image'), uploadContentImageHandler);
-router.post('/upload-pdf', checkStorageLimitMiddleware, uploadPdf.single('pdf'), uploadPdfHandler);
-router.post('/upload-video', checkStorageLimitMiddleware, uploadVideo.single('video'), uploadVideoHandler);
+router.post('/upload-image', requireActivePlan, checkStorageLimitMiddleware, uploadContentImage.single('image'), uploadContentImageHandler);
+router.post('/upload-pdf', requireActivePlan, checkStorageLimitMiddleware, uploadPdf.single('pdf'), uploadPdfHandler);
+router.post('/upload-video', requireActivePlan, checkStorageLimitMiddleware, uploadVideo.single('video'), uploadVideoHandler);
 router.get('/:moduleKey', getModuleContent);
-router.post('/:moduleKey', saveModuleContent);
-router.patch('/:moduleKey/publish', togglePublish);
+router.post('/:moduleKey', requireActivePlan, saveModuleContent);
+router.patch('/:moduleKey/publish', requireActivePlan, togglePublish);
 
 module.exports = router;

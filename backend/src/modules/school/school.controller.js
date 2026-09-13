@@ -9,7 +9,7 @@ const {
     getSchoolSlugByDomainService,
     getStorageUsageService,
 } = require('./school.service');
-const { sendSuccess, sendError } = require('../../utils/response.utils');
+const { sendSuccess, sendError, handleControllerError } = require('../../utils/response.utils');
 const { recordMediaUsage, recalculateSchoolStorage } = require('../../utils/storage.utils');
 
 // ── Get School Profile ───────────────────────────────
@@ -18,7 +18,7 @@ const getSchoolProfile = async (req, res) => {
         const school = await getSchoolProfileService(req.user.schoolId);
         return sendSuccess(res, 'School profile received', school);
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -28,7 +28,7 @@ const updateSchoolProfile = async (req, res) => {
         const school = await updateSchoolProfileService(req.user.schoolId, req.body);
         return sendSuccess(res, 'School profile updated', school);
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -38,7 +38,7 @@ const updateSchoolSettings = async (req, res) => {
         const school = await updateSchoolSettingsService(req.user.schoolId, req.body);
         return sendSuccess(res, 'Settings updated', school);
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -48,7 +48,7 @@ const selectModules = async (req, res) => {
         const result = await selectModulesService(req.user.schoolId, req.body.modules);
         return sendSuccess(res, 'Modules selected', result);
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -58,7 +58,7 @@ const getSelectedModules = async (req, res) => {
         const result = await getSelectedModulesService(req.user.schoolId);
         return sendSuccess(res, 'Selected modules received', result);
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -68,7 +68,7 @@ const acceptTerms = async (req, res) => {
         const result = await acceptTermsService(req.user.schoolId);
         return sendSuccess(res, 'Terms accepted', result);
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -78,7 +78,7 @@ const getPublicSchool = async (req, res) => {
         const school = await getPublicSchoolService(req.params.slug);
         return sendSuccess(res, 'School data fetched', school);
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -88,7 +88,7 @@ const getSchoolByDomain = async (req, res) => {
         const result = await getSchoolSlugByDomainService(req.params.domain);
         return sendSuccess(res, 'School resolved', result);
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -105,7 +105,7 @@ const uploadHeroVideo = async (req, res) => {
         await recordMediaUsage({ schoolId: req.user.schoolId, moduleKey: 'home', resourceType: 'video', sizeBytes: req.file.size, url: videoUrl, publicId: req.file.filename });
         return sendSuccess(res, 'Hero video uploaded successfully', { hero_video_url: videoUrl });
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -118,7 +118,7 @@ const uploadSchoolLogo = async (req, res) => {
         await recordMediaUsage({ schoolId: req.user.schoolId, moduleKey: null, resourceType: 'image', sizeBytes: req.file.size, url: logoUrl, publicId: req.file.filename });
         return sendSuccess(res, 'Logo uploaded successfully', { logo_url: logoUrl });
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -131,7 +131,7 @@ const uploadWelcomeBanner = async (req, res) => {
         await recordMediaUsage({ schoolId: req.user.schoolId, moduleKey: null, resourceType: 'image', sizeBytes: req.file.size, url: bannerUrl, publicId: req.file.filename });
         return sendSuccess(res, 'Welcome banner uploaded successfully', { welcome_banner_url: bannerUrl });
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -144,7 +144,7 @@ const uploadFooterBackground = async (req, res) => {
         await recordMediaUsage({ schoolId: req.user.schoolId, moduleKey: null, resourceType: 'image', sizeBytes: req.file.size, url: footerBgUrl, publicId: req.file.filename });
         return sendSuccess(res, 'Footer background uploaded successfully', { footer_bg_url: footerBgUrl });
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -157,7 +157,7 @@ const uploadProspectus = async (req, res) => {
         await recordMediaUsage({ schoolId: req.user.schoolId, moduleKey: null, resourceType: 'pdf', sizeBytes: req.file.size, url: prospectusUrl, publicId: req.file.filename });
         return sendSuccess(res, 'Prospectus uploaded successfully', { prospectus_url: prospectusUrl });
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -166,7 +166,7 @@ const getDashboardStats = async (req, res) => {
         const stats = await getDashboardStatsService();
         return sendSuccess(res, 'Dashboard stats fetched', stats);
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -175,7 +175,7 @@ const getStorageUsage = async (req, res) => {
         const usage = await getStorageUsageService(req.user.schoolId);
         return sendSuccess(res, 'Storage usage fetched', usage);
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -188,7 +188,7 @@ const recalculateStorage = async (req, res) => {
         const usage = await getStorageUsageService(req.user.schoolId);
         return sendSuccess(res, 'Storage recalculated', { ...usage, removed });
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 

@@ -286,9 +286,12 @@ const assignPlanService = async (uuid, planId) => {
     if (plans.length === 0) throw new AppError("Plan not found", 404);
     const plan = plans[0];
 
+    // Same extend-from-remaining-time math as billing.service.js's
+    // activatePlanForPayment — keep both in sync if this ever changes.
     await pool.query(
         `UPDATE tbl_schools
-        SET plan_id = ?, plan_start_date = CURDATE(), plan_end_date = DATE_ADD(CURDATE(), INTERVAL ? YEAR)
+        SET plan_id = ?, plan_start_date = CURDATE(),
+            plan_end_date = DATE_ADD(GREATEST(COALESCE(plan_end_date, CURDATE()), CURDATE()), INTERVAL ? YEAR)
         WHERE id = ?`,
         [plan.id, plan.tenure_years, school[0].id]
     );

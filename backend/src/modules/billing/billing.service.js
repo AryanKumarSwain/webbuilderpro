@@ -79,27 +79,51 @@ const createOrderService = async (schoolId, planId) => {
 // on purpose — both paths can land here for the same payment (e.g. the webhook
 // fires while the browser is still on the success screen). If the row is already
 // 'paid' this is a no-op, so whichever path wins the race, the other is harmless.
+//
+// All three statements (mark payment paid, read plan tenure, activate the
+// school's plan) run in one transaction — without this, a failure between the
+// first and third statement would leave tbl_payments.status = 'paid' with the
+// school's plan_id never updated, and the idempotency check above would then
+// block every future retry from ever completing the activation. On any
+// failure here, the whole thing rolls back so tbl_payments.status stays
+// whatever it was before (not 'paid'), and a retry can run cleanly again.
 const activatePlanForPayment = async (payment, paymentId, signature = null) => {
     if (payment.status === "paid") {
         return { message: "Plan already active", alreadyPaid: true };
     }
 
-    await pool.query(
-        `UPDATE tbl_payments SET status = 'paid', razorpay_payment_id = ?, razorpay_signature = ? WHERE id = ?`,
-        [paymentId, signature, payment.id]
-    );
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
 
-    const [plans] = await pool.query("SELECT tenure_years FROM tbl_plans WHERE id = ?", [payment.plan_id]);
-    const tenureYears = plans[0].tenure_years;
+        await conn.query(
+            `UPDATE tbl_payments SET status = 'paid', razorpay_payment_id = ?, razorpay_signature = ? WHERE id = ?`,
+            [paymentId, signature, payment.id]
+        );
 
-    await pool.query(
-        `UPDATE tbl_schools
-        SET plan_id = ?, plan_start_date = CURDATE(), plan_end_date = DATE_ADD(CURDATE(), INTERVAL ? YEAR)
-        WHERE id = ?`,
-        [payment.plan_id, tenureYears, payment.school_id]
-    );
+        const [plans] = await conn.query("SELECT tenure_years FROM tbl_plans WHERE id = ?", [payment.plan_id]);
+        const tenureYears = plans[0].tenure_years;
 
-    return { message: "Payment verified — plan activated" };
+        // Renewing/upgrading extends from whichever is later — the school's current
+        // plan_end_date (so an early renewal keeps its unused days) or today (so a
+        // school renewing after real expiry starts fresh instead of backdating).
+        // COALESCE handles a first-ever purchase, where plan_end_date is still NULL.
+        await conn.query(
+            `UPDATE tbl_schools
+            SET plan_id = ?, plan_start_date = CURDATE(),
+                plan_end_date = DATE_ADD(GREATEST(COALESCE(plan_end_date, CURDATE()), CURDATE()), INTERVAL ? YEAR)
+            WHERE id = ?`,
+            [payment.plan_id, tenureYears, payment.school_id]
+        );
+
+        await conn.commit();
+        return { message: "Payment verified — plan activated" };
+    } catch (error) {
+        await conn.rollback();
+        throw error;
+    } finally {
+        conn.release();
+    }
 };
 
 // ── Verify Payment (browser -> us) ────────────────────

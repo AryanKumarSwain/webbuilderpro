@@ -18,6 +18,7 @@ const {
     recalculateStorage
 } = require('./school.controller');
 const { protect, isAdmin } = require('../../middlewares/auth.middleware');
+const { requireActivePlan } = require('../../middlewares/plan.middleware');
 const { upload, uploadContentImage, uploadPdf, uploadHeroVideo: uploadHeroVideoMiddleware } = require('../../config/cloudinary');
 const { checkStorageLimitMiddleware } = require('../../utils/storage.utils');
 
@@ -31,14 +32,14 @@ router.use(isAdmin);
 
 // ── Profile Routes ───────────────────────────────────
 router.get('/profile', getSchoolProfile);
-router.put('/profile', updateSchoolProfile);
+router.put('/profile', requireActivePlan, updateSchoolProfile);
 
 
 // ── Settings Routes ──────────────────────────────────
-router.put('/settings', updateSchoolSettings);
+router.put('/settings', requireActivePlan, updateSchoolSettings);
 
 // ── Module Routes ────────────────────────────────────
-router.post('/modules', selectModules);
+router.post('/modules', requireActivePlan, selectModules);
 router.get('/modules', getSelectedModules);
 
 // ── Terms Consent ─────────────────────────────────────
@@ -49,18 +50,18 @@ router.get('/storage-usage', getStorageUsage);
 router.post('/storage-usage/recalculate', recalculateStorage);
 
 // ── Logo Upload ──────────────────────────────────────
-router.post('/logo', checkStorageLimitMiddleware, upload.single('schoolLogo'), uploadSchoolLogo);
+router.post('/logo', requireActivePlan, checkStorageLimitMiddleware, upload.single('schoolLogo'), uploadSchoolLogo);
 
 // ── Video Upload — 5MB cap, tighter than the shared content-video uploader ──
-router.post('/hero-video', checkStorageLimitMiddleware, uploadHeroVideoMiddleware.single('heroVideo'), uploadHeroVideo);
+router.post('/hero-video', requireActivePlan, checkStorageLimitMiddleware, uploadHeroVideoMiddleware.single('heroVideo'), uploadHeroVideo);
 
 // ── Welcome Banner Upload ────────────────────────────
-router.post('/welcome-banner', checkStorageLimitMiddleware, uploadContentImage.single('welcomeBanner'), uploadWelcomeBanner);
+router.post('/welcome-banner', requireActivePlan, checkStorageLimitMiddleware, uploadContentImage.single('welcomeBanner'), uploadWelcomeBanner);
 
 // ── Footer Background Upload ─────────────────────────
-router.post('/footer-bg', checkStorageLimitMiddleware, uploadContentImage.single('footerBg'), uploadFooterBackground);
+router.post('/footer-bg', requireActivePlan, checkStorageLimitMiddleware, uploadContentImage.single('footerBg'), uploadFooterBackground);
 
 // ── Prospectus Upload ────────────────────────────────
-router.post('/prospectus', checkStorageLimitMiddleware, uploadPdf.single('prospectus'), uploadProspectus);
+router.post('/prospectus', requireActivePlan, checkStorageLimitMiddleware, uploadPdf.single('prospectus'), uploadProspectus);
 
 module.exports = router;

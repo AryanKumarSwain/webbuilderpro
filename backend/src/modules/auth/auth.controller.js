@@ -6,7 +6,7 @@ const {
     resetPasswordService,
     changePasswordService,
 } = require('./auth.service');
-const { sendSuccess, sendError } = require('../../utils/response.utils');
+const { sendSuccess, sendError, handleControllerError } = require('../../utils/response.utils');
 
 const login = async (req, res) => {
     try {
@@ -41,7 +41,7 @@ const login = async (req, res) => {
         });
 
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -57,7 +57,7 @@ const logout = async (req, res) => {
         return sendSuccess(res, 'Logout successful');
 
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -70,7 +70,7 @@ const refreshToken = async (req, res) => {
         return sendSuccess(res, 'Token refreshed', { accessToken });
 
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -91,7 +91,7 @@ const forgotPassword = async (req, res) => {
         return sendSuccess(res, 'If that email is registered, a reset link has been sent.');
 
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -104,7 +104,7 @@ const resetPassword = async (req, res) => {
         return sendSuccess(res, 'Password reset successful. You can now log in.');
 
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 
@@ -121,7 +121,7 @@ const changePassword = async (req, res) => {
         return sendSuccess(res, 'Password changed successfully');
 
     } catch (error) {
-        return sendError(res, error.message, error.statusCode || 500);
+        return handleControllerError(res, error);
     }
 };
 

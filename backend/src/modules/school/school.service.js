@@ -1,6 +1,7 @@
 const { pool } = require("../../config/db");
 const AppError = require("../../utils/error.utils");
 const { reconcileSchoolAssetMedia, reconcileHeroVideoMedia } = require("../../utils/storage.utils");
+const { isPlanActive } = require("../../config/plan.config");
 
 // ── Get School Profile ───────────────────────────────
 const getSchoolProfileService = async (schoolId) => {
@@ -136,13 +137,12 @@ const getSelectedModulesService = async (schoolId) => {
         throw new AppError("School not found", 404);
     }
 
-    // A plan_id alone isn't enough — a lapsed plan_end_date (no renewal) must also
-    // force the admin back to Billing, same as never having had a plan at all.
-    // plan_end_date can be NULL on old rows from before this column existed; treat
-    // those as non-expiring rather than instant-lockout.
+    // A plan_id alone isn't enough — a lapsed plan_end_date (past its grace
+    // period, with no renewal) must also force the admin back to Billing, same
+    // as never having had a plan at all. isPlanActive is the single source of
+    // truth for the cutoff so this can never drift from the backend route guard.
     const school = schools[0];
-    const hasActivePlan = school.plan_id !== null &&
-        (!school.plan_end_date || new Date(school.plan_end_date) >= new Date(new Date().toDateString()));
+    const hasActivePlan = isPlanActive(school.plan_id, school.plan_end_date);
 
     return {
         selectedModules: school.selected_modules
@@ -212,7 +212,8 @@ const getPublicSchoolService = async (slug) => {
             s.hero_video_url, s.hero_video_title, s.intro_message, s.intro_message_enabled,
             s.welcome_banner_enabled, s.welcome_banner_url, s.welcome_banner_link,
             s.footer_bg_url, s.footer_about_text, s.bg_music_enabled, s.bg_music_track, s.affiliation_badges,
-            s.prospectus_url, s.school_app_label, s.school_app_url
+            s.prospectus_url, s.school_app_label, s.school_app_url,
+            s.plan_id, s.plan_end_date
         FROM tbl_schools s
         WHERE s.slug = ? AND s.status = 'active'`,
         [slug]
@@ -223,6 +224,15 @@ const getPublicSchoolService = async (slug) => {
     }
 
     const school = rows[0];
+
+    // Past-grace-period expiry takes the public site offline the same as
+    // status = 'suspended' — an expired-past-grace school has no plan_id/
+    // plan_end_date changed anywhere, so this is the only place that acts on it.
+    if (!isPlanActive(school.plan_id, school.plan_end_date)) {
+        throw new AppError('School not found', 404);
+    }
+    delete school.plan_id;
+    delete school.plan_end_date;
     school.selected_modules = typeof school.selected_modules === 'string'
         ? JSON.parse(school.selected_modules)
         : (school.selected_modules || []);

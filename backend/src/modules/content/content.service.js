@@ -1,6 +1,24 @@
 const { pool } = require("../../config/db");
 const AppError = require("../../utils/error.utils");
 const { reconcileModuleMedia } = require("../../utils/storage.utils");
+const { isPlanActive } = require("../../config/plan.config");
+
+// ── Assert School Publicly Visible ───────────────────
+// Same offline gate as getPublicSchoolService (school.service.js) — a
+// suspended school, or one expired past its grace period, must be
+// unreachable through this schoolId-keyed endpoint too, not just through the
+// slug-keyed one. Without this, a suspended/expired school's already-published
+// content stayed fetchable by anyone who knew/guessed its numeric id.
+const assertSchoolPubliclyVisible = async (schoolId) => {
+    const [rows] = await pool.query(
+        `SELECT status, plan_id, plan_end_date FROM tbl_schools WHERE id = ?`,
+        [schoolId]
+    );
+    const school = rows[0];
+    if (!school || school.status !== 'active' || !isPlanActive(school.plan_id, school.plan_end_date)) {
+        throw new AppError('School not found', 404);
+    }
+};
 
 // ── Get Module Content ───────────────────────────────
 const getModuleContentService = async (schoolId, moduleKey) => {
@@ -72,6 +90,8 @@ const togglePublishService = async (schoolId, moduleKey) => {
 
 // ── Get Public Module Content ────────────────────────
 const getPublicModuleContentService = async (schoolId, moduleKey) => {
+    await assertSchoolPubliclyVisible(schoolId);
+
     const [rows] = await pool.query(
         `SELECT content FROM tbl_module_content
          WHERE school_id = ? AND module_key = ? AND is_published = 1`,
@@ -88,6 +108,8 @@ const getPublicModuleContentService = async (schoolId, moduleKey) => {
 // ── Get Published Module Keys — used by the public site to only show nav/footer
 //    links for modules the school has actually published (not just enabled) ──
 const getPublishedModuleKeysService = async (schoolId) => {
+    await assertSchoolPubliclyVisible(schoolId);
+
     const [rows] = await pool.query(
         `SELECT module_key FROM tbl_module_content WHERE school_id = ? AND is_published = 1`,
         [schoolId]

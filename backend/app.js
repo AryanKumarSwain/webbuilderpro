@@ -6,6 +6,7 @@ require('dotenv').config();
 
 const routes = require('./src/routes/index.routes');
 const { pool } = require('./src/config/db');
+const AppError = require('./src/utils/error.utils');
 
 const app = express();
 
@@ -109,15 +110,20 @@ app.use((req, res) => {
 
 // ── Global Error Handler ─────────────────────────────
 // Fallback only — every controller catches its own errors and responds via
-// sendError with error.statusCode (see response.utils.js). This only fires
-// for errors thrown outside a controller's try/catch (e.g. middleware).
+// handleControllerError with error.statusCode (see response.utils.js). This
+// only fires for errors thrown outside a controller's try/catch (e.g.
+// middleware). Same instanceof AppError check as handleControllerError, so an
+// unexpected error can't leak a raw DB/stack message here either.
 app.use((err, req, res, next) => {
     console.error('ERROR DETAILS:', err);
     console.error('ERROR MESSAGE:', err?.message);
     console.error('ERROR STACK:', err?.stack);
+    const message = err instanceof AppError
+        ? err.message
+        : 'Something went wrong. Please try again.';
     res.status(err.statusCode || err.status || 500).json({
         success: false,
-        message: err.message || 'Internal server error'
+        message
     });
 });
 module.exports = app;
