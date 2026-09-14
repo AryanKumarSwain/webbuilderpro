@@ -104,6 +104,29 @@ const uploadPdfHandler = async (req, res) => {
     }
 };
 
+// Public counterpart of uploadPdfHandler — no req.user (anonymous visitor), so
+// schoolId comes from the URL param. Only used by the career enquiry form's
+// resume upload; no module_key (these live in the module_key IS NULL bucket,
+// same as other school-asset uploads — see storage reclaim notes in CLAUDE.md).
+const uploadPublicResumeHandler = async (req, res) => {
+    try {
+        if (!req.file) {
+            return sendError(res, 'No PDF uploaded', 400);
+        }
+        await recordMediaUsage({
+            schoolId: req.params.schoolId,
+            moduleKey: null,
+            resourceType: 'pdf',
+            sizeBytes: req.file.size,
+            url: req.file.path,
+            publicId: req.file.filename,
+        });
+        return sendSuccess(res, 'Resume uploaded', { url: req.file.path });
+    } catch (error) {
+        return handleControllerError(res, error);
+    }
+};
+
 const uploadVideoHandler = async (req, res) => {
     try {
         if (!req.file) {
@@ -131,5 +154,6 @@ module.exports = {
     getPublishedModules,
     uploadContentImageHandler,
     uploadPdfHandler,
+    uploadPublicResumeHandler,
     uploadVideoHandler,
 };

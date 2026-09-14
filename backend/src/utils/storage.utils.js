@@ -222,10 +222,24 @@ const checkStorageLimitMiddleware = async (req, res, next) => {
     }
 };
 
+// Same check, for a public (unauthenticated) upload route where there's no
+// req.user — schoolId comes from the URL param instead. Used by the career
+// enquiry form's public resume upload.
+const checkPublicStorageLimitMiddleware = async (req, res, next) => {
+    try {
+        const incomingBytes = Number(req.headers["content-length"]) || 0;
+        await checkStorageLimit(req.params.schoolId, incomingBytes);
+        next();
+    } catch (error) {
+        return sendError(res, error.message, error.statusCode || 500);
+    }
+};
+
 module.exports = {
     recordMediaUsage,
     checkStorageLimit,
     checkStorageLimitMiddleware,
+    checkPublicStorageLimitMiddleware,
     reconcileModuleMedia,
     reconcileSchoolAssetMedia,
     reconcileHeroVideoMedia,

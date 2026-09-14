@@ -56,6 +56,19 @@ export const uploadPdfApi = async (file) => {
     return response.data;
 };
 
+// Public counterpart of uploadPdfApi — for the career enquiry form's resume
+// upload, filled out by an anonymous visitor with no admin login. Hits a
+// public backend route instead of the admin-only /content/upload-pdf (which
+// always 401'd for a real visitor with no token).
+export const uploadPublicResumeApi = async (schoolId, file) => {
+    const formData = new FormData();
+    formData.append('pdf', file);
+    const response = await axiosInstance.post(`/content/public/${schoolId}/upload-resume`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+};
+
 
 export const uploadVideoFileApi = async (file) => {
     const formData = new FormData();

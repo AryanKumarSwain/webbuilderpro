@@ -12,8 +12,10 @@ cloudinary.config({
 // Per-school folder suffix — keeps uploads segregated so Cloudinary's own usage
 // stats can be cross-checked against the tbl_media_usage ledger later. req.user is
 // already set by `protect` (which runs before these upload middlewares in every
-// route chain), so no extra DB lookup is needed here.
-const schoolFolder = (base) => (req) => `${base}/school-${req.user?.schoolId || 'misc'}`;
+// authenticated route chain), so no extra DB lookup is needed here. Falls back to
+// req.params.schoolId for the one public (unauthenticated) upload route — the
+// career enquiry form's resume upload — which has no req.user.
+const schoolFolder = (base) => (req) => `${base}/school-${req.user?.schoolId || req.params?.schoolId || 'misc'}`;
 
 // Image upload (small — logos, profile photos)
 const imageStorage = new CloudinaryStorage({

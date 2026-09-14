@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { getPublicSchoolApi } from "../../api/school.api";
 import { submitEnquiryApi } from "../../api/enquiry.api";
-import { uploadPdfApi } from "../../api/content.api";
+import { uploadPublicResumeApi } from "../../api/content.api";
 import { getThemeColors, getBaseColors, isModuleEnabled } from "../../constants/publicNav";
 import AdmissionEnquiryForm from "./AdmissionEnquiryForm";
 import { sanitizePhoneDigits, isValidPhone } from "../../utils/phone";
@@ -139,7 +139,7 @@ const CareerEnquiryModal = ({ school, tc, bc }) => {
     const handleResumeUpload = async (file) => {
         setUploadingResume(true);
         try {
-            const res = await uploadPdfApi(file);
+            const res = await uploadPublicResumeApi(school.id, file);
             setResumeUrl(res.data.url);
             toast.success('Resume uploaded');
         } catch (e) {
