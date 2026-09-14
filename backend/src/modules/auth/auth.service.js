@@ -217,8 +217,8 @@ const resetPasswordService = async (token, role, newPassword) => {
   if (!token || !role || !newPassword) {
     throw new AppError("Token, role and new password are required", 400);
   }
-  if (newPassword.length < 6) {
-    throw new AppError("Password must be at least 6 characters", 400);
+  if (newPassword.length < 8) {
+    throw new AppError("Password must be at least 8 characters", 400);
   }
 
   const tokenHash = crypto.createHash("sha256").update(token).digest("hex");

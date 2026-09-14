@@ -30,8 +30,8 @@ const ResetPassword = () => {
             toast.error('Missing or invalid reset link');
             return;
         }
-        if (password.length < 6) {
-            toast.error('Password must be at least 6 characters');
+        if (password.length < 8) {
+            toast.error('Password must be at least 8 characters');
             return;
         }
         if (password !== confirmPassword) {
@@ -59,26 +59,42 @@ const ResetPassword = () => {
                 rel="stylesheet"
             />
             <style>{`
-                html, body, #root { margin: 0 !important; padding: 0 !important; width: 100% !important; height: 100% !important; }
+                html, body, #root { margin: 0 !important; padding: 0 !important; width: 100% !important; height: 100% !important; overflow-x: hidden !important; }
                 @keyframes spin { to { transform: rotate(360deg); } }
+                @keyframes rpOrbDrift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(18px,-16px) scale(1.08); } }
+                @keyframes rpCardIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
                 .rp-input:focus { border-color: ${theme.accent} !important; box-shadow: 0 0 0 3px ${theme.accent}22; }
                 .rp-btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 10px 26px ${theme.accent}44 !important; }
+                .rp-orb { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(2px); animation: rpOrbDrift 9s ease-in-out infinite; }
+                @media (max-width: 480px) {
+                    .rp-outer { padding: 1rem !important; }
+                    .rp-card { padding: 2rem 1.5rem !important; }
+                }
             `}</style>
 
-            <div style={{
-                width: '100vw', minHeight: '100vh',
+            <div className="rp-outer" style={{
+                width: '100%', minHeight: '100vh',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: '#f7f8fb',
+                position: 'relative', overflow: 'hidden',
+                background: `radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px) 0 0 / 26px 26px, linear-gradient(160deg, ${theme.accentDark} 0%, ${theme.accent} 55%, ${theme.accentDark} 100%)`,
                 fontFamily: "'Inter', sans-serif",
                 padding: '1.5rem',
                 boxSizing: 'border-box',
             }}>
-                <div style={{
+                {/* Floating 3D orbs behind the card — same treatment as Login/Signup/Forgot Password */}
+                <div className="rp-orb" style={{ width: '260px', height: '260px', background: 'rgba(255,255,255,0.14)', top: '-90px', left: '-70px' }}></div>
+                <div className="rp-orb" style={{ width: '200px', height: '200px', background: 'rgba(0,0,0,0.15)', bottom: '-60px', right: '-50px', animationDelay: '1.5s', animationDirection: 'reverse' }}></div>
+                <div className="rp-orb" style={{ width: '120px', height: '120px', background: 'rgba(255,255,255,0.1)', top: '55%', right: '8%', animationDelay: '0.7s' }}></div>
+
+                <div className="rp-card" style={{
+                    position: 'relative', zIndex: 1,
                     width: '100%', maxWidth: '400px',
                     background: '#fff', borderRadius: '20px',
-                    boxShadow: '0 20px 60px rgba(20,26,46,0.1)',
+                    boxShadow: '0 30px 80px rgba(0,0,0,0.35), 0 4px 20px rgba(0,0,0,0.15)',
                     padding: '2.5rem 2rem',
                     textAlign: 'center',
+                    boxSizing: 'border-box',
+                    animation: 'rpCardIn 0.5s cubic-bezier(0.16,1,0.3,1) both',
                 }}>
                     <img src={logo} alt="Web Builder Pro" style={{ width: '160px', height: 'auto', margin: '0 auto 8px', display: 'block' }} />
 
@@ -130,7 +146,7 @@ const ResetPassword = () => {
                                     <div style={{ position: 'relative' }}>
                                         <input
                                             type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)}
-                                            placeholder="Enter new password" required className="rp-input"
+                                            placeholder="Enter new password (min. 8 characters)" required minLength={8} className="rp-input"
                                             style={{ width: '100%', padding: '12px 42px 12px 14px', borderRadius: '12px', border: '1.5px solid #e5e9f5', background: '#fff', color: '#20242C', fontSize: '14px', outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s' }}
                                         />
                                         <button type="button" onClick={() => setShowPassword(!showPassword)}
@@ -155,7 +171,7 @@ const ResetPassword = () => {
                                     <div style={{ position: 'relative' }}>
                                         <input
                                             type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                                            placeholder="Re-enter new password" required className="rp-input"
+                                            placeholder="Re-enter new password" required minLength={8} className="rp-input"
                                             style={{ width: '100%', padding: '12px 42px 12px 14px', borderRadius: '12px', border: '1.5px solid #e5e9f5', background: '#fff', color: '#20242C', fontSize: '14px', outline: 'none', boxSizing: 'border-box', transition: 'all 0.2s' }}
                                         />
                                         <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}
