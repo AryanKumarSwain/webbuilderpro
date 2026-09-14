@@ -47,26 +47,37 @@ const ForgotPassword = ({ role = 'admin' }) => {
             <style>{`
                 html, body, #root { margin: 0 !important; padding: 0 !important; width: 100% !important; height: 100% !important; }
                 @keyframes spin { to { transform: rotate(360deg); } }
+                @keyframes fpOrbDrift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(18px,-16px) scale(1.08); } }
+                @keyframes fpCardIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
                 .fp-input:focus { border-color: ${theme.accent} !important; box-shadow: 0 0 0 3px ${theme.accent}22; }
                 .fp-btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 10px 26px ${theme.accent}44 !important; }
                 .fp-back { transition: color 0.2s; }
                 .fp-back:hover { color: ${theme.accent} !important; }
+                .fp-orb { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(2px); animation: fpOrbDrift 9s ease-in-out infinite; }
             `}</style>
 
             <div style={{
                 width: '100vw', minHeight: '100vh',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: '#f7f8fb',
+                position: 'relative', overflow: 'hidden',
+                background: `radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px) 0 0 / 26px 26px, linear-gradient(160deg, ${theme.accentDark} 0%, ${theme.accent} 55%, ${theme.accentDark} 100%)`,
                 fontFamily: "'Inter', sans-serif",
                 padding: '1.5rem',
                 boxSizing: 'border-box',
             }}>
+                {/* Floating 3D orbs behind the card — same drift treatment as Login/Signup */}
+                <div className="fp-orb" style={{ width: '260px', height: '260px', background: 'rgba(255,255,255,0.14)', top: '-90px', left: '-70px', animationDelay: '0s' }}></div>
+                <div className="fp-orb" style={{ width: '200px', height: '200px', background: 'rgba(0,0,0,0.15)', bottom: '-60px', right: '-50px', animationDelay: '1.5s', animationDirection: 'reverse' }}></div>
+                <div className="fp-orb" style={{ width: '120px', height: '120px', background: 'rgba(255,255,255,0.1)', top: '55%', right: '8%', animationDelay: '0.7s' }}></div>
+
                 <div style={{
+                    position: 'relative', zIndex: 1,
                     width: '100%', maxWidth: '400px',
                     background: '#fff', borderRadius: '20px',
-                    boxShadow: '0 20px 60px rgba(20,26,46,0.1)',
+                    boxShadow: '0 30px 80px rgba(0,0,0,0.35), 0 4px 20px rgba(0,0,0,0.15)',
                     padding: '2.5rem 2rem',
                     textAlign: 'center',
+                    animation: 'fpCardIn 0.5s cubic-bezier(0.16,1,0.3,1) both',
                 }}>
                     <img src={logo} alt="Web Builder Pro" style={{ width: '160px', height: 'auto', margin: '0 auto 8px', display: 'block' }} />
 
