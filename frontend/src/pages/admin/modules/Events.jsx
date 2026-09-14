@@ -10,7 +10,7 @@ import ImageSizeHint from '../../../components/admin/ImageSizeHint';
 import ReorderButtons from '../../../components/common/ReorderButtons';
 import useSchoolStore from '../../../store/schoolStore';
 import { moveItem } from '../../../utils/reorder';
-import { assertEventsVideoSizeOk, MAX_EVENTS_VIDEO_SIZE_MB } from '../../../utils/fileValidation';
+import { assertVideoSizeOk, MAX_VIDEO_SIZE_MB } from '../../../utils/fileValidation';
 import toast from 'react-hot-toast';
 
 const hexToRgba = (hex, alpha) => {
@@ -284,7 +284,7 @@ const VideoSlotsEditor = ({ videos, onChange, max = 3 }) => {
     const moveSlot = (idx, dir) => onChange(moveItem(videos, idx, dir));
 
     const handleFile = async (id, file) => {
-        try { assertEventsVideoSizeOk(file); } catch (e) { return; }
+        try { assertVideoSizeOk(file); } catch (e) { return; }
         setUploadingId(id);
         try {
             const res = await uploadVideoFileApi(file);
@@ -349,7 +349,7 @@ const VideoSlotsEditor = ({ videos, onChange, max = 3 }) => {
                                         onChange={e => { const f = e.target.files[0]; e.target.value = ''; if (f) handleFile(v.id, f); }} />
                                 </label>
                                 {v.videoUrl && <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 600 }}>Uploaded</span>}
-                                {!v.videoUrl && <span style={{ fontSize: '10.5px', color: '#94a3b8' }}>Max {MAX_EVENTS_VIDEO_SIZE_MB}MB</span>}
+                                {!v.videoUrl && <span style={{ fontSize: '10.5px', color: '#94a3b8' }}>Max {MAX_VIDEO_SIZE_MB}MB</span>}
                             </div>
                         )}
                         <input type="text" value={v.title || ''} onChange={e => updateSlot(v.id, 'title', e.target.value)}

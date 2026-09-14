@@ -1,6 +1,6 @@
 import axiosInstance from '../config/axios';
 import { noBreakHyphensDeep } from '../utils/textFormat';
-import { assertImageSizeOk } from '../utils/fileValidation';
+import { assertImageSizeOk, assertPdfSizeOk, assertVideoSizeOk } from '../utils/fileValidation';
 import { compressImage } from '../utils/compressImage';
 
 export const getModuleContentApi = async (moduleKey) => {
@@ -48,6 +48,7 @@ export const uploadContentImageApi = async (file) => {
 };
 
 export const uploadPdfApi = async (file) => {
+    assertPdfSizeOk(file);
     const formData = new FormData();
     formData.append('pdf', file);
     const response = await axiosInstance.post(`/content/upload-pdf?moduleKey=${currentModuleKey()}`, formData, {
@@ -61,6 +62,7 @@ export const uploadPdfApi = async (file) => {
 // public backend route instead of the admin-only /content/upload-pdf (which
 // always 401'd for a real visitor with no token).
 export const uploadPublicResumeApi = async (schoolId, file) => {
+    assertPdfSizeOk(file);
     const formData = new FormData();
     formData.append('pdf', file);
     const response = await axiosInstance.post(`/content/public/${schoolId}/upload-resume`, formData, {
@@ -71,6 +73,7 @@ export const uploadPublicResumeApi = async (schoolId, file) => {
 
 
 export const uploadVideoFileApi = async (file) => {
+    assertVideoSizeOk(file);
     const formData = new FormData();
     formData.append('video', file);
     const response = await axiosInstance.post(`/content/upload-video?moduleKey=${currentModuleKey()}`, formData, {

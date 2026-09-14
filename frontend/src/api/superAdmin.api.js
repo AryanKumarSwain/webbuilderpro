@@ -1,5 +1,6 @@
 import axiosInstance from '../config/axios';
 import { compressFormDataImage } from '../utils/compressImage';
+import { assertImageSizeOk } from '../utils/fileValidation';
 
 // ── Schools ──────────────────────────────────────────
 export const getAllSchoolsApi = async () => {
@@ -45,6 +46,7 @@ export const updateAdminStatusApi = async (uuid, status) => {
 };
 
 export const createSchoolWithAdminApi = async (data) => {
+    assertImageSizeOk(data.get('schoolImage'));
     await compressFormDataImage(data, 'schoolImage');
     const response = await axiosInstance.post(
         '/super-admin/schools/create-with-admin',
