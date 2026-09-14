@@ -575,8 +575,7 @@ const AdminSettings = () => {
         { key: 'footerBg', label: 'Footer Background', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z"/><path strokeLinecap="round" strokeLinejoin="round" d="M4 15l4-4a2 2 0 012.8 0L16 16m-3-3l1.6-1.6a2 2 0 012.8 0L20 14"/></svg> },
         { key: 'bgMusic', label: 'Background Music', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg> },
         { key: 'affiliationBadges', label: 'Affiliation Badges', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15a4 4 0 100-8 4 4 0 000 8z"/><path strokeLinecap="round" strokeLinejoin="round" d="M8.5 13.5L7 21l5-2.5L17 21l-1.5-7.5"/></svg> },
-        // 'customDomain' tab hidden for now (built, working, just not offered yet) — re-add
-        // this entry to bring it back: { key: 'customDomain', label: 'Custom Domain', icon: ... }
+        { key: 'customDomain', label: 'Custom Domain', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path strokeLinecap="round" strokeLinejoin="round" d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg> },
         { key: 'prospectus', label: 'Prospectus', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg> },
         { key: 'schoolApp', label: 'School App', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path strokeLinecap="round" strokeLinejoin="round" d="M11 18h2"/></svg> },
     ];
@@ -1459,9 +1458,12 @@ const AdminSettings = () => {
                     </div>
                 )}
 
-                {/* ── Custom Domain — school points their own domain at their site via a DNS
-                     CNAME record. Save only stores the domain string; there's no automated
-                     verification or host-based routing yet, so this doesn't go live by itself. ── */}
+                {/* ── Custom Domain — school points their own domain (or a wbpro.in subdomain,
+                     e.g. stmarys.wbpro.in) at their site via a DNS CNAME record, added as a
+                     domain in the Vercel project. Saving here just stores the domain string on
+                     tbl_schools.custom_domain — once DNS/Vercel are set up, App.jsx's
+                     RootRouter/CustomDomainRoutes (host-based routing) and app.js's CORS check
+                     already resolve and allow it automatically, no further steps needed. ── */}
                 {activeTab === 'customDomain' && (
                     <div className="settings-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                         <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
