@@ -171,9 +171,18 @@ const RootRouter = () => {
     }, [domainState.status]);
 
     if (domainState.status === 'checking') return <FullPageSpinner />;
-    if (domainState.status === 'custom') return <CustomDomainRoutes slug={domainState.slug} />;
+    if (domainState.status === 'custom') {
+        return (
+            <>
+                <EnquiryWidget customSlug={domainState.slug} />
+                <CustomDomainRoutes slug={domainState.slug} />
+            </>
+        );
+    }
 
     return (
+        <>
+        <EnquiryWidget />
         <Routes>
 
             {/* Public Routes */}
@@ -247,6 +256,7 @@ const RootRouter = () => {
             <Route path="*" element={<Navigate to="/login" replace />} />
 
         </Routes>
+        </>
     );
 };
 
@@ -254,7 +264,6 @@ function App() {
     return (
         <BrowserRouter>
             <Toaster position="top-right" />
-            <EnquiryWidget />
             <RootRouter />
         </BrowserRouter>
     );

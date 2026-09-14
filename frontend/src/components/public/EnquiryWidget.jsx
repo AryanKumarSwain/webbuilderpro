@@ -267,11 +267,19 @@ const CareerEnquiryModal = ({ school, tc, bc }) => {
 // itself (there is no shared public layout route to hang this off yet) rather
 // than every public page having to import/render it individually. Replaces the
 // old dedicated /school/:slug/admission-enquiry and /career-enquiry pages —
-// see CLAUDE.md Modules section. ──
-const EnquiryWidget = () => {
+// see CLAUDE.md Modules section.
+//
+// `customSlug` — on a connected custom domain (e.g. mcs.wbpro.in) the real
+// browser path is clean (no /school/:slug prefix by design, see
+// CustomDomainRoutes in App.jsx), so the regex below never matches and this
+// widget rendered nothing at all there — no floating tabs, no way to submit
+// an enquiry. RootRouter already resolves the slug for a custom domain via
+// resolveSchoolByDomainApi and passes it through as this prop; the regex stays
+// as the fallback for the normal /school/:slug/* platform path. ──
+const EnquiryWidget = ({ customSlug } = {}) => {
     const location = useLocation();
     const match = location.pathname.match(/^\/school\/([^/]+)/);
-    const slug = match ? match[1] : null;
+    const slug = customSlug || (match ? match[1] : null);
 
     const [school, setSchool] = useState(null);
 
