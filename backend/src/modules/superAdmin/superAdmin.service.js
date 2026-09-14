@@ -243,27 +243,26 @@ const approveSchoolService = async (uuid) => {
 
     await pool.query("UPDATE tbl_schools SET status = 'active' WHERE uuid = ?", [uuid]);
 
-    try {
-        await sendMail({
-            to: school.admin_email,
-            subject: "Your Web Builder Pro account is approved",
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #20242C;">
-                    <h2 style="color: #4169E1;">You're approved!</h2>
-                    <p>Hi ${school.admin_name || ""},</p>
-                    <p><strong>${school.name}</strong>'s account has been approved. Log in to choose your plan and go live.</p>
-                    <p style="margin: 28px 0;">
-                        <a href="${process.env.FRONTEND_URL}/login" style="background: #4169E1; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
-                            Log In
-                        </a>
-                    </p>
-                    <p style="color: #9aa3b8; font-size: 12px; margin-top: 32px;">Web Builder Pro</p>
-                </div>
-            `,
-        });
-    } catch (err) {
-        console.error("Failed to send approval email:", err.message);
-    }
+    // Fire-and-forget, same reasoning as signup.service.js#createSignupRequestService:
+    // Gmail SMTP can take a long time to connect/time out, and the approve response
+    // (which the Super Admin UI waits on before refreshing the list) must not block on it.
+    sendMail({
+        to: school.admin_email,
+        subject: "Your Web Builder Pro account is approved",
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #20242C;">
+                <h2 style="color: #4169E1;">You're approved!</h2>
+                <p>Hi ${school.admin_name || ""},</p>
+                <p><strong>${school.name}</strong>'s account has been approved. Log in to choose your plan and go live.</p>
+                <p style="margin: 28px 0;">
+                    <a href="${process.env.FRONTEND_URL}/login" style="background: #4169E1; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                        Log In
+                    </a>
+                </p>
+                <p style="color: #9aa3b8; font-size: 12px; margin-top: 32px;">Web Builder Pro</p>
+            </div>
+        `,
+    }).catch((err) => console.error("Failed to send approval email:", err.message));
 
     return { message: "School approved" };
 };
