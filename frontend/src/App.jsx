@@ -16,6 +16,7 @@ import SuperAdminDashboard from './pages/superAdmin/Dashboard';
 import ManageSchools from './pages/superAdmin/ManageSchools';
 import CreateSchool from './pages/superAdmin/CreateSchool';
 import Plans from './pages/superAdmin/Plans';
+import SubdomainRequests from './pages/superAdmin/SubdomainRequests';
 
 // Admin
 import AdminDashboard from './pages/admin/Dashboard';
@@ -209,6 +210,7 @@ const RootRouter = () => {
                 <Route path="schools" element={<ManageSchools />} />
                 <Route path="schools/create" element={<CreateSchool />} />
                 <Route path="plans" element={<Plans />} />
+                <Route path="subdomain-requests" element={<SubdomainRequests />} />
             </Route>
 
             {/* Admin Protected Routes */}

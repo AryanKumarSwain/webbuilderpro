@@ -21,6 +21,10 @@ const navItems = [
         key: 'plans', label: 'Plans & Pricing', path: '/super-admin/plans',
         icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
     },
+    {
+        key: 'subdomain-requests', label: 'Subdomain Requests', path: '/super-admin/subdomain-requests',
+        icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 000 18M12.5 3a17 17 0 010 18"/></svg>
+    },
 ];
 
 const pageTitles = {
@@ -28,6 +32,7 @@ const pageTitles = {
     '/super-admin/schools': 'Manage Schools',
     '/super-admin/schools/create': 'Create School',
     '/super-admin/plans': 'Plans & Pricing',
+    '/super-admin/subdomain-requests': 'Subdomain Requests',
 };
 
 const SuperAdminLayout = () => {

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { getActivePlansApi } from '../../api/plans.api';
 import { createBillingOrderApi, verifyBillingPaymentApi } from '../../api/billing.api';
+import { getMySubdomainRequestApi } from '../../api/subdomainRequest.api';
+import SubdomainRequestForm from '../../components/admin/SubdomainRequestForm';
 import useAuthStore from '../../store/authStore';
 import useSchoolStore from '../../store/schoolStore';
 
@@ -35,6 +37,15 @@ const Billing = () => {
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [payingId, setPayingId] = useState(null);
+    const [showSubdomainPopup, setShowSubdomainPopup] = useState(false);
+
+    // Same "force-refresh school/plan state" reload the payment success
+    // handler always did — now also the exit point for the subdomain popup
+    // (both "Skip for now" and a successful request submission land here).
+    const proceedToDashboard = () => {
+        navigate('/admin/dashboard');
+        window.location.reload();
+    };
 
     useEffect(() => {
         getActivePlansApi()
@@ -80,8 +91,16 @@ const Billing = () => {
                     try {
                         await verifyBillingPaymentApi(response);
                         toast.success('Payment successful — your plan is now active!');
-                        navigate('/admin/dashboard');
-                        window.location.reload();
+                        // Only prompt for a free wbpro.in subdomain if this school has
+                        // never asked for one before (a renewal payment, or a second
+                        // payment after already requesting/getting one, skips straight
+                        // to the dashboard like before).
+                        const existing = await getMySubdomainRequestApi().catch(() => null);
+                        if (existing?.data) {
+                            proceedToDashboard();
+                        } else {
+                            setShowSubdomainPopup(true);
+                        }
                     } catch (e) {
                         toast.error(e.response?.data?.message || 'Payment verification failed');
                     } finally {
@@ -320,6 +339,33 @@ const Billing = () => {
                     </>
                 )}
             </div>
+
+            {/* ── Post-payment subdomain popup — only shown once, right after a
+                 school's first successful payment (see the handler above). ── */}
+            {showSubdomainPopup && (
+                <div style={{ position: 'fixed', inset: 0, zIndex: 6000, background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
+                    <div style={{ background: '#fff', maxWidth: '420px', width: '100%', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(15,23,42,0.35)' }}>
+                        <div style={{ padding: '1.75rem 1.75rem 1.25rem' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: 800, color: TEXT_DARK, marginBottom: '6px', fontFamily: "'Playfair Display', serif" }}>
+                                Get a free wbpro.in subdomain
+                            </h3>
+                            <p style={{ fontSize: '13px', color: TEXT_MUTED, marginBottom: '18px', lineHeight: 1.6 }}>
+                                Pick a subdomain for {school?.name ? `${school.name}'s` : 'your'} website — we'll set it up and email you once it's live, usually within 24 hours.
+                            </p>
+                            <SubdomainRequestForm
+                                tc={{ primary: BLUE, secondary: BLUE_DARK }}
+                                onSuccess={proceedToDashboard}
+                            />
+                        </div>
+                        <div style={{ padding: '0 1.75rem 1.5rem' }}>
+                            <button onClick={proceedToDashboard}
+                                style={{ width: '100%', padding: '10px', background: 'transparent', color: '#94a3b8', border: 'none', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>
+                                Skip for now — I'll do this later from Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 };

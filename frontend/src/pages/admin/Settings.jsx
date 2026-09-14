@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { getSchoolProfileApi, updateSchoolProfileApi, updateSchoolSettingsApi, uploadSchoolLogoApi, uploadWelcomeBannerApi, uploadFooterBackgroundApi, uploadProspectusApi } from '../../api/school.api';
 import { uploadContentImageApi } from '../../api/content.api';
+import { getMySubdomainRequestApi } from '../../api/subdomainRequest.api';
+import SubdomainRequestForm from '../../components/admin/SubdomainRequestForm';
 import useSchoolStore from '../../store/schoolStore';
 import ImageCropModal from '../../components/common/ImageCropModal';
 import { FONT_OPTIONS, GOOGLE_FONTS_URL, getFontFamily } from '../../constants/fonts';
@@ -73,6 +75,11 @@ const AdminSettings = () => {
     const [customDomain, setCustomDomain] = useState('');
     const [savingDomain, setSavingDomain] = useState(false);
 
+    // Free wbpro.in subdomain — separate from the custom-domain field above
+    // (that one's for a school's own external domain). null while loading;
+    // {} explicitly means "never requested one".
+    const [subdomainRequest, setSubdomainRequest] = useState(null);
+
     const [prospectusUrl, setProspectusUrl] = useState('');
     const [prospectusFile, setProspectusFile] = useState(null);
     const [uploadingProspectus, setUploadingProspectus] = useState(false);
@@ -86,6 +93,11 @@ const AdminSettings = () => {
     const scrollTabs = (dir) => tabsScrollRef.current?.scrollBy({ left: dir * 240, behavior: 'smooth' });
 
     useEffect(() => { fetchProfile(); }, []);
+    useEffect(() => {
+        getMySubdomainRequestApi()
+            .then((res) => setSubdomainRequest(res.data || {}))
+            .catch(() => setSubdomainRequest({}));
+    }, []);
 
     const fetchProfile = async () => {
         try {
@@ -1466,6 +1478,56 @@ const AdminSettings = () => {
                      already resolve and allow it automatically, no further steps needed. ── */}
                 {activeTab === 'customDomain' && (
                     <div className="settings-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+
+                        {/* ── Free wbpro.in Subdomain — separate, mediated flow from the external
+                             Custom Domain card below: request a label here (or right after a
+                             Billing payment), a Super Admin does the DNS/Vercel work manually and
+                             marks it live, which lands in this same tbl_schools.custom_domain
+                             column — see backend/src/modules/subdomainRequest/. ── */}
+                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                    <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>Free wbpro.in Subdomain</p>
+                                    <p style={{ fontSize: '11px', color: '#94a3b8' }}>Get a branded link like yourschool.wbpro.in — no domain purchase needed</p>
+                                </div>
+                                {subdomainRequest?.status && (
+                                    <span style={{
+                                        fontSize: '10.5px', fontWeight: 700, borderRadius: '999px', padding: '4px 11px', flexShrink: 0,
+                                        color: subdomainRequest.status === 'fulfilled' ? '#15803d' : subdomainRequest.status === 'rejected' ? '#b91c1c' : '#b45309',
+                                        background: subdomainRequest.status === 'fulfilled' ? '#f0fdf4' : subdomainRequest.status === 'rejected' ? '#fef2f2' : '#fffbeb',
+                                        border: `1px solid ${subdomainRequest.status === 'fulfilled' ? '#bbf7d0' : subdomainRequest.status === 'rejected' ? '#fecaca' : '#fde68a'}`,
+                                    }}>
+                                        {subdomainRequest.status === 'fulfilled' ? 'Live' : subdomainRequest.status === 'rejected' ? 'Needs a different name' : 'Pending'}
+                                    </span>
+                                )}
+                            </div>
+                            <div style={{ padding: '1.5rem 1.75rem' }}>
+                                {subdomainRequest === null ? (
+                                    <p style={{ fontSize: '12.5px', color: '#94a3b8' }}>Loading...</p>
+                                ) : subdomainRequest.status === 'fulfilled' ? (
+                                    <p style={{ fontSize: '13px', color: '#15803d', fontWeight: 600 }}>
+                                        Your site is live at{' '}
+                                        <a href={`https://${subdomainRequest.requested_label}.wbpro.in`} target="_blank" rel="noopener noreferrer" style={{ color: '#15803d', textDecoration: 'underline' }}>
+                                            {subdomainRequest.requested_label}.wbpro.in
+                                        </a>
+                                    </p>
+                                ) : subdomainRequest.status === 'pending' ? (
+                                    <p style={{ fontSize: '13px', color: '#b45309' }}>
+                                        Request for <strong>{subdomainRequest.requested_label}.wbpro.in</strong> received — you'll get an email within 24 hours once it's live.
+                                    </p>
+                                ) : (
+                                    <SubdomainRequestForm
+                                        tc={tc}
+                                        submitLabel={subdomainRequest.status === 'rejected' ? 'Request a Different Subdomain' : 'Request Subdomain'}
+                                        onSuccess={(data) => setSubdomainRequest({ requested_label: data.label, status: 'pending' })}
+                                    />
+                                )}
+                            </div>
+                        </div>
+
                         <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
                             <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
