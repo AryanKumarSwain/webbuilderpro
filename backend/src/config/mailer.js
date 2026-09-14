@@ -5,14 +5,20 @@ const nodemailer = require('nodemailer');
 // Verification → App Passwords), not the regular account password.
 //
 // Explicit host/port/587 (STARTTLS) instead of nodemailer's `service: 'gmail'`
-// shorthand (which resolves to port 465/implicit TLS) — in production this
-// intermittently failed with "Connection timeout" from Render's network on
-// 465, while 587 (Google's standard submission port) is far more universally
-// reliable across hosting providers' outbound network paths.
+// shorthand (which resolves to port 465/implicit TLS) — 587 is Google's
+// standard submission port and more broadly compatible across hosts.
+//
+// family: 4 forces IPv4-only connections. Render's containers logged
+// `ENETUNREACH` connecting to smtp.gmail.com's IPv6 address (Google's SMTP
+// hostname resolves to both A and AAAA records) — the network has no IPv6
+// route, so any attempt that picked the IPv6 address failed instantly, and
+// others fell back and ran into unrelated timeouts. Skipping IPv6 entirely
+// avoids the broken path.
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     secure: false,
+    family: 4,
     auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASSWORD,
