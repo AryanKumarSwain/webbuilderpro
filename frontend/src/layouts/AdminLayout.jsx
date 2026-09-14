@@ -154,13 +154,20 @@ const AdminLayout = () => {
         },
     ];
 
+    // 'contact'/'settings' aren't real toggleable modules (see moduleRegistry.jsx's
+    // "Configuration" category note) but can still end up in a school's saved
+    // selected_modules (e.g. via ModuleSelector's old "Select All") — when they do,
+    // they need their dedicated route (matching coreItems above), not the generic
+    // /admin/module/:key pattern, which doesn't handle them.
+    const DEDICATED_MODULE_PATHS = { contact: '/admin/contact', settings: '/admin/settings' };
+
     const moduleItems = selectedModules
         .map((key) => moduleRegistry.find((m) => m.key === key))
         .filter(Boolean)
         .map((m) => ({
             key: m.key,
             label: m.label,
-            path: m.key === 'home' ? '/admin/module/home' : `/admin/module/${m.key}`,
+            path: DEDICATED_MODULE_PATHS[m.key] || (m.key === 'home' ? '/admin/module/home' : `/admin/module/${m.key}`),
             icon: m.icon,
         }))
         .sort((a, b) => a.label.localeCompare(b.label));
