@@ -189,29 +189,27 @@ const forgotPasswordService = async (email, role) => {
     console.log("🔗 [dev only] Password reset link:", resetUrl);
   }
 
-  try {
-    await sendMail({
-      to: user.email,
-      subject: "Reset your Web Builder Pro password",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #20242C;">
-          <h2 style="color: #4169E1;">Reset your password</h2>
-          <p>Hi ${user.name || ""},</p>
-          <p>We received a request to reset your Web Builder Pro password. This link is valid for 30 minutes.</p>
-          <p style="margin: 28px 0;">
-            <a href="${resetUrl}" style="background: #4169E1; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
-              Reset Password
-            </a>
-          </p>
-          <p>If you didn't request this, you can safely ignore this email — your password will stay unchanged.</p>
-          <p style="color: #9aa3b8; font-size: 12px; margin-top: 32px;">Web Builder Pro</p>
-        </div>
-      `,
-    });
-  } catch (err) {
-    console.error("Failed to send password reset email:", err.message);
-    throw new AppError("Failed to send reset email. Please try again later.", 500);
-  }
+  // Fire-and-forget, same reasoning as signup.service.js and superAdmin.service.js's
+  // approveSchoolService: Gmail SMTP can take a long time to connect/time out, and the
+  // forgot-password response must not block on (or fail because of) that delay.
+  sendMail({
+    to: user.email,
+    subject: "Reset your Web Builder Pro password",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #20242C;">
+        <h2 style="color: #4169E1;">Reset your password</h2>
+        <p>Hi ${user.name || ""},</p>
+        <p>We received a request to reset your Web Builder Pro password. This link is valid for 30 minutes.</p>
+        <p style="margin: 28px 0;">
+          <a href="${resetUrl}" style="background: #4169E1; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+            Reset Password
+          </a>
+        </p>
+        <p>If you didn't request this, you can safely ignore this email — your password will stay unchanged.</p>
+        <p style="color: #9aa3b8; font-size: 12px; margin-top: 32px;">Web Builder Pro</p>
+      </div>
+    `,
+  }).catch((err) => console.error("Failed to send password reset email:", err.message));
 };
 
 // ── Reset Password ───────────────────────────────────
