@@ -1,57 +1,40 @@
-const nodemailer = require('nodemailer');
-const dns = require('dns').promises;
+const RESEND_API_URL = 'https://api.resend.com/emails';
+const FROM_ADDRESS = 'Web Builder Pro <noreply@wbpro.in>';
 
-const SMTP_HOST = 'smtp.gmail.com';
-const SMTP_PORT = 587;
-
-// ── Gmail SMTP ────────────────────────────────────────
-// Requires a Gmail App Password (Google Account → Security → 2-Step
-// Verification → App Passwords), not the regular account password.
+// ── Resend (HTTP email API) ──────────────────────────
+// Switched from Gmail SMTP after production (Render) consistently failed to
+// complete outbound SMTP connections (timeouts on both IPv4 and IPv6 — see
+// git history on this file) — most hosting PaaS providers block or throttle
+// raw SMTP (ports 25/465/587) egress to prevent spam abuse. Resend is a plain
+// HTTPS API call, which isn't subject to that class of restriction.
 //
-// We resolve the IPv4 address ourselves and connect to it directly instead of
-// letting nodemailer resolve `host`. Its DNS resolution (lib/shared/index.js
-// #resolveHostname) fetches BOTH the A and AAAA records for a hostname and
-// picks ONE AT RANDOM from the combined list — there is no option (a `family`
-// setting on the transporter is simply never read by its connection code) to
-// force IPv4-only. On Render, whose network has no IPv6 route, every send that
-// randomly picked the IPv6 address failed instantly with ENETUNREACH — roughly
-// every other attempt. Connecting straight to a resolved IPv4 address removes
-// that coin flip; `servername` is set explicitly so TLS certificate validation
-// still checks against the real hostname rather than the raw IP.
-const buildTransporter = async () => {
-    const addresses = await dns.resolve4(SMTP_HOST);
-    const host = addresses[Math.floor(Math.random() * addresses.length)];
-    return nodemailer.createTransport({
-        host,
-        port: SMTP_PORT,
-        secure: false,
-        servername: SMTP_HOST,
-        auth: {
-            user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_APP_PASSWORD,
+// Requires RESEND_API_KEY, and the wbpro.in domain verified in the Resend
+// dashboard (DNS records) — without a verified domain, Resend only allows
+// sending to the account owner's own address, not arbitrary recipients like
+// a new school's signup email.
+const sendOnce = async ({ to, subject, html }) => {
+    const res = await fetch(RESEND_API_URL, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+            'Content-Type': 'application/json',
         },
-        connectionTimeout: 15000,
-        greetingTimeout: 15000,
-        socketTimeout: 15000,
+        body: JSON.stringify({ from: FROM_ADDRESS, to, subject, html }),
     });
+    if (!res.ok) {
+        const body = await res.text().catch(() => '');
+        throw new Error(`Resend API ${res.status}: ${body}`);
+    }
 };
 
-const sendOnce = async (mail) => {
-    const transporter = await buildTransporter();
-    await transporter.sendMail(mail);
-};
-
-// One retry on a transient failure (connection timeout, a bad IP out of the
-// resolved pool, etc.) — cheap to do since every caller already treats this as
-// fire-and-forget, and re-resolving on the retry also gives it a fresh chance
-// at a different IPv4 address from the pool.
+// One retry on a transient failure — cheap since every caller already treats
+// this as fire-and-forget.
 const sendMail = async ({ to, subject, html }) => {
-    const mail = { from: `"Web Builder Pro" <${process.env.GMAIL_USER}>`, to, subject, html };
     try {
-        await sendOnce(mail);
+        await sendOnce({ to, subject, html });
     } catch (err) {
         console.error('First mail attempt failed, retrying once:', err.message);
-        await sendOnce(mail);
+        await sendOnce({ to, subject, html });
     }
 };
 
