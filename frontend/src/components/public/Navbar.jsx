@@ -87,6 +87,20 @@ const Navbar = forwardRef(({ school, slug, tc, scrollY = 0, activeKey, forceSoli
         return () => { document.body.style.overflow = ''; };
     }, [mobileOpen]);
 
+    // Browser-tab favicon — the school's own logo if uploaded, falling back to the
+    // platform default (index.html's static /favicon.png) otherwise. Navbar is the
+    // one component every public school page already renders, so this covers all
+    // of them without touching each page individually.
+    useEffect(() => {
+        let link = document.querySelector("link[rel~='icon']");
+        if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            document.head.appendChild(link);
+        }
+        link.href = school?.logo_url || '/favicon.png';
+    }, [school?.logo_url]);
+
     const openTopMenu = (label) => { clearTimeout(topCloseTimer.current); setOpenTop(label); setOpenSub(null); };
     const scheduleTopClose = () => { topCloseTimer.current = setTimeout(() => { setOpenTop(null); setOpenSub(null); }, 150); };
     const openSubMenu = (key) => { clearTimeout(subCloseTimer.current); setOpenSub(key); };

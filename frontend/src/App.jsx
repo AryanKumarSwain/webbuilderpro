@@ -130,10 +130,24 @@ const FullPageSpinner = () => (
 // ── Renders the exact same public school routes, but matched against a synthetic
 // location that has the resolved slug's `/school/:slug` prefix prepended — so a
 // visitor on their own connected domain sees clean URLs (yourschool.com/about)
-// while every public page component still reads `slug` from useParams() as normal. ──
+// while every public page component still reads `slug` from useParams() as normal.
+//
+// Internal navigation (Navbar/Footer's `go()`, "Back to Home" buttons, etc.) calls
+// `navigate('/school/${slug}/...')` unconditionally — the same absolute path used
+// on the platform's own /school/:slug/* tree — since none of those ~25 public page
+// components know whether they're being rendered on the platform host or a
+// connected domain. Left unguarded, prepending the prefix a second time onto an
+// already-prefixed real pathname produced /school/mcs/school/mcs/about, matched no
+// route, and silently bounced to home — reproducible by clicking any nav link on a
+// connected domain (typing the URL directly worked fine, since that always
+// produces an unprefixed real pathname). Skip the prepend when the real pathname
+// is already prefixed. ──
 const CustomDomainRoutes = ({ slug }) => {
     const location = useLocation();
-    const syntheticLocation = { ...location, pathname: `/school/${slug}${location.pathname === '/' ? '' : location.pathname}` };
+    const alreadyPrefixed = location.pathname === `/school/${slug}` || location.pathname.startsWith(`/school/${slug}/`);
+    const syntheticLocation = alreadyPrefixed
+        ? location
+        : { ...location, pathname: `/school/${slug}${location.pathname === '/' ? '' : location.pathname}` };
     return (
         <Routes location={syntheticLocation}>
             {PUBLIC_SCHOOL_ROUTE_DEFS.map(r => <Route key={r.path} path={r.path} element={r.element} />)}
