@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { submitSignupApi } from "../../api/signup.api";
+import { submitSignupApi, verifySignupOtpApi, resendSignupOtpApi } from "../../api/signup.api";
+import useAuthStore from "../../store/authStore";
 import logo from '../../assets/webbuilder-removebg-preview.png';
 import signupHeroImg from '../../assets/signupImage.png';
 
@@ -19,16 +20,30 @@ const inputStyle = {
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { setAuth } = useAuthStore();
   const [formData, setFormData] = useState({ schoolName: "", adminName: "", email: "", phone: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [step, setStep] = useState("form"); // 'form' | 'otp'
+  const [schoolUuid, setSchoolUuid] = useState(null);
+  const [otp, setOtp] = useState("");
+  const [verifying, setVerifying] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   // Phone is optional, but when filled it must be exactly 10 digits — strip
   // anything non-numeric as the user types rather than validating after the fact.
   const handlePhoneChange = (e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "").slice(0, 10) });
+
+  const handleOtpChange = (e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,12 +57,46 @@ const Signup = () => {
     }
     setLoading(true);
     try {
-      await submitSignupApi(formData);
-      setSubmitted(true);
+      const res = await submitSignupApi(formData);
+      setSchoolUuid(res.data.uuid);
+      setStep("otp");
     } catch (error) {
       toast.error(error.response?.data?.message || "Signup failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    if (otp.length !== 6) {
+      toast.error("Enter the 6-digit code");
+      return;
+    }
+    setVerifying(true);
+    try {
+      const res = await verifySignupOtpApi(schoolUuid, otp);
+      setAuth(res.data.user, "admin", res.data.accessToken);
+      toast.success("Email verified!");
+      navigate("/admin/dashboard");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Invalid code");
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (resendCooldown > 0 || resending) return;
+    setResending(true);
+    try {
+      await resendSignupOtpApi(schoolUuid);
+      toast.success("A new code has been sent");
+      setResendCooldown(30);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to resend code");
+    } finally {
+      setResending(false);
     }
   };
 
@@ -164,24 +213,50 @@ const Signup = () => {
           }}>
             <img src={logo} alt="Web Builder Pro" className="signup-mobile-logo signup-anim-1"
               style={{ height: "150px", objectFit: "contain", margin: "0 auto 1.75rem", display: "none" }} />
-            {submitted ? (
-              <div style={{ textAlign: "center", padding: "1.5rem 0" }}>
-                <div style={{ position: "relative", width: "72px", height: "72px", margin: "0 auto 1.25rem" }}>
-                  <div className="signup-success-ring" style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "3px solid #22c55e" }}></div>
-                  <div className="signup-success-badge" style={{ position: "relative", width: "72px", height: "72px", borderRadius: "50%", background: "#22c55e", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 10px 26px rgba(34,197,94,0.35)" }}>
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                      <path className="signup-success-check" d="M4 12.5l5 5L20 6.5" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                </div>
-                <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "26px", fontWeight: 800, color: TEXT_DARK, marginBottom: "10px" }}>Request submitted!</h2>
-                <p style={{ color: TEXT_MUTED, fontSize: "14px", lineHeight: 1.6, marginBottom: "24px" }}>
-                  We've emailed you a confirmation. Our team will review your request and approve your account shortly — you'll get another email the moment that happens, with a link to log in and choose your plan.
+            {step === "otp" ? (
+              <>
+                <h1 className="signup-anim-1" style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(26px, 3vw, 32px)", fontWeight: 800, color: TEXT_DARK, textAlign: "center", marginBottom: "6px" }}>
+                  Verify Your Email
+                </h1>
+                <p className="signup-anim-1" style={{ textAlign: "center", color: TEXT_MUTED, fontSize: "13px", marginBottom: "1.75rem", lineHeight: 1.6 }}>
+                  We've sent a 6-digit code to <strong style={{ color: TEXT_DARK }}>{formData.email}</strong>
                 </p>
-                <button onClick={() => navigate('/login')} style={{ padding: "12px 28px", background: `linear-gradient(135deg, ${BLUE}, ${BLUE_DARK})`, color: "#fff", border: "none", borderRadius: "13px", fontSize: "14px", fontWeight: 700, cursor: "pointer" }}>
-                  Back to Login
-                </button>
-              </div>
+
+                <form onSubmit={handleVerifyOtp} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <input
+                    className="signup-anim-2 signup-input" type="text" inputMode="numeric" value={otp}
+                    onChange={handleOtpChange} placeholder="123456" maxLength={6} autoFocus required
+                    style={{ ...inputStyle, textAlign: "center", fontSize: "28px", fontWeight: 700, letterSpacing: "10px", padding: "16px 10px" }}
+                  />
+
+                  <button type="submit" disabled={verifying} className="signup-anim-3 signup-submit-btn"
+                    style={{ width: "100%", padding: "15px", background: verifying ? "#a9b8ea" : `linear-gradient(135deg, ${BLUE}, ${BLUE_DARK})`, color: "#fff", border: "none", borderRadius: "13px", fontSize: "14.5px", fontWeight: 700, cursor: verifying ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "8px", boxShadow: "0 10px 26px rgba(65,105,225,0.32)", transition: "all 0.2s" }}>
+                    {verifying ? (
+                      <>
+                        <svg style={{ animation: "spin 1s linear infinite", width: "17px", height: "17px" }} viewBox="0 0 24 24" fill="none">
+                          <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                        </svg>
+                        Verifying...
+                      </>
+                    ) : "Verify & Continue"}
+                  </button>
+                </form>
+
+                <p className="signup-anim-4" style={{ textAlign: "center", color: "#9aa3b8", fontSize: "12.5px", marginTop: "1.5rem" }}>
+                  Didn't get the code?{" "}
+                  <button type="button" onClick={handleResendOtp} disabled={resending || resendCooldown > 0}
+                    style={{ background: "none", border: "none", padding: 0, color: BLUE, fontWeight: 600, fontSize: "12.5px", cursor: resending || resendCooldown > 0 ? "not-allowed" : "pointer", textDecoration: "underline" }}>
+                    {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : resending ? "Sending..." : "Resend code"}
+                  </button>
+                </p>
+                <p className="signup-anim-4" style={{ textAlign: "center", marginTop: "6px" }}>
+                  <button type="button" onClick={() => setStep("form")}
+                    style={{ background: "none", border: "none", padding: 0, color: "#9aa3b8", fontSize: "12.5px", cursor: "pointer", textDecoration: "underline" }}>
+                    ← Use a different email
+                  </button>
+                </p>
+              </>
             ) : (
               <>
                 <h1 className="signup-anim-1" style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(26px, 3vw, 32px)", fontWeight: 800, color: TEXT_DARK, textAlign: "center", marginBottom: "6px" }}>

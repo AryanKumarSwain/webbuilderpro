@@ -9,6 +9,37 @@ const {
 const AppError = require("../../utils/error.utils");
 const { sendMail } = require("../../config/mailer");
 
+// ── Issue Session ─────────────────────────────────────
+// Generates access+refresh tokens for a user and persists the refresh token.
+// Shared by loginService and signup.service.js's verifySignupOtpService (which
+// auto-logs an admin in right after OTP verification instead of a password
+// check) — one source of truth for what "issuing a session" means. Does not
+// update last_login; callers do that separately since not every caller wants to.
+const issueSession = async (userId, role, schoolId) => {
+  const payload = { id: parseInt(userId), role };
+  if (role === "admin") payload.schoolId = parseInt(schoolId);
+
+  const accessToken = generateAccessToken(payload);
+  const refreshToken = generateRefreshToken(payload);
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7);
+
+  await pool.query(
+    `INSERT INTO tbl_refresh_tokens
+        (token, admin_id, super_admin_id, expires_at)
+        VALUES (?, ?, ?, ?)`,
+    [
+      refreshToken,
+      role === "admin" ? userId : null,
+      role === "super_admin" ? userId : null,
+      expiresAt,
+    ],
+  );
+
+  return { accessToken, refreshToken };
+};
+
 const loginService = async (email, password, role) => {
   // Step 1 — Find user by email
   let user;
@@ -51,37 +82,12 @@ const loginService = async (email, password, role) => {
     }
 
     if (schoolRows[0].status === "pending") {
-      throw new AppError("Your account is still awaiting Super Admin approval", 403);
+      throw new AppError("Please verify your email to activate your account", 403);
     }
   }
 
-  // Step 4 — Generate tokens
- const payload = {
-    id: parseInt(user.id),
-    role: role,
-};
-
-if (role === 'admin') {
-    payload.schoolId = parseInt(user.school_id);
-}
-  const accessToken = generateAccessToken(payload);
-  const refreshToken = generateRefreshToken(payload);
-
-  // Step 5 — Save the refresh token in the database
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + 7);
-
-  await pool.query(
-    `INSERT INTO tbl_refresh_tokens
-        (token, admin_id, super_admin_id, expires_at)
-        VALUES (?, ?, ?, ?)`,
-    [
-      refreshToken,
-      role === "admin" ? user.id : null,
-      role === "super_admin" ? user.id : null,
-      expiresAt,
-    ],
-  );
+  // Step 4/5 — Generate tokens and save the refresh token
+  const { accessToken, refreshToken } = await issueSession(user.id, role, user.school_id);
 
   // Step 6 — Update last login
   await pool.query(`UPDATE ${table} SET last_login = NOW() WHERE id = ?`, [
@@ -296,6 +302,7 @@ const changePasswordService = async (userId, role, currentPassword, newPassword,
 };
 
 module.exports = {
+  issueSession,
   loginService,
   logoutService,
   refreshTokenService,

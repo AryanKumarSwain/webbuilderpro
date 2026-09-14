@@ -60,24 +60,3 @@ export const getDashboardStatsApi = async () => {
     const response = await axiosInstance.get('/super-admin/dashboard-stats');
     return response.data;
 };
-
-// ── Approval Queue ───────────────────────────────────
-export const getPendingSchoolsApi = async () => {
-    const response = await axiosInstance.get('/super-admin/pending-schools');
-    return response.data;
-};
-
-export const approveSchoolApi = async (uuid) => {
-    const response = await axiosInstance.patch(`/super-admin/schools/${uuid}/approve`);
-    return response.data;
-};
-
-export const rejectSchoolApi = async (uuid) => {
-    const response = await axiosInstance.patch(`/super-admin/schools/${uuid}/reject`);
-    return response.data;
-};
-
-export const assignPlanApi = async (uuid, planId) => {
-    const response = await axiosInstance.patch(`/super-admin/schools/${uuid}/assign-plan`, { planId });
-    return response.data;
-};

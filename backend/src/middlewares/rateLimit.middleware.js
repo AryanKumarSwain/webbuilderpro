@@ -32,4 +32,14 @@ const enquiryLimiter = rateLimit({
     handler,
 });
 
-module.exports = { authLimiter, signupLimiter, enquiryLimiter };
+// Signup OTP verify/resend — stricter than the other limiters since a 6-digit
+// code only has 1,000,000 combinations and must resist brute-forcing.
+const otpLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000,
+    limit: 8,
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler,
+});
+
+module.exports = { authLimiter, signupLimiter, enquiryLimiter, otpLimiter };

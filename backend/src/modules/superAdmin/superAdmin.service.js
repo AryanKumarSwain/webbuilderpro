@@ -259,87 +259,6 @@ const getDashboardStatsService = async () => {
     };
 };
 
-// ── Get Pending Schools (self-signups awaiting approval) ─────────────
-const getPendingSchoolsService = async () => {
-    const [schools] = await pool.query(
-        `SELECT s.id, s.uuid, s.name, s.slug, s.email, s.phone, s.created_at,
-                a.name as admin_name, a.email as admin_email
-        FROM tbl_schools s
-        LEFT JOIN tbl_admins a ON s.id = a.school_id
-        WHERE s.status = 'pending'
-        ORDER BY s.created_at DESC`
-    );
-    return schools;
-};
-
-// ── Approve School ───────────────────────────────────
-const approveSchoolService = async (uuid) => {
-    const [schools] = await pool.query(
-        `SELECT s.id, s.name, a.name as admin_name, a.email as admin_email
-        FROM tbl_schools s LEFT JOIN tbl_admins a ON s.id = a.school_id
-        WHERE s.uuid = ?`,
-        [uuid]
-    );
-    if (schools.length === 0) throw new AppError("School not found", 404);
-    const school = schools[0];
-
-    await pool.query("UPDATE tbl_schools SET status = 'active' WHERE uuid = ?", [uuid]);
-
-    // Fire-and-forget, same reasoning as signup.service.js#createSignupRequestService:
-    // Gmail SMTP can take a long time to connect/time out, and the approve response
-    // (which the Super Admin UI waits on before refreshing the list) must not block on it.
-    sendMail({
-        to: school.admin_email,
-        subject: "Your Web Builder Pro account is approved",
-        html: `
-            <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #20242C;">
-                <h2 style="color: #4169E1;">You're approved!</h2>
-                <p>Hi ${school.admin_name || ""},</p>
-                <p><strong>${school.name}</strong>'s account has been approved. Log in to choose your plan and go live.</p>
-                <p style="margin: 28px 0;">
-                    <a href="${process.env.FRONTEND_URL}/login" style="background: #4169E1; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
-                        Log In
-                    </a>
-                </p>
-                <p style="color: #9aa3b8; font-size: 12px; margin-top: 32px;">Web Builder Pro</p>
-            </div>
-        `,
-    }).catch((err) => console.error("Failed to send approval email:", err.message));
-
-    return { message: "School approved" };
-};
-
-// ── Reject School ─────────────────────────────────────
-const rejectSchoolService = async (uuid) => {
-    const [school] = await pool.query("SELECT id FROM tbl_schools WHERE uuid = ?", [uuid]);
-    if (school.length === 0) throw new AppError("School not found", 404);
-
-    await pool.query("UPDATE tbl_schools SET status = 'suspended' WHERE uuid = ?", [uuid]);
-    return { message: "School rejected" };
-};
-
-// ── Assign Plan (backfill existing schools / manual override) ────────
-const assignPlanService = async (uuid, planId) => {
-    const [school] = await pool.query("SELECT id FROM tbl_schools WHERE uuid = ?", [uuid]);
-    if (school.length === 0) throw new AppError("School not found", 404);
-
-    const [plans] = await pool.query("SELECT id, tenure_years FROM tbl_plans WHERE id = ? AND is_active = 1", [planId]);
-    if (plans.length === 0) throw new AppError("Plan not found", 404);
-    const plan = plans[0];
-
-    // Same extend-from-remaining-time math as billing.service.js's
-    // activatePlanForPayment — keep both in sync if this ever changes.
-    await pool.query(
-        `UPDATE tbl_schools
-        SET plan_id = ?, plan_start_date = CURDATE(),
-            plan_end_date = DATE_ADD(GREATEST(COALESCE(plan_end_date, CURDATE()), CURDATE()), INTERVAL ? YEAR)
-        WHERE id = ?`,
-        [plan.id, plan.tenure_years, school[0].id]
-    );
-
-    return { message: "Plan assigned" };
-};
-
 module.exports = {
     createSchoolService,
     getAllSchoolsService,
@@ -350,8 +269,4 @@ module.exports = {
     updateAdminStatusService,
     createSchoolWithAdminService,
     getDashboardStatsService,
-    getPendingSchoolsService,
-    approveSchoolService,
-    rejectSchoolService,
-    assignPlanService,
 };

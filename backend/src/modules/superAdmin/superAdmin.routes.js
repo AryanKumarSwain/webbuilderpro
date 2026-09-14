@@ -10,10 +10,6 @@ const {
     updateAdminStatus,
     createSchoolWithAdmin,
     getDashboardStats,
-    getPendingSchools,
-    approveSchool,
-    rejectSchool,
-    assignPlan,
 } = require('./superAdmin.controller');
 const { protect, isSuperAdmin } = require('../../middlewares/auth.middleware');
 const { upload } = require('../../config/cloudinary');
@@ -30,12 +26,6 @@ router.get('/schools', getAllSchools);
 router.get('/schools/:uuid', getSchoolByUuid);
 router.patch('/schools/:uuid/status', updateSchoolStatus);
 router.delete('/schools/:uuid', deleteSchool);
-
-// ── Approval Queue (self-signups) ────────────────────
-router.get('/pending-schools', getPendingSchools);
-router.patch('/schools/:uuid/approve', approveSchool);
-router.patch('/schools/:uuid/reject', rejectSchool);
-router.patch('/schools/:uuid/assign-plan', assignPlan);
 
 // ── Create School + Admin Together ───────────────────
 router.post('/schools/create-with-admin', upload.single('schoolImage'), createSchoolWithAdmin);
