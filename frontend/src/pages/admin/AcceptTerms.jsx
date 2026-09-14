@@ -13,12 +13,15 @@ const ACCENT_DARK = '#0f172a';
 const BORDER = '#e2e8f0';
 const TEXT_MUTED = '#64748b';
 
-const AGREEMENT_TEXT = "I confirm that I am authorised by the School to manage this website and that all content uploaded or published through this account is the responsibility of the School. I agree not to upload or publish unlawful, obscene, offensive, defamatory, discriminatory, misleading, copyrighted without permission, or otherwise inappropriate content.";
+const AGREEMENT_TEXT_EN = "I confirm that I am authorised by the School to manage this website and that all content uploaded or published through this account is the responsibility of the School. I agree not to upload or publish unlawful, obscene, offensive, defamatory, discriminatory, misleading, copyrighted without permission, or otherwise inappropriate content.";
+
+const AGREEMENT_TEXT_HI = "मैं पुष्टि करता/करती हूं कि मुझे इस वेबसाइट के प्रबंधन के लिए स्कूल द्वारा अधिकृत किया गया है और इस अकाउंट के माध्यम से अपलोड या प्रकाशित की गई सभी सामग्री की जिम्मेदारी स्कूल की है। मैं सहमत हूं कि मैं कोई भी गैरकानूनी, अश्लील, आपत्तिजनक, मानहानिकारक, भेदभावपूर्ण, भ्रामक, बिना अनुमति के कॉपीराइट सामग्री, या अन्यथा अनुचित सामग्री अपलोड या प्रकाशित नहीं करूंगा/करूंगी।";
 
 const AcceptTerms = () => {
     const navigate = useNavigate();
     const [checked, setChecked] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [lang, setLang] = useState('en');
 
     const handleContinue = async () => {
         if (!checked) {
@@ -56,11 +59,25 @@ const AcceptTerms = () => {
                     Please read and accept the agreement below to access your admin panel.
                 </p>
 
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+                    <button
+                        type="button"
+                        onClick={() => setLang(l => (l === 'en' ? 'hi' : 'en'))}
+                        style={{
+                            padding: '5px 12px', borderRadius: '999px', border: `1px solid ${BORDER}`,
+                            background: '#f8fafc', color: ACCENT, fontSize: '12px', fontWeight: 700,
+                            cursor: 'pointer',
+                        }}
+                    >
+                        {lang === 'en' ? 'हिंदी' : 'English'}
+                    </button>
+                </div>
+
                 <div style={{
                     background: '#f8fafc', border: `1px solid ${BORDER}`, borderRadius: '10px',
                     padding: '1.1rem 1.25rem', fontSize: '13px', color: '#334155', lineHeight: 1.75, marginBottom: '1.25rem',
                 }}>
-                    {AGREEMENT_TEXT}
+                    {lang === 'en' ? AGREEMENT_TEXT_EN : AGREEMENT_TEXT_HI}
                 </div>
 
                 <label style={{
