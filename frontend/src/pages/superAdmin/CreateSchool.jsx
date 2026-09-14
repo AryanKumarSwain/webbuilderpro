@@ -92,6 +92,13 @@ const CreateSchool = () => {
                 }
                 .cs-input:hover { border-color: #cbd5e1; }
                 .cs-input::placeholder { color: #94a3b8; }
+                @media (max-width: 640px) {
+                    .cs-grid-2, .cs-grid-3, .cs-summary-grid { grid-template-columns: 1fr !important; }
+                    .cs-logo-row { flex-direction: column !important; }
+                    .cs-card-body { padding: 1.25rem !important; }
+                    .cs-card-footer { padding: 1rem 1.25rem !important; }
+                    .cs-card-header { padding: 1rem 1.25rem !important; }
+                }
             `}</style>
 
             <div style={{ fontFamily: 'system-ui, sans-serif' }}>
@@ -143,25 +150,25 @@ const CreateSchool = () => {
                     {step === 1 && (
                         <div className="cs-section" style={{ background: '#ffffff', border: '0.5px solid #eef1f6', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
 
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#eef1f6)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#6d8bff,#4f6ef7)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(79,110,247,0.3)' }}>
+                            <div className="cs-card-header" style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#eef1f6)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#6d8bff,#4f6ef7)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(79,110,247,0.3)', flexShrink: 0 }}>
                                     <svg width="18" height="18" fill="none" stroke="#ffffff" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                 </div>
-                                <div>
+                                <div style={{ minWidth: 0 }}>
                                     <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>School Information</p>
                                     <p style={{ fontSize: '11px', color: '#94a3b8' }}>Basic details and photo of the school</p>
                                 </div>
                             </div>
 
-                            <div style={{ padding: '2rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            <div className="cs-card-body" style={{ padding: '2rem' }}>
+                                <div className="cs-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
 
                                     <div style={{ gridColumn: '1 / -1' }}>
                                         <label style={labelStyle}>School Name *</label>
                                         <input className="cs-input" type="text" name="name" value={formData.name} onChange={handleChange} placeholder="e.g. St. Mary's Convent School" required style={inputStyle} />
                                     </div>
 
-                                    <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+                                    <div className="cs-logo-row" style={{ gridColumn: '1 / -1', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
                                         <div style={{ flexShrink: 0 }}>
                                             <label style={labelStyle}>School Logo</label>
                                             <div onClick={() => document.getElementById('schoolImageInput').click()}
@@ -184,8 +191,8 @@ const CreateSchool = () => {
                                             )}
                                         </div>
 
-                                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                            <div className="cs-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                                 <div>
                                                     <label style={labelStyle}>School Email *</label>
                                                     <input className="cs-input" type="email" name="email" value={formData.email} onChange={handleChange} placeholder="school@example.com" required style={inputStyle} />
@@ -202,7 +209,7 @@ const CreateSchool = () => {
                                         </div>
                                     </div>
 
-                                    <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+                                    <div className="cs-grid-3" style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
                                         <div>
                                             <label style={labelStyle}>City</label>
                                             <input className="cs-input" type="text" name="city" value={formData.city} onChange={handleChange} placeholder="Jaipur" style={inputStyle} />
@@ -221,7 +228,7 @@ const CreateSchool = () => {
                                 </div>
                             </div>
 
-                            <div style={{ padding: '1.25rem 1.75rem', borderTop: '0.5px solid #eef1f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc' }}>
+                            <div className="cs-card-footer" style={{ padding: '1.25rem 1.75rem', borderTop: '0.5px solid #eef1f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap', background: '#f8fafc' }}>
                                 <button type="button" onClick={() => navigate('/super-admin/schools')}
                                     style={{ padding: '10px 20px', background: 'transparent', border: '0.5px solid #eef1f6', borderRadius: '10px', fontSize: '13px', color: '#64748b', cursor: 'pointer', fontWeight: 500 }}>
                                     Cancel
@@ -244,18 +251,18 @@ const CreateSchool = () => {
                     {step === 2 && (
                         <div className="cs-section" style={{ background: '#ffffff', border: '0.5px solid #eef1f6', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
 
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#eef1f6)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#6d8bff,#4f6ef7)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(79,110,247,0.3)' }}>
+                            <div className="cs-card-header" style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#eef1f6)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#6d8bff,#4f6ef7)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(79,110,247,0.3)', flexShrink: 0 }}>
                                     <svg width="18" height="18" fill="none" stroke="#ffffff" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                 </div>
-                                <div>
+                                <div style={{ minWidth: 0 }}>
                                     <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>Admin Account</p>
-                                    <p style={{ fontSize: '11px', color: '#94a3b8' }}>Login credentials for <strong style={{ color: '#0f172a' }}>{formData.name}</strong></p>
+                                    <p style={{ fontSize: '11px', color: '#94a3b8', overflowWrap: 'anywhere' }}>Login credentials for <strong style={{ color: '#0f172a' }}>{formData.name}</strong></p>
                                 </div>
                             </div>
 
-                            <div style={{ padding: '2rem' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            <div className="cs-card-body" style={{ padding: '2rem' }}>
+                                <div className="cs-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
 
                                     <div style={{ gridColumn: '1 / -1', padding: '12px 16px', background: '#f8fafc', border: '0.5px solid #eef1f6', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <svg width="16" height="16" fill="none" stroke="#64748b" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zM12 14v7m-4-4h8"/></svg>
@@ -292,7 +299,7 @@ const CreateSchool = () => {
                                 {/* Summary */}
                                 <div style={{ marginTop: '1.5rem', padding: '1.25rem 1.5rem', background: '#f8fafc', borderRadius: '12px', border: '0.5px solid #eef1f6' }}>
                                     <p style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Summary</p>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                    <div className="cs-summary-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                                         {[
                                             { label: 'School', value: formData.name },
                                             { label: 'City', value: formData.city || '—' },
@@ -315,7 +322,7 @@ const CreateSchool = () => {
                                 </div>
                             </div>
 
-                            <div style={{ padding: '1.25rem 1.75rem', borderTop: '0.5px solid #eef1f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc' }}>
+                            <div className="cs-card-footer" style={{ padding: '1.25rem 1.75rem', borderTop: '0.5px solid #eef1f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap', background: '#f8fafc' }}>
                                 <button type="button" onClick={() => setStep(1)}
                                     style={{ padding: '10px 20px', background: 'transparent', border: '0.5px solid #eef1f6', borderRadius: '10px', fontSize: '13px', color: '#64748b', cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}>
                                     <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>

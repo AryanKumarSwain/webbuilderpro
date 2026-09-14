@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../components/common/Navbar';
 import logo from '../assets/webbuilder-removebg-preview.png';
@@ -31,24 +31,34 @@ const pageTitles = {
 };
 
 const SuperAdminLayout = () => {
-    // Default to the collapsed (icon-only) sidebar on tablet/phone widths so it doesn't
+    // Default to the collapsed (icon-only) sidebar on tablet widths so it doesn't
     // eat most of the screen — the toggle button still lets the admin expand it manually.
+    // Below 900px the sidebar is hidden entirely in favor of a hamburger + slide-in drawer.
     const [collapsed, setCollapsed] = useState(() => typeof window !== 'undefined' && window.innerWidth < 900);
+    const [mobileOpen, setMobileOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const title = pageTitles[location.pathname] || 'Super Admin';
 
-    const NavItem = ({ item }) => {
+    // Close the mobile drawer on route change, and lock background scroll while it's open.
+    useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+    useEffect(() => {
+        document.body.style.overflow = mobileOpen ? 'hidden' : '';
+        return () => { document.body.style.overflow = ''; };
+    }, [mobileOpen]);
+
+    const NavItem = ({ item, forceExpanded = false, onNavigate }) => {
         const isActive = location.pathname === item.path;
+        const isCollapsed = collapsed && !forceExpanded;
         return (
             <div
-                onClick={() => navigate(item.path)}
-                title={collapsed ? item.label : ''}
+                onClick={() => { navigate(item.path); onNavigate?.(); }}
+                title={isCollapsed ? item.label : ''}
                 style={{
                     display: 'flex', alignItems: 'center', gap: '10px',
-                    padding: collapsed ? '10px 0' : '9px 16px',
+                    padding: isCollapsed ? '10px 0' : '9px 16px',
                     margin: '1px 8px', borderRadius: '8px',
-                    justifyContent: collapsed ? 'center' : 'flex-start',
+                    justifyContent: isCollapsed ? 'center' : 'flex-start',
                     cursor: 'pointer',
                     background: isActive ? '#eef2ff' : 'transparent',
                     transition: 'all 0.15s',
@@ -59,7 +69,7 @@ const SuperAdminLayout = () => {
                 <span style={{ color: isActive ? '#4f6ef7' : '#94a3b8', flexShrink: 0 }}>
                     {item.icon}
                 </span>
-                {!collapsed && (
+                {!isCollapsed && (
                     <span style={{ fontSize: '13px', fontWeight: isActive ? 600 : 400, color: isActive ? '#3c4fd1' : '#334155', whiteSpace: 'nowrap' }}>
                         {item.label}
                     </span>
@@ -70,9 +80,21 @@ const SuperAdminLayout = () => {
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: '#f3f5f9', fontFamily: 'system-ui, sans-serif' }}>
+            <style>{`
+                @media (max-width: 900px) {
+                    .sa-sidebar { display: none !important; }
+                    .navbar-desktop-toggle { display: none !important; }
+                    .navbar-hamburger { display: flex !important; }
+                }
+                @media (max-width: 640px) {
+                    .sa-content-pad { padding: 16px !important; }
+                }
+                @keyframes saDrawerBackdropIn { from { opacity: 0; } to { opacity: 1; } }
+                @keyframes saDrawerSlideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+            `}</style>
 
-            {/* ── Sidebar ── */}
-            <div style={{
+            {/* ── Sidebar — desktop/tablet only, replaced by the hamburger + drawer below 900px ── */}
+            <div className="sa-sidebar" style={{
                 width: collapsed ? '64px' : '260px',
                 minHeight: '100vh',
                 background: '#ffffff',
@@ -119,13 +141,48 @@ const SuperAdminLayout = () => {
             </div>
 
             {/* ── Main ── */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                <Navbar title={title} onToggle={() => setCollapsed(!collapsed)} />
-                <div style={{ flex: 1, padding: '24px', overflowY: 'auto', width: '100%' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
+                <Navbar title={title} onToggle={() => setCollapsed(!collapsed)} onMobileOpen={() => setMobileOpen(true)} />
+                <div className="sa-content-pad" style={{ flex: 1, padding: '24px', overflowY: 'auto', overflowX: 'hidden', width: '100%', boxSizing: 'border-box' }}>
                     <Outlet />
                 </div>
             </div>
 
+            {/* ── Mobile drawer — hamburger-triggered slide-in sidebar below 900px ── */}
+            {mobileOpen && (
+                <>
+                    <div onClick={() => setMobileOpen(false)}
+                        style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.5)', zIndex: 998, animation: 'saDrawerBackdropIn 0.2s ease' }} />
+                    <div style={{
+                        position: 'fixed', top: 0, left: 0, bottom: 0, width: 'min(280px, 84vw)', zIndex: 999,
+                        background: '#ffffff', display: 'flex', flexDirection: 'column', overflow: 'hidden',
+                        boxShadow: '0 0 40px rgba(0,0,0,0.25)', animation: 'saDrawerSlideIn 0.25s cubic-bezier(0.16,1,0.3,1)',
+                    }}>
+                        {/* Logo + close */}
+                        <div style={{ height: '80px', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, borderBottom: '1px solid #eef1f6' }}>
+                            <img src={logo} alt="Web Builder Pro" style={{ width: '170px', height: '76px', objectFit: 'contain', objectPosition: 'left center', display: 'block' }} />
+                            <button onClick={() => setMobileOpen(false)}
+                                style={{ width: '32px', height: '32px', background: '#f8fafc', border: '1px solid #eef1f6', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#334155', flexShrink: 0 }}
+                                aria-label="Close menu">
+                                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18"/></svg>
+                            </button>
+                        </div>
+
+                        <div style={{ flex: 1, overflowY: 'auto', paddingTop: '14px' }}>
+                            <div style={{ padding: '4px 20px 8px', fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
+                                Main
+                            </div>
+                            <nav style={{ padding: '4px 0' }}>
+                                {navItems.map((item) => <NavItem key={item.key} item={item} forceExpanded onNavigate={() => setMobileOpen(false)} />)}
+                            </nav>
+                        </div>
+
+                        <div style={{ flexShrink: 0, borderTop: '1px solid #eef1f6', padding: '14px 20px' }}>
+                            <p style={{ fontSize: '10.5px', color: '#cbd5e1', letterSpacing: '0.03em' }}>Web Builder Pro · Platform</p>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

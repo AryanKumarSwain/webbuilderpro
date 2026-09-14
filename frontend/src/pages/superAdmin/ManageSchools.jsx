@@ -147,6 +147,12 @@ const ManageSchools = () => {
                 .action-btn { transition: all 0.15s; }
                 .action-btn:hover { transform: translateY(-1px); }
                 .create-btn:hover { background: #3c55d6 !important; }
+                @media (max-width: 900px) {
+                    .ms-stats { grid-template-columns: repeat(2,1fr) !important; }
+                }
+                @media (max-width: 640px) {
+                    .ms-modal-overlay { padding: 1rem !important; }
+                }
             `}</style>
 
             <div style={{ fontFamily: 'system-ui, sans-serif' }}>
@@ -169,7 +175,7 @@ const ManageSchools = () => {
                 </div>
 
                 {/* ── Stat Strip ── */}
-                <div className="ms-section" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '14px', marginBottom: '1.5rem' }}>
+                <div className="ms-section ms-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '14px', marginBottom: '1.5rem' }}>
                     {[
                         { label: 'Total', value: schools.length, color: '#4f6ef7', bg: '#eef2ff' },
                         { label: 'Active', value: schools.filter(s => s.status === 'active').length, color: '#16a34a', bg: '#f0fdf4' },
@@ -216,15 +222,9 @@ const ManageSchools = () => {
                     </div>
                 </div>
 
-                {/* ── Table ── */}
+                {/* ── Table — horizontally scrollable below the 6-column layout's natural width,
+                    rather than squishing every cell down to illegibility on a phone ── */}
                 <div className="ms-section" style={{ background: '#ffffff', border: '1px solid #eef1f6', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 2px 10px rgba(15,23,42,0.03)' }}>
-
-                    {/* Header */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '2.1fr 1.3fr 0.9fr 1fr 0.8fr 1.9fr', padding: '12px 20px', background: '#f8fafc', borderBottom: '1px solid #eef1f6' }}>
-                        {['School', 'Admin', 'Location', 'Plan', 'Status', 'Actions'].map(h => (
-                            <span key={h} style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 700 }}>{h}</span>
-                        ))}
-                    </div>
 
                     {/* Empty */}
                     {filtered.length === 0 ? (
@@ -247,7 +247,15 @@ const ManageSchools = () => {
                             )}
                         </div>
                     ) : (
-                        filtered.map((school, i) => {
+                        <div style={{ overflowX: 'auto' }}>
+                            <div style={{ minWidth: '880px' }}>
+                                {/* Header */}
+                                <div style={{ display: 'grid', gridTemplateColumns: '2.1fr 1.3fr 0.9fr 1fr 0.8fr 1.9fr', padding: '12px 20px', background: '#f8fafc', borderBottom: '1px solid #eef1f6' }}>
+                                    {['School', 'Admin', 'Location', 'Plan', 'Status', 'Actions'].map(h => (
+                                        <span key={h} style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 700 }}>{h}</span>
+                                    ))}
+                                </div>
+                                {filtered.map((school, i) => {
                             const sc = statusConfig[school.status] || statusConfig.pending;
                             return (
                                 <div key={school.id} className="school-row"
@@ -346,7 +354,9 @@ const ManageSchools = () => {
                                     </div>
                                 </div>
                             );
-                        })
+                        })}
+                            </div>
+                        </div>
                     )}
                 </div>
 
@@ -360,7 +370,7 @@ const ManageSchools = () => {
 
             {/* ── Delete Confirmation Modal ── */}
             {deleteTarget && (
-                <div onClick={() => !deleting && setDeleteTarget(null)}
+                <div className="ms-modal-overlay" onClick={() => !deleting && setDeleteTarget(null)}
                     style={{ position: 'fixed', inset: 0, zIndex: 5000, background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
                     <div onClick={e => e.stopPropagation()}
                         style={{ background: '#ffffff', maxWidth: '400px', width: '100%', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(15,23,42,0.35)', textAlign: 'center' }}>
@@ -405,7 +415,7 @@ const ManageSchools = () => {
 
             {/* ── Assign Plan Modal ── */}
             {planTarget && (
-                <div onClick={() => !assigning && setPlanTarget(null)}
+                <div className="ms-modal-overlay" onClick={() => !assigning && setPlanTarget(null)}
                     style={{ position: 'fixed', inset: 0, zIndex: 5000, background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
                     <div onClick={e => e.stopPropagation()}
                         style={{ background: '#ffffff', maxWidth: '440px', width: '100%', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(15,23,42,0.35)' }}>

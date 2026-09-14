@@ -85,7 +85,16 @@ const SuperAdminDashboard = () => {
                 @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
                 .dash-section { animation: fadeInUp 0.4s ease forwards; opacity: 0; }
                 @media (max-width: 900px) {
-                    .dash-section { grid-template-columns: 1fr !important; }
+                    .dash-main-grid { grid-template-columns: 1fr !important; }
+                }
+                @media (max-width: 1180px) {
+                    .dash-stats { grid-template-columns: repeat(3,1fr) !important; }
+                }
+                @media (max-width: 640px) {
+                    .dash-stats { grid-template-columns: repeat(2,1fr) !important; gap: 10px !important; }
+                    .dash-breakdown { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+                    .recent-table-header, .recent-table-row { grid-template-columns: 2fr 1fr !important; padding-left: 14px !important; padding-right: 14px !important; }
+                    .recent-col-location, .recent-col-theme { display: none !important; }
                 }
                 .dash-section:nth-child(1) { animation-delay: 0.03s; }
                 .dash-section:nth-child(2) { animation-delay: 0.08s; }
@@ -113,7 +122,7 @@ const SuperAdminDashboard = () => {
                 </div>
 
                 {/* ── Stat Strip ── */}
-                <div className="dash-section" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: '14px', marginBottom: '1.5rem' }}>
+                <div className="dash-section dash-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: '14px', marginBottom: '1.5rem' }}>
                     {statCards.map((s, i) => (
                         <div key={i} className="stat-card" style={{ background: '#ffffff', border: '1px solid #eef1f6', borderRadius: '14px', padding: '16px 18px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 2px 10px rgba(15,23,42,0.03)' }}>
                             <div style={{ width: '42px', height: '42px', borderRadius: '11px', background: s.bg, color: s.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -128,7 +137,7 @@ const SuperAdminDashboard = () => {
                 </div>
 
                 {/* ── Main Grid ── */}
-                <div className="dash-section" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '1.25rem', marginBottom: '1.5rem' }}>
+                <div className="dash-section dash-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '1.25rem', marginBottom: '1.5rem' }}>
 
                     {/* Recent Schools */}
                     <div style={{ background: '#ffffff', border: '1px solid #eef1f6', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 2px 10px rgba(15,23,42,0.03)' }}>
@@ -144,9 +153,9 @@ const SuperAdminDashboard = () => {
                             </button>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '10px 24px', background: '#f8fafc' }}>
+                        <div className="recent-table-header" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '10px 24px', background: '#f8fafc' }}>
                             {['School', 'Location', 'Theme', 'Status'].map(h => (
-                                <span key={h} style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{h}</span>
+                                <span key={h} className={h === 'Location' ? 'recent-col-location' : h === 'Theme' ? 'recent-col-theme' : ''} style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{h}</span>
                             ))}
                         </div>
 
@@ -162,24 +171,24 @@ const SuperAdminDashboard = () => {
                             (stats?.recent_schools || []).map((school, i) => {
                                 const sc = statusColor(school.status);
                                 return (
-                                    <div key={i} className="school-row"
+                                    <div key={i} className="school-row recent-table-row"
                                         onClick={() => navigate('/super-admin/schools')}
                                         style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '14px 24px', borderBottom: i < stats.recent_schools.length - 1 ? '1px solid #f1f5f9' : 'none', cursor: 'pointer', alignItems: 'center' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
                                             {school.logo_url ? (
-                                                <img src={school.logo_url} alt="" style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'cover' }} />
+                                                <img src={school.logo_url} alt="" style={{ width: '32px', height: '32px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }} />
                                             ) : (
                                                 <div style={{ width: '32px', height: '32px', background: 'linear-gradient(135deg,#6d8bff,#4f6ef7)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                                     <svg width="14" height="14" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                                 </div>
                                             )}
                                             <div style={{ minWidth: 0 }}>
-                                                <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>{school.name}</p>
-                                                <p style={{ fontSize: '11px', color: '#94a3b8' }}>{school.slug}</p>
+                                                <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginBottom: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{school.name}</p>
+                                                <p style={{ fontSize: '11px', color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{school.slug}</p>
                                             </div>
                                         </div>
-                                        <span style={{ fontSize: '12px', color: '#64748b' }}>{school.city ? `${school.city}, ${school.state}` : '—'}</span>
-                                        <span style={{ fontSize: '12px', color: '#64748b', textTransform: 'capitalize' }}>{school.theme || 'default'}</span>
+                                        <span className="recent-col-location" style={{ fontSize: '12px', color: '#64748b' }}>{school.city ? `${school.city}, ${school.state}` : '—'}</span>
+                                        <span className="recent-col-theme" style={{ fontSize: '12px', color: '#64748b', textTransform: 'capitalize' }}>{school.theme || 'default'}</span>
                                         <span style={{ fontSize: '11px', fontWeight: 600, padding: '4px 10px', borderRadius: '6px', background: sc.bg, color: sc.color, border: `1px solid ${sc.border}`, display: 'inline-flex', alignItems: 'center', gap: '5px', width: 'fit-content', textTransform: 'capitalize' }}>
                                             <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: sc.dot }}></div>
                                             {school.status}
@@ -217,7 +226,7 @@ const SuperAdminDashboard = () => {
                 {/* ── Status Breakdown ── */}
                 <div className="dash-section" style={{ background: '#ffffff', border: '1px solid #eef1f6', borderRadius: '14px', padding: '1.5rem 1.75rem', boxShadow: '0 2px 10px rgba(15,23,42,0.03)' }}>
                     <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1.5rem' }}>Platform Status Breakdown</p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '2.5rem' }}>
+                    <div className="dash-breakdown" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '2.5rem' }}>
                         {breakdownBars.map((b, i) => {
                             const p = pct(b.value);
                             return (

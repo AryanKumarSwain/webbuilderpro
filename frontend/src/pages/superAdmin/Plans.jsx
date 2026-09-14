@@ -156,7 +156,12 @@ const Plans = () => {
 
     return (
         <div style={{ fontFamily: 'system-ui, sans-serif' }}>
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            <style>{`
+                @keyframes spin { to { transform: rotate(360deg); } }
+                @media (max-width: 640px) {
+                    .plans-modal-overlay { padding: 1rem !important; }
+                }
+            `}</style>
 
             {/* ── Header ── */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '14px' }}>
@@ -248,7 +253,7 @@ const Plans = () => {
 
             {/* ── Create / Edit modal ── */}
             {modalOpen && (
-                <div onClick={() => !saving && setModalOpen(false)}
+                <div className="plans-modal-overlay" onClick={() => !saving && setModalOpen(false)}
                     style={{ position: 'fixed', inset: 0, zIndex: 5000, background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
                     <div onClick={(e) => e.stopPropagation()}
                         style={{ background: '#fff', maxWidth: '480px', width: '100%', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(15,23,42,0.35)', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
@@ -324,7 +329,7 @@ const Plans = () => {
 
             {/* ── Delete confirm ── */}
             {deleteTarget && (
-                <div onClick={() => !deleting && setDeleteTarget(null)}
+                <div className="plans-modal-overlay" onClick={() => !deleting && setDeleteTarget(null)}
                     style={{ position: 'fixed', inset: 0, zIndex: 5000, background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
                     <div onClick={(e) => e.stopPropagation()}
                         style={{ background: '#fff', maxWidth: '400px', width: '100%', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(15,23,42,0.35)', textAlign: 'center' }}>

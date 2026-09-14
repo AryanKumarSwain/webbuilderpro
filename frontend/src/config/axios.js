@@ -27,7 +27,16 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // A 401 from the login or refresh endpoints themselves means "wrong credentials" /
+        // "no valid session" — not an expired access token — so it must NOT trigger the
+        // refresh-and-retry flow below. Letting it through here used to hijack a failed
+        // login attempt: it tried (and failed) to refresh, then force-navigated to the
+        // hardcoded school-admin '/login' route via window.location.href, unmounting the
+        // page before the caller's own toast.error() could run — so a wrong-password
+        // attempt on either login page silently bounced to '/login' with no visible error.
+        const isAuthEndpoint = originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/refresh');
+
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
             originalRequest._retry = true;
 
             try {
