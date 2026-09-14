@@ -41,11 +41,18 @@ const AcceptTerms = () => {
     };
 
     return (
-        <div style={{
+        <>
+            <style>{`
+                @media (max-width: 640px) {
+                    .accept-terms-outer { padding: 0.75rem !important; }
+                    .accept-terms-card { padding: 1.5rem !important; }
+                }
+            `}</style>
+        <div className="accept-terms-outer" style={{
             minHeight: '100vh', background: '#f8fafc', display: 'flex', alignItems: 'center',
             justifyContent: 'center', padding: '2rem', fontFamily: 'system-ui, sans-serif',
         }}>
-            <div style={{
+            <div className="accept-terms-card" style={{
                 width: '100%', maxWidth: '580px', background: '#ffffff', border: `1px solid ${BORDER}`,
                 borderRadius: '16px', boxShadow: '0 4px 24px rgba(15,23,42,0.06)', padding: '2.5rem',
             }}>
@@ -111,6 +118,7 @@ const AcceptTerms = () => {
                 </button>
             </div>
         </div>
+        </>
     );
 };
 
