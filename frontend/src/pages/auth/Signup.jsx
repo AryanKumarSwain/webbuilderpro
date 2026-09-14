@@ -22,6 +22,7 @@ const Signup = () => {
   const [formData, setFormData] = useState({ schoolName: "", adminName: "", email: "", phone: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -162,7 +163,7 @@ const Signup = () => {
             padding: "2.75rem 3rem 2.5rem", display: "flex", flexDirection: "column", justifyContent: "center",
           }}>
             <img src={logo} alt="Web Builder Pro" className="signup-mobile-logo signup-anim-1"
-              style={{ height: "52px", objectFit: "contain", margin: "0 auto 1.75rem", display: "none" }} />
+              style={{ height: "150px", objectFit: "contain", margin: "0 auto 1.75rem", display: "none" }} />
             {submitted ? (
               <div style={{ textAlign: "center", padding: "1.5rem 0" }}>
                 <div style={{ position: "relative", width: "72px", height: "72px", margin: "0 auto 1.25rem" }}>
@@ -197,7 +198,27 @@ const Signup = () => {
                     <input className="signup-input" type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Enter email address" required style={inputStyle} />
                     <input className="signup-input" type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} placeholder="Enter phone number" inputMode="numeric" maxLength={10} pattern="[0-9]{10}" title="Enter a 10-digit phone number" style={inputStyle} />
                   </div>
-                  <input className="signup-anim-5 signup-input" type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Create a password (min. 8 characters)" required minLength={8} style={inputStyle} />
+                  <div className="signup-anim-5" style={{ position: "relative" }}>
+                    <input
+                      type={showPassword ? "text" : "password"} name="password" value={formData.password}
+                      onChange={handleChange} placeholder="Create a password (min. 8 characters)" required minLength={8}
+                      className="signup-input" style={{ ...inputStyle, paddingRight: "44px" }}
+                    />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      style={{ position: "absolute", right: "14px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", padding: 0, color: "#9aa3b8", display: "flex", alignItems: "center" }}>
+                      {showPassword ? (
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                        </svg>
+                      ) : (
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                      )}
+                    </button>
+                  </div>
 
                   <button type="submit" disabled={loading} className="signup-anim-6 signup-submit-btn"
                     style={{ width: "100%", padding: "15px", background: loading ? "#a9b8ea" : `linear-gradient(135deg, ${BLUE}, ${BLUE_DARK})`, color: "#fff", border: "none", borderRadius: "13px", fontSize: "14.5px", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "8px", boxShadow: "0 10px 26px rgba(65,105,225,0.32)", transition: "all 0.2s" }}>
