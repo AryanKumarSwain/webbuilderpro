@@ -58,10 +58,36 @@ const updateSchoolStatusService = async (uuid, status) => {
     const validStatuses = ["active", "suspended", "pending"];
     if (!validStatuses.includes(status)) throw new AppError("Invalid status", 400);
 
-    const [school] = await pool.query("SELECT id FROM tbl_schools WHERE uuid = ?", [uuid]);
-    if (school.length === 0) throw new AppError("School not found", 404);
+    const [schools] = await pool.query(
+        `SELECT s.id, s.name, a.name as admin_name, a.email as admin_email
+        FROM tbl_schools s LEFT JOIN tbl_admins a ON s.id = a.school_id
+        WHERE s.uuid = ?`,
+        [uuid]
+    );
+    if (schools.length === 0) throw new AppError("School not found", 404);
+    const school = schools[0];
 
     await pool.query("UPDATE tbl_schools SET status = ? WHERE uuid = ?", [status, uuid]);
+
+    // Fire-and-forget, same reasoning as approveSchoolService below: don't block the
+    // response on Gmail/Resend latency. Only fires when the school is actually being
+    // suspended (not on reactivate/pending) — same pattern as the approval email.
+    if (status === "suspended" && school.admin_email) {
+        sendMail({
+            to: school.admin_email,
+            subject: "Your Web Builder Pro account has been suspended",
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #20242C;">
+                    <h2 style="color: #dc2626;">Account suspended</h2>
+                    <p>Hi ${school.admin_name || ""},</p>
+                    <p><strong>${school.name}</strong>'s Web Builder Pro account has been suspended. You won't be able to log in or access your admin panel until this is resolved.</p>
+                    <p>If you believe this is a mistake, please get in touch with us.</p>
+                    <p style="color: #9aa3b8; font-size: 12px; margin-top: 32px;">Web Builder Pro</p>
+                </div>
+            `,
+        }).catch((err) => console.error("Failed to send suspension email:", err.message));
+    }
+
     return { message: `School status updated to ${status}` };
 };
 
