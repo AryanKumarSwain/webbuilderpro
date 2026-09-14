@@ -25,8 +25,20 @@ const Signup = () => {
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  // Phone is optional, but when filled it must be exactly 10 digits — strip
+  // anything non-numeric as the user types rather than validating after the fact.
+  const handlePhoneChange = (e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "").slice(0, 10) });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.phone && formData.phone.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits");
+      return;
+    }
+    if (formData.password.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
     setLoading(true);
     try {
       await submitSignupApi(formData);
@@ -183,9 +195,9 @@ const Signup = () => {
                   <input className="signup-anim-3 signup-input" type="text" name="adminName" value={formData.adminName} onChange={handleChange} placeholder="Enter your full name" required style={inputStyle} />
                   <div className="signup-anim-4 signup-field-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                     <input className="signup-input" type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Enter email address" required style={inputStyle} />
-                    <input className="signup-input" type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Enter phone number" style={inputStyle} />
+                    <input className="signup-input" type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} placeholder="Enter phone number" inputMode="numeric" maxLength={10} pattern="[0-9]{10}" title="Enter a 10-digit phone number" style={inputStyle} />
                   </div>
-                  <input className="signup-anim-5 signup-input" type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Create a password" required minLength={6} style={inputStyle} />
+                  <input className="signup-anim-5 signup-input" type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Create a password (min. 8 characters)" required minLength={8} style={inputStyle} />
 
                   <button type="submit" disabled={loading} className="signup-anim-6 signup-submit-btn"
                     style={{ width: "100%", padding: "15px", background: loading ? "#a9b8ea" : `linear-gradient(135deg, ${BLUE}, ${BLUE_DARK})`, color: "#fff", border: "none", borderRadius: "13px", fontSize: "14.5px", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "8px", boxShadow: "0 10px 26px rgba(65,105,225,0.32)", transition: "all 0.2s" }}>
