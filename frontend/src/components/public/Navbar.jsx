@@ -101,6 +101,12 @@ const Navbar = forwardRef(({ school, slug, tc, scrollY = 0, activeKey, forceSoli
         link.href = school?.logo_url || '/favicon.png';
     }, [school?.logo_url]);
 
+    // Browser-tab title — same reasoning as the favicon above, index.html's
+    // static <title>Web Builder Pro</title> otherwise never changes.
+    useEffect(() => {
+        if (school?.name) document.title = school.name;
+    }, [school?.name]);
+
     const openTopMenu = (label) => { clearTimeout(topCloseTimer.current); setOpenTop(label); setOpenSub(null); };
     const scheduleTopClose = () => { topCloseTimer.current = setTimeout(() => { setOpenTop(null); setOpenSub(null); }, 150); };
     const openSubMenu = (key) => { clearTimeout(subCloseTimer.current); setOpenSub(key); };
