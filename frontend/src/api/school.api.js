@@ -13,6 +13,12 @@ export const updateSchoolProfileApi = async (profileData) => {
     return response.data;
 };
 
+// ── Admin Account (the admin's own name/login email) ─────────────────
+export const updateAdminAccountApi = async (accountData) => {
+    const response = await axiosInstance.put('/school/account', accountData);
+    return response.data;
+};
+
 // ── Settings ─────────────────────────────────────────
 export const updateSchoolSettingsApi = async (settingsData) => {
     const response = await axiosInstance.put('/school/settings', settingsData);

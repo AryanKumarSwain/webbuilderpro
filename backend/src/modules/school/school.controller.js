@@ -8,6 +8,7 @@ const {
     getPublicSchoolService,
     getSchoolSlugByDomainService,
     getStorageUsageService,
+    updateAdminAccountService,
 } = require('./school.service');
 const { sendSuccess, sendError, handleControllerError } = require('../../utils/response.utils');
 const { recordMediaUsage, recalculateSchoolStorage } = require('../../utils/storage.utils');
@@ -17,6 +18,16 @@ const getSchoolProfile = async (req, res) => {
     try {
         const school = await getSchoolProfileService(req.user.schoolId);
         return sendSuccess(res, 'School profile received', school);
+    } catch (error) {
+        return handleControllerError(res, error);
+    }
+};
+
+// ── Update Admin Account (name/email — the admin's own login identity) ──
+const updateAdminAccount = async (req, res) => {
+    try {
+        const result = await updateAdminAccountService(req.user.id, req.body);
+        return sendSuccess(res, 'Account updated successfully', result);
     } catch (error) {
         return handleControllerError(res, error);
     }
@@ -195,6 +206,7 @@ const recalculateStorage = async (req, res) => {
 module.exports = {
     getSchoolProfile,
     updateSchoolProfile,
+    updateAdminAccount,
     updateSchoolSettings,
     selectModules,
     getSelectedModules,

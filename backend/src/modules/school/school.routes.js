@@ -3,6 +3,7 @@ const router = express.Router();
 const {
     getSchoolProfile,
     updateSchoolProfile,
+    updateAdminAccount,
     updateSchoolSettings,
     selectModules,
     getSelectedModules,
@@ -33,6 +34,10 @@ router.use(isAdmin);
 // ── Profile Routes ───────────────────────────────────
 router.get('/profile', getSchoolProfile);
 router.put('/profile', requireActivePlan, updateSchoolProfile);
+
+// ── Admin Account (name/email — not gated by plan status, since a school
+// whose plan lapsed must still be able to fix their own login email) ────
+router.put('/account', updateAdminAccount);
 
 
 // ── Settings Routes ──────────────────────────────────

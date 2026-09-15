@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { getSchoolProfileApi, updateSchoolProfileApi, updateSchoolSettingsApi, uploadSchoolLogoApi, uploadWelcomeBannerApi, uploadFooterBackgroundApi, uploadProspectusApi } from '../../api/school.api';
+import { getSchoolProfileApi, updateSchoolProfileApi, updateAdminAccountApi, updateSchoolSettingsApi, uploadSchoolLogoApi, uploadWelcomeBannerApi, uploadFooterBackgroundApi, uploadProspectusApi } from '../../api/school.api';
 import { uploadContentImageApi } from '../../api/content.api';
 import { getMySubdomainRequestApi } from '../../api/subdomainRequest.api';
 import SubdomainRequestForm from '../../components/admin/SubdomainRequestForm';
@@ -41,6 +41,8 @@ const AdminSettings = () => {
     const [profileData, setProfileData] = useState({
         name: '', phone: '', phone2: '', address: '', city: '', state: '', pincode: '', intro_message: '', intro_message_enabled: true
     });
+    const [accountData, setAccountData] = useState({ name: '', email: '' });
+    const [savingAccount, setSavingAccount] = useState(false);
     const [settingsData, setSettingsData] = useState({
         theme: 'default', base_theme: 'white', logo_url: '', nav_font: 'inter'
     });
@@ -114,6 +116,10 @@ const AdminSettings = () => {
                 intro_message: school.intro_message || '',
                 intro_message_enabled: school.intro_message_enabled === undefined ? true : !!school.intro_message_enabled,
             });
+            setAccountData({
+                name: school.admin_name || '',
+                email: school.admin_email || '',
+            });
             setSettingsData({
                 theme: school.theme || 'default',
                 base_theme: school.base_theme || 'white',
@@ -172,6 +178,34 @@ const AdminSettings = () => {
             toast.error('Failed to update profile');
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleAccountChange = (e) => {
+        const { name, value } = e.target;
+        setAccountData({ ...accountData, [name]: value });
+    };
+
+    const handleAccountSave = async () => {
+        const name = accountData.name.trim();
+        const email = accountData.email.trim().toLowerCase();
+        if (!name) {
+            toast.error('Name is required');
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            toast.error('Enter a valid email address');
+            return;
+        }
+        setSavingAccount(true);
+        try {
+            await updateAdminAccountApi({ name, email });
+            setAccountData({ name, email });
+            toast.success('Account updated! Use your new email next time you log in.');
+        } catch (e) {
+            toast.error(e?.response?.data?.message || 'Failed to update account');
+        } finally {
+            setSavingAccount(false);
         }
     };
 
@@ -578,6 +612,7 @@ const AdminSettings = () => {
     };
 
     const tabs = [
+        { key: 'account', label: 'My Account', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg> },
         { key: 'profile', label: 'School Profile', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg> },
         { key: 'logo', label: 'School Logo', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg> },
         { key: 'theme', label: 'Website Theme', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg> },
@@ -713,6 +748,44 @@ const AdminSettings = () => {
                         <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6" /></svg>
                     </button>
                 </div>
+
+                {/* ── My Account Tab — the admin's own name/login email, separate
+                     from the School Profile tab below which is the school's
+                     public-facing details. ── */}
+                {activeTab === 'account' && (
+                    <div className="settings-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                    <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                </div>
+                                <div>
+                                    <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>My Account</p>
+                                    <p style={{ fontSize: '11px', color: '#94a3b8' }}>Your name and the email you log in with</p>
+                                </div>
+                            </div>
+                            <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <div>
+                                    <label style={labelStyle}>Your Name</label>
+                                    <input className="settings-input" type="text" name="name" value={accountData.name} onChange={handleAccountChange} placeholder="Enter Your Name" style={inputStyle} />
+                                </div>
+                                <div>
+                                    <label style={labelStyle}>Login Email</label>
+                                    <input className="settings-input" type="email" name="email" value={accountData.email} onChange={handleAccountChange} placeholder="Enter Your Email" style={inputStyle} />
+                                </div>
+                                <p style={{ fontSize: '11px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    <InfoIcon /> Changing your email changes what you log in with — use the new one next time.
+                                </p>
+                                <div>
+                                    <button onClick={handleAccountSave} disabled={savingAccount}
+                                        style={{ padding: '11px 20px', background: savingAccount ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: savingAccount ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                        {savingAccount ? 'Saving...' : 'Save Account'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* ── Profile Tab ── */}
                 {activeTab === 'profile' && (

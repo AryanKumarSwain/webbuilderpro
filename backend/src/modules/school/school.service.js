@@ -291,6 +291,33 @@ const getDashboardStatsService = async () => {
         recent_schools: recentSchools,
     };
 };
+// ── Update Admin Account (name/email — the admin's own login identity,
+// separate from the school's public-facing profile above) ───────────
+const updateAdminAccountService = async (adminId, { name, email }) => {
+    const trimmedName = (name || '').trim();
+    const trimmedEmail = (email || '').trim().toLowerCase();
+
+    if (!trimmedName) throw new AppError("Name is required", 400);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+        throw new AppError("Enter a valid email address", 400);
+    }
+
+    const [existing] = await pool.query(
+        "SELECT id FROM tbl_admins WHERE email = ? AND id != ?",
+        [trimmedEmail, adminId]
+    );
+    if (existing.length > 0) {
+        throw new AppError("This email is already in use", 409);
+    }
+
+    await pool.query(
+        "UPDATE tbl_admins SET name = ?, email = ? WHERE id = ?",
+        [trimmedName, trimmedEmail, adminId]
+    );
+
+    return { name: trimmedName, email: trimmedEmail };
+};
+
 module.exports = {
     getSchoolProfileService,
     updateSchoolProfileService,
@@ -302,4 +329,5 @@ module.exports = {
     getSchoolSlugByDomainService,
     getDashboardStatsService,
     getStorageUsageService,
+    updateAdminAccountService,
 };
