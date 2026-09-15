@@ -308,7 +308,7 @@ const AdminDashboard = () => {
                                 </div>
                             </div>
                             {school?.slug && (
-                                <a href={`/school/${school.slug}`} target="_blank" rel="noreferrer" className="visit-site-link"
+                                <a href={school.custom_domain ? `https://${school.custom_domain}` : `/school/${school.slug}`} target="_blank" rel="noreferrer" className="visit-site-link"
                                     style={{
                                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
                                         fontSize: '12.5px', fontWeight: 700, color: '#ffffff', textDecoration: 'none',

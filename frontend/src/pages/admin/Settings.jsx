@@ -1544,6 +1544,11 @@ const AdminSettings = () => {
                                 )}
                             </div>
                             <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                {subdomainRequest?.status === 'fulfilled' && (
+                                    <p style={{ fontSize: '11.5px', color: '#b45309', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '8px', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '7px' }}>
+                                        <InfoIcon /> Your site is currently live at <strong>{subdomainRequest.requested_label}.wbpro.in</strong>. Saving a domain below will replace it with the domain you enter here.
+                                    </p>
+                                )}
                                 <div>
                                     <label style={labelStyle}>Your Domain</label>
                                     <input className="settings-input" type="text" value={customDomain} onChange={e => setCustomDomain(e.target.value)}
