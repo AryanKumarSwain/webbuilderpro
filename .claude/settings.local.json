@@ -209,5 +209,12 @@
       "Bash(pkill -f \"vite\")",
       "Bash(npm -v)"
     ]
+  },
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(node scripts/prod-query.js *)",
+      "Bash(node backend/scripts/prod-query.js *)"
+    ]
   }
 }

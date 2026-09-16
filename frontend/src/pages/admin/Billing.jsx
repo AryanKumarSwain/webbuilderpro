@@ -59,10 +59,15 @@ const Billing = () => {
     // there's only one plan.
     const recommendedIndex = plans.length > 1 ? Math.floor(plans.length / 2) : -1;
 
-    // AdminLayout only redirects here when hasActivePlan is false — if the school
-    // already has a plan_id, they must be here because it lapsed (plan_end_date in
-    // the past), not because they've never had one. Drives the renewal copy below.
-    const isRenewal = !!school?.plan_id;
+    // AdminLayout force-redirects here only when hasActivePlan is false (never had a
+    // plan, or it lapsed) — but a school can also land here on its own, from the new
+    // Settings -> Plan & Billing "Extend / Upgrade Plan" link, while their plan is
+    // still active. Three distinct states drive the copy below: never had a plan,
+    // had one and it lapsed, or has one and is renewing/upgrading early.
+    const planEndDate = school?.plan_end_date ? new Date(school.plan_end_date) : null;
+    const isExpired = !!planEndDate && planEndDate < new Date();
+    const isRenewal = !!school?.plan_id && isExpired;
+    const isProactiveManage = !!school?.plan_id && !isExpired;
 
     const handlePay = async (plan) => {
         if (payingId) return;
@@ -198,15 +203,17 @@ const Billing = () => {
                     <div style={{ position: 'absolute', width: '340px', height: '340px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.16) 0%, transparent 70%)', top: '-150px', right: '-90px', animation: 'billOrbDrift 11s ease-in-out infinite', pointerEvents: 'none' }} />
                     <div style={{ position: 'relative' }}>
                         <span style={{ display: 'inline-block', fontSize: '10.5px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', padding: '5px 12px', background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.28)', borderRadius: '999px', marginBottom: '14px' }}>
-                            {isRenewal ? 'Plan expired' : 'Activate your website'}
+                            {isRenewal ? 'Plan expired' : isProactiveManage ? 'Manage your plan' : 'Activate your website'}
                         </span>
                         <h1 className="bill-shimmer" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(26px, 3.4vw, 36px)', fontWeight: 800, letterSpacing: '-0.5px', marginBottom: '8px' }}>
-                            {isRenewal ? 'Renew your plan' : 'Choose your plan'}
+                            {isRenewal ? 'Renew your plan' : isProactiveManage ? 'Extend or upgrade your plan' : 'Choose your plan'}
                         </h1>
                         <p style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.82)', lineHeight: 1.65, maxWidth: '520px' }}>
                             {isRenewal
                                 ? `${school?.name ? `${school.name}'s ` : 'Your '}plan has ended — renew to keep your school website live and editable.`
-                                : `${school?.name ? `${school.name}'s ` : 'Your '}account is approved — pick a plan to take your school website live.`}
+                                : isProactiveManage
+                                    ? `${school?.name ? `${school.name}'s ` : 'Your '}plan is active — renew early or switch to a bigger plan any time. Your remaining days are never lost.`
+                                    : `${school?.name ? `${school.name}'s ` : 'Your '}account is approved — pick a plan to take your school website live.`}
                         </p>
                     </div>
                 </div>

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getSchoolProfileApi, updateSchoolProfileApi, updateAdminAccountApi, updateSchoolSettingsApi, uploadSchoolLogoApi, uploadWelcomeBannerApi, uploadFooterBackgroundApi, uploadProspectusApi } from '../../api/school.api';
 import { uploadContentImageApi } from '../../api/content.api';
 import { getMySubdomainRequestApi } from '../../api/subdomainRequest.api';
+import { getActivePlansApi } from '../../api/plans.api';
 import SubdomainRequestForm from '../../components/admin/SubdomainRequestForm';
 import useSchoolStore from '../../store/schoolStore';
 import ImageCropModal from '../../components/common/ImageCropModal';
@@ -28,6 +30,7 @@ const hexToRgba = (hex, alpha) => {
 };
 
 const AdminSettings = () => {
+    const navigate = useNavigate();
     const { tc, setTheme: setStoreTheme, setBaseTheme: setStoreBaseTheme, setLogo: setStoreLogo } = useSchoolStore();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -91,6 +94,12 @@ const AdminSettings = () => {
     const [schoolAppUrl, setSchoolAppUrl] = useState('');
     const [savingSchoolApp, setSavingSchoolApp] = useState(false);
 
+    // Plan & Billing — plan_id/plan_end_date come straight off the school row
+    // (already fetched by fetchProfile below); allPlans resolves plan_id to a
+    // display name/price via the same public GET /plans Billing.jsx uses.
+    const [planInfo, setPlanInfo] = useState({ plan_id: null, plan_start_date: null, plan_end_date: null });
+    const [allPlans, setAllPlans] = useState([]);
+
     const tabsScrollRef = useRef(null);
     const scrollTabs = (dir) => tabsScrollRef.current?.scrollBy({ left: dir * 240, behavior: 'smooth' });
 
@@ -99,6 +108,11 @@ const AdminSettings = () => {
         getMySubdomainRequestApi()
             .then((res) => setSubdomainRequest(res.data || {}))
             .catch(() => setSubdomainRequest({}));
+    }, []);
+    useEffect(() => {
+        getActivePlansApi()
+            .then((res) => setAllPlans(res.data || []))
+            .catch(() => setAllPlans([]));
     }, []);
 
     const fetchProfile = async () => {
@@ -145,6 +159,11 @@ const AdminSettings = () => {
             setProspectusUrl(school.prospectus_url || '');
             setSchoolAppLabel(school.school_app_label || '');
             setSchoolAppUrl(school.school_app_url || '');
+            setPlanInfo({
+                plan_id: school.plan_id ?? null,
+                plan_start_date: school.plan_start_date || null,
+                plan_end_date: school.plan_end_date || null,
+            });
         } catch (e) {
             toast.error('Failed to load profile');
         } finally {
@@ -613,6 +632,7 @@ const AdminSettings = () => {
 
     const tabs = [
         { key: 'account', label: 'My Account', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg> },
+        { key: 'plan', label: 'Plan & Billing', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path strokeLinecap="round" strokeLinejoin="round" d="M8 11V7a4 4 0 018 0v4"/></svg> },
         { key: 'profile', label: 'School Profile', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg> },
         { key: 'logo', label: 'School Logo', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg> },
         { key: 'theme', label: 'Website Theme', icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg> },
@@ -748,6 +768,72 @@ const AdminSettings = () => {
                         <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6" /></svg>
                     </button>
                 </div>
+
+                {/* ── Plan & Billing Tab — the only proactive way to reach /admin/billing;
+                     otherwise it's only reachable via AdminLayout's forced redirect when
+                     hasActivePlan is false. Lets a school renew early or upgrade instead of
+                     waiting for their plan to lapse. ── */}
+                {activeTab === 'plan' && (() => {
+                    const planEndDate = planInfo.plan_end_date ? new Date(planInfo.plan_end_date) : null;
+                    const isExpired = !!planEndDate && planEndDate < new Date();
+                    const currentPlan = allPlans.find(p => p.id === planInfo.plan_id);
+                    const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
+                    return (
+                        <div className="settings-section" style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', maxWidth: '640px' }}>
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                    <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2" /><path strokeLinecap="round" strokeLinejoin="round" d="M8 11V7a4 4 0 018 0v4" /></svg>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>Plan & Billing</p>
+                                    <p style={{ fontSize: '11px', color: '#94a3b8' }}>Your current plan, renewal date, and upgrade options</p>
+                                </div>
+                                {planInfo.plan_id && (
+                                    <span style={{
+                                        fontSize: '10.5px', fontWeight: 700, borderRadius: '999px', padding: '4px 11px', flexShrink: 0,
+                                        color: isExpired ? '#b91c1c' : '#15803d',
+                                        background: isExpired ? '#fef2f2' : '#f0fdf4',
+                                        border: `1px solid ${isExpired ? '#fecaca' : '#bbf7d0'}`,
+                                    }}>
+                                        {isExpired ? 'Expired' : 'Active'}
+                                    </span>
+                                )}
+                            </div>
+                            <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                {!planInfo.plan_id ? (
+                                    <p style={{ fontSize: '13px', color: '#64748b' }}>You don't have an active plan yet — choose one to take your school website live.</p>
+                                ) : (
+                                    <>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '14px' }}>
+                                            <div style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '8px', padding: '12px 14px' }}>
+                                                <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Current Plan</div>
+                                                <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginTop: '2px' }}>{currentPlan?.name || `Plan #${planInfo.plan_id}`}</div>
+                                            </div>
+                                            <div style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '8px', padding: '12px 14px' }}>
+                                                <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{isExpired ? 'Expired On' : 'Valid Until'}</div>
+                                                <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginTop: '2px' }}>{fmtDate(planInfo.plan_end_date)}</div>
+                                            </div>
+                                        </div>
+                                        {isExpired && (
+                                            <p style={{ fontSize: '11.5px', color: '#b45309', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '8px', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '7px' }}>
+                                                <InfoIcon /> Your plan has ended — renew to keep your school website live and editable.
+                                            </p>
+                                        )}
+                                    </>
+                                )}
+                                <div>
+                                    <button onClick={() => navigate('/admin/billing')}
+                                        style={{ padding: '11px 20px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                        {!planInfo.plan_id ? 'Choose a Plan' : isExpired ? 'Renew Plan' : 'Extend / Upgrade Plan'}
+                                    </button>
+                                </div>
+                                <p style={{ fontSize: '11px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    <InfoIcon /> Renewing early adds the new plan's tenure on top of your remaining days — you never lose unused time.
+                                </p>
+                            </div>
+                        </div>
+                    );
+                })()}
 
                 {/* ── My Account Tab — the admin's own name/login email, separate
                      from the School Profile tab below which is the school's
