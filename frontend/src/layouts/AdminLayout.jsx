@@ -152,22 +152,27 @@ const AdminLayout = () => {
             key: "settings", label: "General Settings", path: "/admin/settings",
             icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>,
         },
+        {
+            key: "billing", label: "Plan & Billing", path: "/admin/billing",
+            icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path strokeLinecap="round" strokeLinejoin="round" d="M8 11V7a4 4 0 018 0v4"/></svg>,
+        },
     ];
 
     // 'contact'/'settings' aren't real toggleable modules (see moduleRegistry.jsx's
     // "Configuration" category note) but can still end up in a school's saved
-    // selected_modules (e.g. via ModuleSelector's old "Select All") — when they do,
-    // they need their dedicated route (matching coreItems above), not the generic
-    // /admin/module/:key pattern, which doesn't handle them.
-    const DEDICATED_MODULE_PATHS = { contact: '/admin/contact', settings: '/admin/settings' };
+    // selected_modules (e.g. via ModuleSelector's old "Select All"). They already
+    // have fixed entries in coreItems above (Main section), so they're dropped here
+    // rather than also rendered a second time in the Modules section.
+    const FIXED_NAV_MODULE_KEYS = ['contact', 'settings'];
 
     const moduleItems = selectedModules
+        .filter((key) => !FIXED_NAV_MODULE_KEYS.includes(key))
         .map((key) => moduleRegistry.find((m) => m.key === key))
         .filter(Boolean)
         .map((m) => ({
             key: m.key,
             label: m.label,
-            path: DEDICATED_MODULE_PATHS[m.key] || (m.key === 'home' ? '/admin/module/home' : `/admin/module/${m.key}`),
+            path: m.key === 'home' ? '/admin/module/home' : `/admin/module/${m.key}`,
             icon: m.icon,
         }))
         .sort((a, b) => a.label.localeCompare(b.label));
