@@ -1,0 +1,29 @@
+{
+  "name": "web-builder-pro-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-tenant School Website SaaS Platform",
+  "scripts": {
+    "install:backend": "npm install --prefix backend",
+    "install:frontend": "npm install --prefix frontend",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build": "npm run build:frontend",
+    "start:backend": "npm start --prefix backend",
+    "start": "npm run start:backend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "pm2:start": "pm2 start ecosystem.config.cjs",
+    "pm2:restart": "pm2 restart ecosystem.config.cjs",
+    "pm2:reload": "pm2 reload ecosystem.config.cjs",
+    "pm2:stop": "pm2 stop ecosystem.config.cjs",
+    "pm2:logs": "pm2 logs web-builder-pro-backend"
+  },
+  "keywords": [
+    "saas",
+    "school-builder",
+    "multi-tenant"
+  ],
+  "author": "",
+  "license": "ISC"
+}

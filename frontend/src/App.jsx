@@ -119,7 +119,14 @@ const PUBLIC_SCHOOL_ROUTE_DEFS = [
 
 // ── Platform hosts — anything else attempting a page load is treated as a
 // candidate custom domain and resolved via the backend before rendering. ──
-const isPlatformHost = (host) => host === 'localhost' || host === '127.0.0.1' || host.endsWith('.vercel.app') || host === 'wbpro.in' || host === 'www.wbpro.in';
+const isPlatformHost = (host) => {
+    if (host === 'localhost' || host === '127.0.0.1' || host.endsWith('.vercel.app') || host === 'wbpro.in' || host === 'www.wbpro.in') return true;
+    // Direct VPS IP access (e.g. 192.168.1.10, 159.65.1.2)
+    if (/^(\d{1,3}\.){3}\d{1,3}$/.test(host)) return true;
+    const configuredHost = import.meta.env.VITE_PLATFORM_HOST;
+    if (configuredHost && (host === configuredHost || host === `www.${configuredHost}`)) return true;
+    return false;
+};
 
 const FullPageSpinner = () => (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

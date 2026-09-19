@@ -11,6 +11,10 @@ const plansRoutes = require('../modules/plans/plans.routes');
 const billingRoutes = require('../modules/billing/billing.routes');
 const subdomainRequestRoutes = require('../modules/subdomainRequest/subdomainRequest.routes');
 
+router.get('/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString(), uptime: process.uptime() });
+});
+
 router.use('/auth', authRoutes);
 router.use('/super-admin', superAdminRoutes);
 router.use('/school', schoolRoutes);

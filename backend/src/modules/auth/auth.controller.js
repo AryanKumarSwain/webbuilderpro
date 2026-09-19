@@ -52,7 +52,12 @@ const logout = async (req, res) => {
         await logoutService(refreshToken);
 
         // Clear the cookie
-        res.clearCookie('refreshToken');
+        const isProd = process.env.NODE_ENV === 'production';
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
+        });
 
         return sendSuccess(res, 'Logout successful');
 

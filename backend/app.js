@@ -28,12 +28,25 @@ app.use(helmet({
 // domain and must be able to call the API with credentials from it too.
 const staticAllowedOrigins = new Set([process.env.FRONTEND_URL].filter(Boolean));
 
+let configuredFrontendHost = '';
+try {
+    if (process.env.FRONTEND_URL) {
+        configuredFrontendHost = new URL(process.env.FRONTEND_URL).hostname;
+    }
+} catch {}
+
 const isStaticAllowedHost = (hostname) =>
     hostname === 'localhost' ||
     hostname === '127.0.0.1' ||
+    /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname) ||
     hostname.endsWith('.vercel.app') ||
     hostname === 'wbpro.in' ||
-    hostname === 'www.wbpro.in';
+    hostname === 'www.wbpro.in' ||
+    (configuredFrontendHost && (
+        hostname === configuredFrontendHost ||
+        hostname === `www.${configuredFrontendHost}` ||
+        hostname.endsWith(`.${configuredFrontendHost}`)
+    ));
 
 // Custom-domain lookups are cached briefly so CORS doesn't hit the DB on
 // every single request from a school's connected domain.
