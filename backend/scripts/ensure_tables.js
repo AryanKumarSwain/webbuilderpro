@@ -46,14 +46,27 @@ async function main() {
     UNIQUE KEY uuid (uuid)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
 
+  // Fix tbl_payments if created with legacy/incorrect columns
+  const [payCols] = await pool.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tbl_payments'`
+  );
+  const payColNames = payCols.map(c => c.COLUMN_NAME);
+  if (payColNames.includes('order_id') && !payColNames.includes('razorpay_order_id')) {
+    const [rows] = await pool.query('SELECT COUNT(*) as count FROM tbl_payments');
+    if (rows[0].count === 0) {
+      await pool.query('DROP TABLE tbl_payments');
+    }
+  }
+
   await pool.query(`CREATE TABLE IF NOT EXISTS tbl_payments (
     id INT NOT NULL AUTO_INCREMENT,
     uuid VARCHAR(36) NOT NULL,
     school_id INT NOT NULL,
     plan_id INT NOT NULL,
-    order_id VARCHAR(64) NOT NULL,
-    payment_id VARCHAR(64) DEFAULT NULL,
-    amount_paise INT NOT NULL,
+    razorpay_order_id VARCHAR(64) NOT NULL,
+    razorpay_payment_id VARCHAR(64) DEFAULT NULL,
+    razorpay_signature VARCHAR(255) DEFAULT NULL,
+    amount DECIMAL(10,2) NOT NULL,
     currency VARCHAR(10) NOT NULL DEFAULT 'INR',
     status ENUM('created','paid','failed') NOT NULL DEFAULT 'created',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -66,17 +79,30 @@ async function main() {
     CONSTRAINT tbl_payments_plan_fk FOREIGN KEY (plan_id) REFERENCES tbl_plans (id)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
 
+  // Fix tbl_media_usage if created with incorrect columns
+  const [mediaCols] = await pool.query(
+    `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tbl_media_usage'`
+  );
+  const mediaColNames = mediaCols.map(c => c.COLUMN_NAME);
+  if (mediaColNames.includes('bytes') && !mediaColNames.includes('file_size_bytes')) {
+    const [rows] = await pool.query('SELECT COUNT(*) as count FROM tbl_media_usage');
+    if (rows[0].count === 0) {
+      await pool.query('DROP TABLE tbl_media_usage');
+    }
+  }
+
   await pool.query(`CREATE TABLE IF NOT EXISTS tbl_media_usage (
     id INT NOT NULL AUTO_INCREMENT,
-    uuid VARCHAR(36) NOT NULL,
     school_id INT NOT NULL,
-    media_type ENUM('image','pdf','video') NOT NULL,
-    bytes BIGINT NOT NULL,
+    module_key VARCHAR(50) DEFAULT NULL,
+    resource_type ENUM('image','pdf','video') NOT NULL,
+    file_url VARCHAR(500) NOT NULL,
+    file_size_bytes BIGINT NOT NULL,
     cloudinary_public_id VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    UNIQUE KEY uuid (uuid),
     KEY school_id (school_id),
+    KEY module_key (module_key),
     CONSTRAINT tbl_media_usage_school_fk FOREIGN KEY (school_id) REFERENCES tbl_schools (id) ON DELETE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`);
 
