@@ -45,12 +45,24 @@ const loginService = async (email, password, role) => {
   let user;
   let table = role === "super_admin" ? "tbl_super_admins" : "tbl_admins";
 
-  const [rows] = await pool.query(
-    role === 'admin'
-        ? `SELECT id, uuid, school_id, name, email, password, phone, profile_photo, status, last_login, created_at, updated_at FROM tbl_admins WHERE email = ?`
-        : `SELECT id, uuid, name, email, password, is_active, last_login, created_at, updated_at FROM tbl_super_admins WHERE email = ?`,
+  let [rows] = await pool.query(
+    role === 'super_admin'
+        ? `SELECT id, uuid, name, email, password, is_active, last_login, created_at, updated_at FROM tbl_super_admins WHERE email = ?`
+        : `SELECT id, uuid, school_id, name, email, password, phone, profile_photo, status, last_login, created_at, updated_at FROM tbl_admins WHERE email = ?`,
     [email]
-);
+  );
+
+  // Fallback: If not found, check the other table automatically!
+  if (rows.length === 0) {
+    const otherQuery = role === 'super_admin'
+        ? `SELECT id, uuid, school_id, name, email, password, phone, profile_photo, status, last_login, created_at, updated_at FROM tbl_admins WHERE email = ?`
+        : `SELECT id, uuid, name, email, password, is_active, last_login, created_at, updated_at FROM tbl_super_admins WHERE email = ?`;
+    const [fallbackRows] = await pool.query(otherQuery, [email]);
+    if (fallbackRows.length > 0) {
+      rows = fallbackRows;
+      role = role === 'super_admin' ? 'admin' : 'super_admin';
+    }
+  }
 
   if (rows.length === 0) {
     throw new AppError("Invalid email or password", 401);
