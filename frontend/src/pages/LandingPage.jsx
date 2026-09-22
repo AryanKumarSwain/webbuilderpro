@@ -165,7 +165,7 @@ const TRUST_CARDS = [
     { title: 'Reliable Storage', desc: 'Cloudinary-backed uploads for photos, videos, and PDFs — built to last.', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h10a4 4 0 001.6-7.67 5 5 0 00-9.5-2.79A4 4 0 003 15z" /> },
 ];
 
-const DEMO_URL = '/school/st-marys-convent-school';
+const DEMO_URL = 'https://jdis.wbpro.in';
 
 const LandingPage = () => {
     const navigate = useNavigate();
@@ -204,27 +204,55 @@ const LandingPage = () => {
                 @keyframes lpOrbDrift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-26px,20px) scale(1.08); } }
                 @keyframes lpFloatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
                 @keyframes lpChipFloat { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-13px) rotate(3deg); } }
-                @keyframes lpShimmer { 0% { background-position: 200% center; } 100% { background-position: -200% center; } }
+                @keyframes lpShimmer { 0% { background-position: -100% center; } 100% { background-position: 100% center; } }
+                @keyframes lpShimmerRTL { 0% { background-position: 100% center; } 100% { background-position: -100% center; } }
                 @keyframes lpSpin { to { transform: rotate(360deg); } }
                 @keyframes lpPulseRing { 0%,100% { box-shadow: 0 0 0 0 rgba(65,105,225,0.35); } 50% { box-shadow: 0 0 0 12px rgba(65,105,225,0); } }
 
                 .lp-shimmer-text {
-                    background: linear-gradient(90deg, ${TEXT_DARK}, ${BLUE}, ${TEXT_DARK});
+                    background: linear-gradient(90deg, ${TEXT_DARK} 0%, ${TEXT_DARK} 42%, ${BLUE} 50%, ${TEXT_DARK} 58%, ${TEXT_DARK} 100%);
                     background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
                     animation: lpShimmer 8s linear infinite;
                 }
                 .lp-shimmer-text-light {
-                    background: linear-gradient(90deg, #ffffff, ${BLUE_LIGHT}, #ffffff);
+                    background: linear-gradient(90deg, #ffffff 0%, #ffffff 42%, ${BLUE_LIGHT} 50%, #ffffff 58%, #ffffff 100%);
                     background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
                     animation: lpShimmer 8s linear infinite;
                 }
                 .lp-hero-heading-shimmer {
-                    background: linear-gradient(90deg, #0f1f4b 0%, #1d4ed8 35%, #60a5fa 55%, #1d4ed8 75%, #0f1f4b 100%);
-                    background-size: 300% auto;
+                    background: linear-gradient(90deg, #0f1f4b 0%, #0f1f4b 42%, #1d4ed8 50%, #0f1f4b 58%, #0f1f4b 100%);
+                    background-size: 200% auto;
                     -webkit-background-clip: text;
                     background-clip: text;
                     -webkit-text-fill-color: transparent;
-                    animation: lpShimmer 10s linear infinite;
+                    animation: lpShimmerRTL 8s linear infinite;
+                }
+                /* RTL shimmer — dark navy colours, right to left */
+                .lp-hero-rtl-shimmer {
+                    background: linear-gradient(90deg, #0f1f4b 0%, #0f1f4b 42%, #2563eb 50%, #0f1f4b 58%, #0f1f4b 100%);
+                    background-size: 200% auto;
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    animation: lpShimmerRTL 7s linear infinite;
+                }
+                /* LTR shimmer — blue colours, left to right */
+                .lp-hero-ltr-shimmer {
+                    background: linear-gradient(90deg, #1d4ed8 0%, #1d4ed8 42%, #60a5fa 50%, #1d4ed8 58%, #1d4ed8 100%);
+                    background-size: 200% auto;
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    animation: lpShimmer 7s linear infinite;
+                }
+                /* Unified shimmer on full h1 */
+                .lp-hero-h1-unified {
+                    background: linear-gradient(90deg, #0f1f4b 0%, #0f1f4b 42%, #2563eb 50%, #1d4ed8 58%, #1d4ed8 100%);
+                    background-size: 200% auto;
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    animation: lpShimmerRTL 7s linear infinite;
                 }
 
                 .lp-nav-link { transition: color 0.2s ease, text-shadow 0.2s ease; }
@@ -428,13 +456,12 @@ const LandingPage = () => {
                                     fontWeight: 900,
                                     lineHeight: 1.08,
                                     letterSpacing: '-2px',
-                                    color: '#0f1f4b',
                                     marginBottom: '1.5rem'
                                 }}>
-                                    Build a School Website That{' '}
-                                    <span className="lp-hero-heading-shimmer" style={{ position: 'relative', display: 'inline-block', paddingBottom: '8px' }}>
+                                    <span className="lp-hero-rtl-shimmer" style={{ display: 'block' }}>Build a School</span>
+                                    <span className="lp-hero-rtl-shimmer" style={{ display: 'block' }}>Website That</span>
+                                    <span className="lp-hero-ltr-shimmer" style={{ position: 'relative', display: 'inline-block', paddingBottom: '8px' }}>
                                         Stands Apart.
-                                        {/* Wavy underline — thicker, more pronounced */}
                                         <svg
                                             style={{
                                                 position: 'absolute',
