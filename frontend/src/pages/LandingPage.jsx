@@ -520,15 +520,42 @@ const LandingPage = () => {
                         pointerEvents: 'none', zIndex: 1
                     }}></div>
 
-                    {/* Bottom fade to white */}
+                    {/* Bottom wave divider seamlessly transitioning into #ffffff modules section */}
                     <div style={{
                         position: 'absolute',
-                        bottom: 0, left: 0, right: 0,
-                        height: '72px',
-                        background: 'linear-gradient(180deg, transparent, #ffffff)',
+                        bottom: -1,
+                        left: 0,
+                        right: 0,
+                        width: '100%',
+                        overflow: 'hidden',
+                        lineHeight: 0,
                         pointerEvents: 'none',
                         zIndex: 2
-                    }}></div>
+                    }}>
+                        <svg
+                            viewBox="0 0 1440 90"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            preserveAspectRatio="none"
+                            style={{
+                                position: 'relative',
+                                display: 'block',
+                                width: '100%',
+                                height: 'clamp(48px, 6vw, 88px)',
+                            }}
+                        >
+                            {/* Subtle layered soft wave accent for depth */}
+                            <path
+                                d="M0,58 C320,82 620,32 980,42 C1200,48 1340,62 1440,54 L1440,90 L0,90 Z"
+                                fill="rgba(255, 255, 255, 0.45)"
+                            />
+                            {/* Main crisp white wave matching the modules section */}
+                            <path
+                                d="M0,46 C280,68 560,18 920,24 C1160,28 1320,44 1440,36 L1440,90 L0,90 Z"
+                                fill="#ffffff"
+                            />
+                        </svg>
+                    </div>
 
                     <div className="lp-hero-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(2rem,5vw,3rem)', alignItems: 'center', position: 'relative', zIndex: 3 }}>
 
