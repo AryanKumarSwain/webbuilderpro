@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/webbuilder-removebg-preview.png";
+import schoolHeroBg from "../assets/school-hero-bg.jpg";
 
 // ── Scroll-triggered fade+slide-up, same IntersectionObserver pattern used on every public page ──
 const useScrollReveal = () => {
@@ -291,83 +292,273 @@ const LandingPage = () => {
 
             <div style={{ fontFamily: "'Inter', system-ui, sans-serif", color: TEXT_DARK, background: '#ffffff', minHeight: '100vh', overflowX: 'hidden' }}>
 
-                {/* ── Nav — fixed (not sticky) so it reliably follows on scroll regardless of
-                     ancestor overflow; height is constant so the hero's compensating top
-                     padding below always lines up exactly. ── */}
+                {/* ── Nav — Clean modern white FeeFlow-style navbar for Web Builder Pro ── */}
                 <nav style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, height: '64px',
+                    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, height: '74px',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '0 clamp(1.25rem,6vw,3.5rem)',
-                    background: scrolled ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.05)',
-                    backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
-                    borderBottom: scrolled ? '1px solid rgba(59,59,59,0.08)' : '1px solid rgba(255,255,255,0.14)',
-                    transition: 'all 0.3s ease',
+                    padding: '0 clamp(1.25rem, 5vw, 3.5rem)',
+                    background: 'rgba(255, 255, 255, 0.98)',
+                    backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+                    borderBottom: '1px solid #e2e8f0',
+                    boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)',
+                    transition: 'all 0.25s ease',
                 }}>
-                    <img src={logo} alt="Web Builder Pro" style={{ height: 'clamp(48px,6vw,60px)', objectFit: 'contain' }} />
-                    <div className="lp-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '1.75rem' }}>
-                        <a href="#modules" className={`lp-nav-link ${scrolled ? 'lp-nav-link-dark' : 'lp-nav-link-light'}`} style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? TEXT_MUTED_LIGHT : 'rgba(255,255,255,0.88)', textDecoration: 'none' }}>Modules</a>
-                        <a href="#features" className={`lp-nav-link ${scrolled ? 'lp-nav-link-dark' : 'lp-nav-link-light'}`} style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? TEXT_MUTED_LIGHT : 'rgba(255,255,255,0.88)', textDecoration: 'none' }}>Features</a>
-                        <a href="#preview" className={`lp-nav-link ${scrolled ? 'lp-nav-link-dark' : 'lp-nav-link-light'}`} style={{ fontSize: '13px', fontWeight: 500, color: scrolled ? TEXT_MUTED_LIGHT : 'rgba(255,255,255,0.88)', textDecoration: 'none' }}>Preview</a>
+                    {/* Brand / Logo */}
+                    <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                        <img src={logo} alt="Web Builder Pro" style={{ height: 'clamp(56px, 6vw, 62px)', width: 'auto', objectFit: 'contain' }} />
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <button onClick={() => navigate('/login')} className={`lp-nav-link ${scrolled ? 'lp-nav-link-dark' : 'lp-nav-link-light'}`} style={{ fontSize: '12.5px', fontWeight: 600, color: scrolled ? TEXT_DARK : '#ffffff', background: 'none', border: 'none', cursor: 'pointer' }}>Log in</button>
-                        <button onClick={() => navigate('/signup')} className="lp-btn"
-                            style={{ padding: '7px 16px', background: '#ffffff', color: BLUE_DARK, border: 'none', borderRadius: '8px', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.18)' }}>
-                            Get Started
+
+                    {/* Center Nav Links */}
+                    <div className="lp-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                        <a href="#features" style={{ fontSize: '14px', fontWeight: 600, color: '#334155', textDecoration: 'none', transition: 'color 0.18s ease' }} onMouseOver={e => e.currentTarget.style.color = BLUE} onMouseOut={e => e.currentTarget.style.color = '#334155'}>
+                            Features
+                        </a>
+                        <a href={DEMO_URL} target="_blank" rel="noopener noreferrer" style={{ fontSize: '14px', fontWeight: 600, color: '#e15241', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px', transition: 'color 0.18s ease' }} onMouseOver={e => e.currentTarget.style.color = '#c53b2c'} onMouseOut={e => e.currentTarget.style.color = '#e15241'}>
+                            <span style={{ fontSize: '13px' }}>✦</span> Platform Demo
+                        </a>
+                        <a href="#modules" style={{ fontSize: '14px', fontWeight: 600, color: '#334155', textDecoration: 'none', transition: 'color 0.18s ease' }} onMouseOver={e => e.currentTarget.style.color = BLUE} onMouseOut={e => e.currentTarget.style.color = '#334155'}>
+                            Modules
+                        </a>
+                        <a href="#preview" style={{ fontSize: '14px', fontWeight: 600, color: '#334155', textDecoration: 'none', transition: 'color 0.18s ease' }} onMouseOver={e => e.currentTarget.style.color = BLUE} onMouseOut={e => e.currentTarget.style.color = '#334155'}>
+                            Preview
+                        </a>
+                    </div>
+
+                    {/* Right Actions (Sign In + Coral Primary CTA) */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <button onClick={() => navigate('/login')} style={{ fontSize: '14px', fontWeight: 600, color: '#334155', background: 'none', border: 'none', cursor: 'pointer', padding: '8px 10px', transition: 'color 0.18s ease' }} onMouseOver={e => e.currentTarget.style.color = '#0f172a'} onMouseOut={e => e.currentTarget.style.color = '#334155'}>
+                            Sign In
+                        </button>
+                        <button onClick={() => navigate('/signup')} style={{
+                            padding: '10px 22px',
+                            background: '#e15241',
+                            color: '#ffffff',
+                            border: 'none',
+                            borderRadius: '999px',
+                            fontSize: '13.5px',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            boxShadow: '0 4px 14px rgba(225, 82, 65, 0.35)',
+                            transition: 'all 0.2s ease'
+                        }} onMouseOver={e => { e.currentTarget.style.background = '#d04332'; e.currentTarget.style.transform = 'translateY(-1px)'; }} onMouseOut={e => { e.currentTarget.style.background = '#e15241'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                            Start Free Trial →
                         </button>
                     </div>
                 </nav>
 
-                {/* ── Hero — blue base (not plain white), styled with a dot-grid, soft glow
-                     orbs, and a wave divider into the next (dark) section. paddingTop offsets
-                     the now-fixed nav's 64px height. ── */}
-                <section style={{ position: 'relative', padding: 'calc(64px + clamp(2rem,6vw,3.5rem)) clamp(1.25rem,6vw,4rem) clamp(4.5rem,8vw,6rem)', overflow: 'hidden', background: `linear-gradient(160deg, ${BLUE_DARK} 0%, ${BLUE} 55%, ${BLUE_DARK} 100%)` }}>
-                    <div style={{ position: 'absolute', width: '460px', height: '460px', borderRadius: '50%', background: `radial-gradient(circle, rgba(255,255,255,0.16) 0%, transparent 70%)`, top: '-160px', right: '-100px', animation: 'lpOrbDrift 10s ease-in-out infinite', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'absolute', width: '320px', height: '320px', borderRadius: '50%', background: `radial-gradient(circle, rgba(20,26,46,0.35) 0%, transparent 70%)`, bottom: '-120px', left: '-70px', animation: 'lpOrbDrift 12s ease-in-out infinite reverse', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'absolute', inset: 0, backgroundImage: `radial-gradient(rgba(255,255,255,0.09) 1px, transparent 1px)`, backgroundSize: '26px 26px', pointerEvents: 'none' }}></div>
-                    <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style={{ position: 'absolute', bottom: '-1px', left: 0, width: '100%', height: '64px', zIndex: 1 }}>
-                        <path d="M0,40 C360,90 1080,-10 1440,40 L1440,80 L0,80 Z" fill="#ffffff" />
-                    </svg>
+                {/* ── Hero — Light canvas with blurred school sports-day background image,
+                     ambient glows, bold dark typography with wavy accent, dual pill CTAs ── */}
+                <section style={{
+                    position: 'relative',
+                    padding: 'calc(74px + clamp(2.5rem,6vw,4.2rem)) clamp(1.25rem,6vw,4rem) clamp(4.5rem,7vw,6.5rem)',
+                    overflow: 'hidden',
+                    background: '#f0f4f8'
+                }}>
+                    {/* Local school sports-day background image */}
+                    <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        backgroundImage: `url(${schoolHeroBg})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center 45%',
+                        filter: 'saturate(1.15) brightness(0.92)',
+                        opacity: 0.22,
+                        pointerEvents: 'none',
+                        zIndex: 0
+                    }}></div>
 
-                    <div className="lp-hero-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(2rem,5vw,3rem)', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                    {/* Very light white tint — just enough for text readability */}
+                    <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'rgba(248,250,252,0.30)',
+                        pointerEvents: 'none',
+                        zIndex: 1
+                    }}></div>
+
+                    {/* Warm amber glow — bottom-right */}
+                    <div style={{
+                        position: 'absolute',
+                        width: '520px', height: '520px', borderRadius: '50%',
+                        background: 'radial-gradient(circle, rgba(254,215,170,0.5) 0%, rgba(254,215,170,0.1) 45%, transparent 70%)',
+                        bottom: '-120px', right: '-80px',
+                        animation: 'lpOrbDrift 14s ease-in-out infinite alternate',
+                        pointerEvents: 'none', zIndex: 1
+                    }}></div>
+
+                    {/* Cool blue glow — top-left */}
+                    <div style={{
+                        position: 'absolute',
+                        width: '480px', height: '480px', borderRadius: '50%',
+                        background: 'radial-gradient(circle, rgba(191,219,254,0.55) 0%, rgba(191,219,254,0.1) 45%, transparent 70%)',
+                        top: '-80px', left: '-60px',
+                        animation: 'lpOrbDrift 12s ease-in-out infinite alternate-reverse',
+                        pointerEvents: 'none', zIndex: 1
+                    }}></div>
+
+                    {/* Bottom fade to white */}
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 0, left: 0, right: 0,
+                        height: '72px',
+                        background: 'linear-gradient(180deg, transparent, #ffffff)',
+                        pointerEvents: 'none',
+                        zIndex: 2
+                    }}></div>
+
+                    <div className="lp-hero-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(2rem,5vw,3rem)', alignItems: 'center', position: 'relative', zIndex: 3 }}>
 
                         {/* Left — copy */}
                         <div>
                             <Reveal>
-                                <span style={{ display: 'inline-block', fontSize: '11.5px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.16em', textTransform: 'uppercase', padding: '6px 14px', background: 'rgba(255,255,255,0.16)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '999px', marginBottom: '1.5rem', backdropFilter: 'blur(6px)' }}>
-                                    School Website & Management Platform
-                                </span>
+                                <div style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '6px 16px',
+                                    background: '#ffffff',
+                                    border: '1px solid rgba(226,232,240,0.9)',
+                                    borderRadius: '999px',
+                                    marginBottom: '1.4rem',
+                                    boxShadow: '0 2px 12px rgba(15,23,42,0.06)'
+                                }}>
+                                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#e15241' }}></span>
+                                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#334155', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                                        School Website & Management Platform
+                                    </span>
+                                    <span style={{ fontSize: '12px' }}>✨</span>
+                                </div>
                             </Reveal>
                             <Reveal delay={0.08}>
-                                <h1 className="lp-shimmer-text-light" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(38px,5.6vw,66px)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-1.5px', marginBottom: '1.35rem' }}>
-                                    Build a School Website That Stands Apart
+                                <h1 style={{
+                                    fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif",
+                                    fontSize: 'clamp(38px, 5.2vw, 64px)',
+                                    fontWeight: 800,
+                                    lineHeight: 1.12,
+                                    letterSpacing: '-1.5px',
+                                    color: '#0f172a',
+                                    marginBottom: '1.35rem'
+                                }}>
+                                    Build a School Website That{' '}
+                                    <span style={{ position: 'relative', display: 'inline-block', color: '#0f172a', paddingBottom: '4px' }}>
+                                        Stands Apart.
+                                        <svg
+                                            style={{
+                                                position: 'absolute',
+                                                left: 0,
+                                                bottom: '-4px',
+                                                width: '100%',
+                                                height: '14px',
+                                                overflow: 'visible'
+                                            }}
+                                            viewBox="0 0 250 14"
+                                            fill="none"
+                                            preserveAspectRatio="none"
+                                        >
+                                            <path
+                                                d="M 2 7 Q 15 1, 30 7 T 60 7 T 90 7 T 120 7 T 150 7 T 180 7 T 210 7 T 240 7 T 250 7"
+                                                stroke="#e15241"
+                                                strokeWidth="3.8"
+                                                strokeLinecap="round"
+                                                fill="none"
+                                                vectorEffect="non-scaling-stroke"
+                                            />
+                                        </svg>
+                                    </span>
                                 </h1>
                             </Reveal>
                             <Reveal delay={0.16}>
-                                <p style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 'clamp(15px,1.6vw,17.5px)', fontWeight: 400, color: 'rgba(255,255,255,0.86)', lineHeight: 1.85, letterSpacing: '0.1px', maxWidth: '500px', marginBottom: '1.75rem' }}>
+                                <p style={{
+                                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                                    fontSize: 'clamp(15px, 1.5vw, 17px)',
+                                    fontWeight: 400,
+                                    color: '#475569',
+                                    lineHeight: 1.8,
+                                    letterSpacing: '0.1px',
+                                    maxWidth: '520px',
+                                    marginBottom: '1.75rem'
+                                }}>
                                     A complete platform to run your school's public website and day-to-day operations — fees, admissions, events, gallery, and more — all from one simple dashboard.
                                 </p>
                             </Reveal>
                             <Reveal delay={0.24}>
                                 <div className="lp-hero-checks" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 24px', marginBottom: '2.25rem' }}>
                                     {['Custom public website', 'One dashboard, every module', 'No coding required'].map(item => (
-                                        <span key={item} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: "'Inter', system-ui, sans-serif", fontSize: '13.5px', color: '#ffffff', fontWeight: 600, letterSpacing: '0.15px' }}>
-                                            <CheckIcon color="#ffffff" />{item}
+                                        <span key={item} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: "'Inter', system-ui, sans-serif", fontSize: '13.5px', color: '#334155', fontWeight: 600, letterSpacing: '0.15px' }}>
+                                            <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(225,82,65,0.15)', border: '1.5px solid rgba(225,82,65,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                <CheckIcon color="#e15241" />
+                                            </span>
+                                            {item}
                                         </span>
                                     ))}
                                 </div>
                             </Reveal>
                             <Reveal delay={0.32}>
                                 <div className="lp-hero-ctas" style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                                    <button onClick={() => navigate('/login')} className="lp-btn"
-                                        style={{ padding: '15px 28px', background: '#ffffff', color: BLUE_DARK, border: 'none', borderRadius: '13px', fontSize: '15px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '9px', boxShadow: '0 10px 26px rgba(0,0,0,0.25)' }}>
+                                    <button
+                                        onClick={() => navigate('/login')}
+                                        className="lp-btn"
+                                        style={{
+                                            padding: '14px 28px',
+                                            background: '#e15241',
+                                            color: '#ffffff',
+                                            border: 'none',
+                                            borderRadius: '999px',
+                                            fontSize: '15px',
+                                            fontWeight: 700,
+                                            cursor: 'pointer',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '9px',
+                                            boxShadow: '0 8px 24px rgba(225, 82, 65, 0.35)',
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                        onMouseOver={e => { e.currentTarget.style.background = '#d04332'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                                        onMouseOut={e => { e.currentTarget.style.background = '#e15241'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                                    >
                                         Login to Dashboard
-                                        <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M20 12H4" /></svg>
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M20 12H4" />
+                                        </svg>
                                     </button>
-                                    <a href={DEMO_URL} target="_blank" rel="noopener noreferrer" className="lp-btn lp-btn-outline-hero"
-                                        style={{ padding: '15px 26px', background: 'transparent', color: '#ffffff', border: '1.5px solid rgba(255,255,255,0.55)', borderRadius: '13px', fontSize: '14.5px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-                                        <span style={{ width: '26px', height: '26px', borderRadius: '50%', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <PlayIcon color={BLUE_DARK} />
+                                    <a
+                                        href={DEMO_URL}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="lp-btn"
+                                        style={{
+                                            padding: '13px 26px',
+                                            background: '#ffffff',
+                                            color: '#0f172a',
+                                            border: '1.5px solid #e2e8f0',
+                                            borderRadius: '999px',
+                                            fontSize: '14.5px',
+                                            fontWeight: 700,
+                                            cursor: 'pointer',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '10px',
+                                            textDecoration: 'none',
+                                            boxShadow: '0 4px 14px rgba(15, 23, 42, 0.05)',
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                        onMouseOver={e => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15, 23, 42, 0.08)'; }}
+                                        onMouseOut={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(15, 23, 42, 0.05)'; }}
+                                    >
+                                        <span style={{
+                                            width: '26px',
+                                            height: '26px',
+                                            borderRadius: '50%',
+                                            background: '#f59e0b',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            boxShadow: '0 2px 6px rgba(245, 158, 11, 0.35)'
+                                        }}>
+                                            <PlayIcon color="#ffffff" />
                                         </span>
                                         Watch Demo
                                     </a>
@@ -380,49 +571,49 @@ const LandingPage = () => {
                             onMouseMove={handleHeroMove} onMouseLeave={handleHeroLeave}>
                             <div className="lp-mock-float" style={{ width: 'min(420px, 92vw)', margin: '0 auto', position: 'relative' }}>
                                 <div className="lp-hero-mock-tilt" style={{ transform: `rotateX(${heroTilt.x}deg) rotateY(${heroTilt.y}deg)` }}>
-                                    <div style={{ background: '#ffffff', borderRadius: '20px', overflow: 'hidden', boxShadow: `0 50px 90px rgba(65,105,225,0.28), 0 14px 34px rgba(0,0,0,0.14)`, border: '1px solid rgba(59,59,59,0.08)' }}>
+                                    <div style={{ background: '#ffffff', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 30px 70px rgba(15,23,42,0.14), 0 10px 28px rgba(15,23,42,0.08)', border: '1px solid rgba(226,232,240,0.9)' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', background: '#fafbfe', borderBottom: '1px solid #eef0f6' }}>
                                             <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#f87171' }}></span>
                                             <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#fbbf24' }}></span>
                                             <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#4ade80' }}></span>
                                             <span style={{ fontSize: '11px', fontWeight: 600, color: TEXT_MUTED_LIGHT, marginLeft: '6px' }}>Home Page — Editor</span>
-                                            <span style={{ marginLeft: 'auto', fontSize: '10.5px', fontWeight: 700, color: '#fff', background: BLUE, padding: '4px 12px', borderRadius: '999px' }}>Publish</span>
+                                            <span style={{ marginLeft: 'auto', fontSize: '10.5px', fontWeight: 700, color: '#fff', background: '#2563eb', padding: '4px 14px', borderRadius: '999px', boxShadow: '0 2px 8px rgba(37, 99, 235, 0.3)' }}>Publish</span>
                                         </div>
                                         <div style={{ padding: '22px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                            <div style={{ height: '15px', width: '70%', borderRadius: '4px', background: '#e6eaf5' }}></div>
-                                            <div style={{ height: '9px', width: '90%', borderRadius: '3px', background: '#f0f2f8' }}></div>
-                                            <div style={{ height: '9px', width: '55%', borderRadius: '3px', background: '#f0f2f8' }}></div>
-                                            <div style={{ height: '110px', borderRadius: '12px', marginTop: '6px', background: `linear-gradient(135deg, ${BLUE_LIGHT}, #f4f6fc)`, border: '1px solid #e6eaf5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: `linear-gradient(135deg,${BLUE},${BLUE_DARK})`, boxShadow: '0 10px 22px rgba(65,105,225,0.35)' }}></div>
+                                            <div style={{ height: '15px', width: '70%', borderRadius: '4px', background: '#e2e8f0' }}></div>
+                                            <div style={{ height: '9px', width: '90%', borderRadius: '3px', background: '#f1f5f9' }}></div>
+                                            <div style={{ height: '9px', width: '55%', borderRadius: '3px', background: '#f1f5f9' }}></div>
+                                            <div style={{ height: '120px', borderRadius: '14px', marginTop: '6px', background: `linear-gradient(135deg, #eff6ff, #f8fafc)`, border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: `linear-gradient(135deg,#2563eb,#1d4ed8)`, boxShadow: '0 12px 24px rgba(37, 99, 235, 0.35)' }}></div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Floating block-inserter panel */}
-                                <div className="lp-chip lp-chip-1" style={{ top: '-9%', left: '-13%', width: '150px', padding: '10px', border: '1px solid #eef0f6' }}>
-                                    <div style={{ fontSize: '9.5px', fontWeight: 700, color: TEXT_MUTED_LIGHT, marginBottom: '7px' }}>+ Add Block</div>
+                                <div className="lp-chip lp-chip-1" style={{ top: '-9%', left: '-13%', width: '150px', padding: '10px', background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 14px 30px rgba(15,23,42,0.1)' }}>
+                                    <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#64748b', marginBottom: '7px' }}>+ Add Block</div>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '5px' }}>
                                         {[0, 1, 2, 3, 4, 5].map(i => (
-                                            <div key={i} style={{ height: '22px', borderRadius: '5px', background: i === 0 ? BLUE_LIGHT : '#f4f6fa', border: i === 0 ? `1px solid ${BLUE}55` : '1px solid #eef0f6' }}></div>
+                                            <div key={i} style={{ height: '22px', borderRadius: '5px', background: i === 0 ? '#eff6ff' : '#f8fafc', border: i === 0 ? `1.5px solid #3b82f6` : '1px solid #e2e8f0' }}></div>
                                         ))}
                                     </div>
                                 </div>
 
                                 {/* Floating dark nav panel */}
-                                <div className="lp-chip lp-chip-2" style={{ bottom: '4%', right: '-15%', width: '138px', padding: '10px', background: GREY }}>
-                                    <div style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.5)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Dashboard</div>
+                                <div className="lp-chip lp-chip-2" style={{ bottom: '4%', right: '-15%', width: '140px', padding: '12px 10px', background: '#1e293b', borderRadius: '14px', boxShadow: '0 18px 38px rgba(15,23,42,0.24)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                    <div style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.5)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Dashboard</div>
                                     {['Modules', 'Enquiries', 'Settings'].map((t, i) => (
-                                        <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '6px 7px', borderRadius: '6px', background: i === 0 ? BLUE : 'transparent', marginBottom: '3px' }}>
+                                        <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '6px 8px', borderRadius: '7px', background: i === 0 ? '#2563eb' : 'transparent', marginBottom: '3px' }}>
                                             <span style={{ width: '6px', height: '6px', borderRadius: '2px', background: i === 0 ? '#fff' : 'rgba(255,255,255,0.4)' }}></span>
-                                            <span style={{ fontSize: '10px', fontWeight: 600, color: i === 0 ? '#fff' : 'rgba(255,255,255,0.65)' }}>{t}</span>
+                                            <span style={{ fontSize: '10.5px', fontWeight: 600, color: i === 0 ? '#fff' : 'rgba(255,255,255,0.65)' }}>{t}</span>
                                         </div>
                                     ))}
                                 </div>
 
                                 {/* Floating isometric school badge */}
-                                <div className="lp-chip lp-chip-3" style={{ top: '30%', right: '-16%', width: '68px', height: '68px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <IsoSchool size={44} tone="blue" />
+                                <div className="lp-chip lp-chip-3" style={{ top: '28%', right: '-16%', width: '70px', height: '70px', borderRadius: '16px', background: '#ffffff', boxShadow: '0 14px 32px rgba(15,23,42,0.12)', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <IsoSchool size={46} tone="blue" />
                                 </div>
                             </div>
                         </div>
