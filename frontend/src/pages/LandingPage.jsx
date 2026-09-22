@@ -1158,22 +1158,6 @@ const LandingPage = () => {
 
                     <div style={{ maxWidth: '1220px', margin: '0 auto', position: 'relative' }}>
                         <Reveal style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                            <div style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                padding: '6px 16px',
-                                borderRadius: '999px',
-                                background: '#ffffff',
-                                border: '1px solid #bfdbfe',
-                                boxShadow: '0 2px 10px rgba(37, 99, 235, 0.08)',
-                                marginBottom: '16px'
-                            }}>
-                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#2563eb', display: 'inline-block', boxShadow: '0 0 8px #2563eb' }} />
-                                <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#1d4ed8', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-                                    Live School Website Preview
-                                </span>
-                            </div>
                             <h2 style={{
                                 fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
                                 fontSize: 'clamp(28px, 4vw, 44px)',
