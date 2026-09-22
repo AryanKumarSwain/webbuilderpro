@@ -537,6 +537,16 @@ const LandingPage = () => {
                     .lp-trust-grid > div:first-child { align-items: center !important; }
                     .lp-nav-links { display: none !important; }
                 }
+
+                @keyframes lpFloatIso {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-7px); }
+                }
+
+                @media (max-width: 640px) {
+                    .lp-cta-btn-group { flex-direction: column !important; width: 100% !important; align-items: stretch !important; }
+                    .lp-cta-btn-group button { width: 100% !important; max-width: 100% !important; justify-content: center !important; }
+                }
             `}</style>
 
             <div style={{ fontFamily: "'Inter', system-ui, sans-serif", color: TEXT_DARK, background: '#ffffff', minHeight: '100vh', overflowX: 'hidden' }}>
@@ -1842,27 +1852,213 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                {/* ── CTA banner ── */}
-                <section style={{ padding: 'clamp(2.5rem,6vw,4rem) clamp(1.25rem,6vw,4rem)' }}>
+                {/* ── CTA Banner (High-Converting & Mobile-Responsive) ── */}
+                <section style={{ padding: 'clamp(2.5rem, 5vw, 4.5rem) clamp(1rem, 4vw, 2.5rem)', background: '#ffffff', position: 'relative' }}>
                     <Reveal>
-                        <div style={{ maxWidth: '1080px', margin: '0 auto', position: 'relative', overflow: 'hidden', borderRadius: '24px', padding: 'clamp(2rem,5vw,3.5rem)', background: `linear-gradient(135deg, ${GREY}, ${BLUE_DARK} 60%, ${BLUE})`, textAlign: 'center' }}>
-                            <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)', backgroundSize: '22px 22px', pointerEvents: 'none' }}></div>
-                            <div style={{ position: 'absolute', width: '90px', height: '90px', borderRadius: '50%', background: 'rgba(255,255,255,0.12)', top: '-24px', left: '10%', animation: 'lpChipFloat 6s ease-in-out infinite' }}></div>
-                            <div style={{ position: 'relative', margin: '0 auto 1rem', width: '110px' }}>
-                                <IsoSchool size={110} tone="blue" />
+                        <div style={{
+                            maxWidth: '1100px',
+                            margin: '0 auto',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            borderRadius: 'clamp(20px, 3.5vw, 32px)',
+                            padding: 'clamp(2.75rem, 6vw, 4.75rem) clamp(1.25rem, 4vw, 3.5rem)',
+                            background: 'linear-gradient(135deg, #1b2848 0%, #1d408f 42%, #2563eb 100%)',
+                            border: '1px solid rgba(255, 255, 255, 0.16)',
+                            boxShadow: '0 25px 60px -12px rgba(15, 23, 42, 0.35), 0 12px 28px -6px rgba(37, 99, 235, 0.3)',
+                            textAlign: 'center'
+                        }}>
+                            {/* Circle accent at top-left — matching user screenshot */}
+                            <div style={{
+                                position: 'absolute',
+                                width: '100px',
+                                height: '100px',
+                                borderRadius: '50%',
+                                background: 'rgba(255, 255, 255, 0.08)',
+                                top: '24px',
+                                left: 'clamp(20px, 5vw, 68px)',
+                                pointerEvents: 'none'
+                            }} />
+
+                            {/* Soft glowing ambient orbs */}
+                            <div style={{
+                                position: 'absolute',
+                                width: '380px',
+                                height: '380px',
+                                borderRadius: '50%',
+                                background: 'radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 68%)',
+                                top: '-100px',
+                                right: '-50px',
+                                pointerEvents: 'none'
+                            }} />
+                            <div style={{
+                                position: 'absolute',
+                                width: '340px',
+                                height: '340px',
+                                borderRadius: '50%',
+                                background: 'radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 68%)',
+                                bottom: '-80px',
+                                left: '-40px',
+                                pointerEvents: 'none'
+                            }} />
+
+                            {/* Isometric School Building Icon with floating motion */}
+                            <div style={{
+                                position: 'relative',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: '18px',
+                                filter: 'drop-shadow(0 14px 28px rgba(0,0,0,0.32))',
+                                animation: 'lpFloatIso 5s ease-in-out infinite'
+                            }}>
+                                <IsoSchool size={84} tone="blue" />
                             </div>
-                            <h2 className="lp-hero-heading-shimmer" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(24px,3.4vw,34px)', fontWeight: 700, marginBottom: '10px', position: 'relative' }}>
+
+                            {/* Crisp High-Contrast Bold Heading */}
+                            <h2 style={{
+                                fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
+                                fontSize: 'clamp(25px, 4.4vw, 42px)',
+                                fontWeight: 800,
+                                letterSpacing: '-0.8px',
+                                lineHeight: 1.2,
+                                color: '#ffffff',
+                                marginBottom: '14px',
+                                position: 'relative',
+                                textShadow: '0 2px 10px rgba(0,0,0,0.2)'
+                            }}>
                                 Ready to bring your school online?
                             </h2>
-                            <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.82)', marginBottom: '1.75rem', position: 'relative' }}>
+
+                            {/* Subtitle */}
+                            <p style={{
+                                fontFamily: "'Inter', system-ui, sans-serif",
+                                fontSize: 'clamp(14px, 2vw, 16.5px)',
+                                color: 'rgba(255, 255, 255, 0.9)',
+                                maxWidth: '580px',
+                                margin: '0 auto clamp(1.75rem, 3.5vw, 2.5rem) auto',
+                                lineHeight: 1.65,
+                                position: 'relative'
+                            }}>
                                 Login to your dashboard and start building your school's website today.
                             </p>
-                            <button onClick={() => navigate('/login')} className="lp-btn"
-                                style={{ padding: '14px 32px', background: '#ffffff', color: BLUE_DARK, border: 'none', borderRadius: '13px', fontSize: '14.5px', fontWeight: 700, cursor: 'pointer', position: 'relative', boxShadow: '0 10px 28px rgba(0,0,0,0.25)' }}>
-                                Login to Dashboard
-                            </button>
+
+                            {/* Buttons Group — Responsive Flex on Mobile */}
+                            <div className="lp-cta-btn-group" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '14px',
+                                flexWrap: 'wrap',
+                                position: 'relative',
+                                zIndex: 5
+                            }}>
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    style={{
+                                        padding: '14px 34px',
+                                        background: '#ffffff',
+                                        color: '#1d4ed8',
+                                        border: 'none',
+                                        borderRadius: '13px',
+                                        fontSize: '15px',
+                                        fontWeight: 800,
+                                        cursor: 'pointer',
+                                        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '8px',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 12px 28px rgba(0, 0, 0, 0.26)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.2)';
+                                    }}
+                                >
+                                    Login to Dashboard
+                                </button>
+                                <button
+                                    onClick={() => navigate('/signup')}
+                                    className="lp-btn"
+                                    style={{
+                                        padding: '13px 30px',
+                                        background: 'rgba(255, 255, 255, 0.14)',
+                                        color: '#ffffff',
+                                        border: '1.5px solid rgba(255, 255, 255, 0.38)',
+                                        borderRadius: '13px',
+                                        fontSize: '15px',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                        backdropFilter: 'blur(8px)',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '8px',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.24)';
+                                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.65)';
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.14)';
+                                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.38)';
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                    }}
+                                >
+                                    <span>Start Free Trial</span>
+                                    <span>&rarr;</span>
+                                </button>
+                            </div>
+
+                            {/* Trust Assurance Row */}
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: 'clamp(12px, 3vw, 24px)',
+                                flexWrap: 'wrap',
+                                marginTop: '2rem',
+                                fontSize: '13px',
+                                fontWeight: 600,
+                                color: 'rgba(255, 255, 255, 0.85)',
+                                position: 'relative'
+                            }}>
+                                <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    <span style={{ color: '#4ade80' }}>✓</span> No credit card required
+                                </span>
+                                <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    <span style={{ color: '#4ade80' }}>✓</span> Instant setup in 10 mins
+                                </span>
+                                <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    <span style={{ color: '#4ade80' }}>✓</span> Dedicated school onboarding
+                                </span>
+                            </div>
                         </div>
                     </Reveal>
+
+                    {/* Centered logo preview directly beneath card as in user screenshot */}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginTop: 'clamp(2.5rem, 5vw, 3.75rem)'
+                    }}>
+                        <img
+                            src={logo}
+                            alt="Web Builder Pro"
+                            style={{
+                                height: 'clamp(32px, 4vw, 42px)',
+                                width: 'auto',
+                                objectFit: 'contain'
+                            }}
+                        />
+                    </div>
                 </section>
 
                 {/* ── Rich Dark Footer (Web Builder Pro) ── */}
