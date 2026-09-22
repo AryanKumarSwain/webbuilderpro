@@ -1057,100 +1057,148 @@ const LandingPage = () => {
 
                 {/* ── Screenshots / Product Preview ── */}
                 <section id="preview" style={{
-                    padding: 'clamp(3.5rem, 6vw, 5.5rem) clamp(1.25rem, 5vw, 3.5rem)',
-                    background: 'linear-gradient(180deg, #ffffff 0%, #fbfcfe 50%, #fdfbf7 100%)',
+                    padding: 'clamp(4rem, 7vw, 6rem) clamp(1.25rem, 5vw, 3.5rem)',
+                    background: 'linear-gradient(180deg, #f8fafc 0%, #edf2f7 50%, #f8fafc 100%)',
                     position: 'relative',
                     overflow: 'hidden',
-                    borderTop: '1px solid #edf2f7'
+                    borderTop: '1px solid #e2e8f0',
+                    borderBottom: '1px solid #e2e8f0'
                 }}>
-                    {/* Soft ambient background glows */}
-                    <div style={{ position: 'absolute', width: '560px', height: '560px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(254, 237, 213, 0.5) 0%, transparent 70%)', top: '-100px', right: '-120px', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'absolute', width: '520px', height: '520px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(219, 234, 254, 0.55) 0%, transparent 70%)', bottom: '-80px', left: '-100px', pointerEvents: 'none' }}></div>
+                    {/* Precision blueprint dot grid pattern */}
+                    <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        backgroundImage: 'radial-gradient(rgba(100, 116, 139, 0.22) 1.2px, transparent 1.2px)',
+                        backgroundSize: '28px 28px',
+                        opacity: 0.65,
+                        pointerEvents: 'none'
+                    }} />
 
-                    <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative' }}>
-                        <Reveal style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+                    {/* Luminous dynamic ambient glow auras */}
+                    <div style={{
+                        position: 'absolute',
+                        width: '650px',
+                        height: '650px',
+                        borderRadius: '50%',
+                        background: 'radial-gradient(circle, rgba(37, 99, 235, 0.13) 0%, rgba(59, 130, 246, 0.04) 45%, transparent 70%)',
+                        top: '5%',
+                        left: '12%',
+                        filter: 'blur(40px)',
+                        pointerEvents: 'none'
+                    }} />
+                    <div style={{
+                        position: 'absolute',
+                        width: '550px',
+                        height: '550px',
+                        borderRadius: '50%',
+                        background: 'radial-gradient(circle, rgba(249, 115, 22, 0.11) 0%, rgba(245, 158, 11, 0.03) 40%, transparent 70%)',
+                        bottom: '2%',
+                        right: '8%',
+                        filter: 'blur(40px)',
+                        pointerEvents: 'none'
+                    }} />
+
+                    <div style={{ maxWidth: '1220px', margin: '0 auto', position: 'relative' }}>
+                        <Reveal style={{ textAlign: 'center', marginBottom: '3rem' }}>
                             <div style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                padding: '5px 15px',
+                                padding: '6px 16px',
                                 borderRadius: '999px',
-                                background: '#eff6ff',
+                                background: '#ffffff',
                                 border: '1px solid #bfdbfe',
-                                marginBottom: '14px'
+                                boxShadow: '0 2px 10px rgba(37, 99, 235, 0.08)',
+                                marginBottom: '16px'
                             }}>
-                                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#2563eb', display: 'inline-block' }}></span>
-                                <span style={{ fontSize: '11px', fontWeight: 800, color: '#1d4ed8', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-                                    Live Platform Preview
+                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#2563eb', display: 'inline-block', boxShadow: '0 0 8px #2563eb' }} />
+                                <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#1d4ed8', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                                    Live School Website Preview
                                 </span>
                             </div>
                             <h2 style={{
                                 fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
-                                fontSize: 'clamp(28px, 3.8vw, 42px)',
+                                fontSize: 'clamp(28px, 4vw, 44px)',
                                 fontWeight: 900,
-                                letterSpacing: '-0.8px',
+                                letterSpacing: '-0.9px',
                                 marginBottom: '14px',
-                                lineHeight: 1.18
+                                lineHeight: 1.15
                             }}>
-                                <span style={{ color: '#0f172a' }}>A Dashboard That </span>
+                                <span style={{ color: '#0f172a' }}>World-Class on Desktop. </span>
                                 <span style={{
-                                    background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%)',
+                                    background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0284c7 100%)',
                                     WebkitBackgroundClip: 'text',
                                     backgroundClip: 'text',
                                     WebkitTextFillColor: 'transparent',
                                     display: 'inline-block'
-                                }}>Feels Effortless</span>
+                                }}>
+                                    Flawless on Mobile.
+                                </span>
                             </h2>
                             <p style={{
                                 fontFamily: "'Inter', sans-serif",
-                                fontSize: '15px',
+                                fontSize: '15.5px',
                                 color: '#64748b',
-                                maxWidth: '580px',
+                                maxWidth: '640px',
                                 margin: '0 auto',
                                 lineHeight: 1.7
                             }}>
-                                Move your mouse over the preview below — every module in your admin panel follows the same clean, guided layout.
+                                Explore how your institution's public website, admissions, academic showcase, and cultural events adapt synchronously across desktop and handheld screens.
                             </p>
                         </Reveal>
 
-                        <div className="lp-preview-grid" style={{ display: 'grid', gridTemplateColumns: '1.35fr 0.65fr', gap: 'clamp(1.75rem,4vw,2.75rem)', alignItems: 'center' }}>
+                        <div className="lp-preview-grid" style={{ display: 'grid', gridTemplateColumns: '1.38fr 0.62fr', gap: 'clamp(2rem, 4vw, 3.25rem)', alignItems: 'center' }}>
                             {/* Desktop Live Website Carousel Window */}
                             <Reveal>
                                 <div style={{ perspective: '1600px' }} onMouseMove={handlePreviewMove} onMouseLeave={handlePreviewLeave}>
+                                    {/* Desktop Device Label */}
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', padding: '0 4px' }}>
+                                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, color: '#475569', background: '#ffffff', padding: '4px 12px', borderRadius: '999px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                                            <span>🖥️</span>
+                                            <span>Desktop Experience</span>
+                                            <span style={{ color: '#94a3b8', fontSize: '11px' }}>&bull; 1920 &times; 1080</span>
+                                        </div>
+                                        <span style={{ fontSize: '12px', fontWeight: 700, color: '#2563eb' }}>
+                                            {PREVIEW_DESKTOP_SLIDES[previewSlide]?.tag}
+                                        </span>
+                                    </div>
+
                                     <div className="lp-tilt-frame" style={{ transform: `perspective(1600px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}>
                                         <div style={{
                                             background: '#ffffff',
                                             borderRadius: '22px',
                                             overflow: 'hidden',
-                                            boxShadow: '0 30px 70px -15px rgba(15, 23, 42, 0.16), 0 10px 24px rgba(0,0,0,0.04)',
+                                            boxShadow: '0 32px 75px -18px rgba(15, 23, 42, 0.2), 0 12px 28px -6px rgba(0,0,0,0.06), 0 0 0 1px rgba(226, 232, 240, 0.9)',
                                             border: '1.5px solid #e2e8f0',
                                             position: 'relative'
                                         }}>
                                             {/* Browser Window Header */}
-                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 18px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 18px', background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)', borderBottom: '1px solid #e2e8f0' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                                                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f87171' }}></span>
-                                                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#fbbf24' }}></span>
-                                                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#4ade80' }}></span>
+                                                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f87171', border: '1px solid rgba(0,0,0,0.08)' }}></span>
+                                                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#fbbf24', border: '1px solid rgba(0,0,0,0.08)' }}></span>
+                                                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#4ade80', border: '1px solid rgba(0,0,0,0.08)' }}></span>
                                                 </div>
                                                 <div style={{
                                                     display: 'flex', alignItems: 'center', gap: '8px',
                                                     padding: '5px 16px', borderRadius: '999px',
                                                     background: '#ffffff', border: '1px solid #e2e8f0',
-                                                    fontSize: '11.5px', color: '#475569', fontWeight: 600,
-                                                    maxWidth: '290px', width: '100%', justifyContent: 'center'
+                                                    fontSize: '11.5px', color: '#334155', fontWeight: 600,
+                                                    maxWidth: '290px', width: '100%', justifyContent: 'center',
+                                                    boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.04)'
                                                 }}>
-                                                    <span style={{ color: '#059669', fontSize: '10px' }}>🔒</span>
+                                                    <span style={{ color: '#059669', fontSize: '10.5px' }}>🔒</span>
                                                     <span>https://jdis.wbpro.in</span>
+                                                    <a href="https://jdis.wbpro.in" target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '11px', marginLeft: '4px' }} title="Open live site in new tab">↗</a>
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '3px', background: '#f1f5f9', padding: '2px 6px', borderRadius: '999px', border: '1px solid #e2e8f0' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '3px', background: '#ffffff', padding: '2px 6px', borderRadius: '999px', border: '1px solid #e2e8f0' }}>
                                                         <button
                                                             onClick={() => setPreviewSlide(prev => (prev - 1 + PREVIEW_DESKTOP_SLIDES.length) % PREVIEW_DESKTOP_SLIDES.length)}
                                                             aria-label="Previous slide"
                                                             style={{
                                                                 width: '20px', height: '20px', borderRadius: '50%',
-                                                                background: '#ffffff', border: '1px solid #cbd5e1',
+                                                                background: '#f8fafc', border: '1px solid #cbd5e1',
                                                                 color: '#334155', cursor: 'pointer', display: 'flex',
                                                                 alignItems: 'center', justifyContent: 'center', fontSize: '12px',
                                                                 fontWeight: 700, padding: 0
@@ -1166,7 +1214,7 @@ const LandingPage = () => {
                                                             aria-label="Next slide"
                                                             style={{
                                                                 width: '20px', height: '20px', borderRadius: '50%',
-                                                                background: '#ffffff', border: '1px solid #cbd5e1',
+                                                                background: '#f8fafc', border: '1px solid #cbd5e1',
                                                                 color: '#334155', cursor: 'pointer', display: 'flex',
                                                                 alignItems: 'center', justifyContent: 'center', fontSize: '12px',
                                                                 fontWeight: 700, padding: 0
@@ -1185,7 +1233,7 @@ const LandingPage = () => {
                                             {/* Slides Container Area (Clean, 100% Unobstructed Full View) */}
                                             <div style={{
                                                 position: 'relative',
-                                                height: 'clamp(280px, 32vw, 390px)',
+                                                height: 'clamp(310px, 34vw, 415px)',
                                                 background: '#0f172a',
                                                 overflow: 'hidden'
                                             }}>
@@ -1223,13 +1271,21 @@ const LandingPage = () => {
                             {/* Mobile Website Mockup (Ultra-Realistic Modern iPhone Pro Chassis) */}
                             <Reveal delay={0.12}>
                                 <div style={{ width: 'min(245px, 80vw)', margin: '0 auto', position: 'relative' }}>
+                                    {/* Mobile Device Label */}
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+                                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, color: '#475569', background: '#ffffff', padding: '4px 12px', borderRadius: '999px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                                            <span>📱</span>
+                                            <span>Mobile App & Web</span>
+                                        </div>
+                                    </div>
+
                                     {/* Realistic iPhone Titanium Outer Frame */}
                                     <div style={{
                                         position: 'relative',
                                         background: 'linear-gradient(155deg, #334155 0%, #1e293b 40%, #0f172a 100%)',
                                         borderRadius: '46px',
                                         padding: '10px',
-                                        boxShadow: '0 30px 60px -15px rgba(15, 23, 42, 0.4), 0 10px 24px -4px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.3)',
+                                        boxShadow: '0 35px 75px -15px rgba(15, 23, 42, 0.45), 0 12px 28px -4px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3)',
                                         border: '1.5px solid #475569'
                                     }}>
                                         {/* Physical Hardware Buttons */}
@@ -1281,7 +1337,7 @@ const LandingPage = () => {
                                         {/* Inner OLED Display Glass */}
                                         <div style={{
                                             position: 'relative',
-                                            height: '390px',
+                                            height: '405px',
                                             background: '#020617',
                                             borderRadius: '36px',
                                             overflow: 'hidden',
@@ -1401,56 +1457,95 @@ const LandingPage = () => {
                                     <p style={{
                                         textAlign: 'center',
                                         fontFamily: "'Inter', sans-serif",
-                                        fontSize: '12.5px',
+                                        fontSize: '12px',
                                         fontWeight: 600,
                                         color: '#64748b',
                                         marginTop: '6px'
                                     }}>
-                                        Mobile preview &bull; 100% responsive
+                                        100% Touch Responsive
                                     </p>
                                 </div>
                             </Reveal>
                         </div>
 
-                        {/* Synchronized Interactive Slide Switcher Pills */}
+                        {/* Synchronized Interactive Slide Switcher Pills & Live CTA */}
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            flexWrap: 'wrap',
-                            gap: '10px',
-                            marginTop: '28px'
+                            flexDirection: 'column',
+                            gap: '14px',
+                            marginTop: '32px'
                         }}>
-                            {PREVIEW_DESKTOP_SLIDES.map((slide, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => setPreviewSlide(idx)}
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexWrap: 'wrap',
+                                gap: '10px'
+                            }}>
+                                {PREVIEW_DESKTOP_SLIDES.map((slide, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setPreviewSlide(idx)}
+                                        style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            padding: '9px 20px',
+                                            borderRadius: '999px',
+                                            border: previewSlide === idx ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
+                                            background: previewSlide === idx ? '#eff6ff' : '#ffffff',
+                                            color: previewSlide === idx ? '#1d4ed8' : '#64748b',
+                                            boxShadow: previewSlide === idx ? '0 4px 14px -2px rgba(37,99,235,0.22)' : '0 2px 6px rgba(0,0,0,0.04)',
+                                            fontSize: '13px',
+                                            fontWeight: 700,
+                                            cursor: 'pointer',
+                                            transition: 'all 0.22s ease'
+                                        }}
+                                    >
+                                        <span style={{
+                                            width: '7px',
+                                            height: '7px',
+                                            borderRadius: '50%',
+                                            background: previewSlide === idx ? '#2563eb' : '#cbd5e1',
+                                            transition: 'background 0.22s ease'
+                                        }} />
+                                        <span>{slide.title}</span>
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Direct Live Website Link & Auto-rotate indicator */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '4px' }}>
+                                <a
+                                    href="https://jdis.wbpro.in"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     style={{
                                         display: 'inline-flex',
                                         alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '8px 18px',
+                                        gap: '7px',
+                                        padding: '7px 18px',
                                         borderRadius: '999px',
-                                        border: previewSlide === idx ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
-                                        background: previewSlide === idx ? '#eff6ff' : '#ffffff',
-                                        color: previewSlide === idx ? '#1d4ed8' : '#64748b',
-                                        boxShadow: previewSlide === idx ? '0 4px 12px -2px rgba(37,99,235,0.22)' : '0 2px 6px rgba(0,0,0,0.03)',
-                                        fontSize: '13px',
+                                        background: '#2563eb',
+                                        color: '#ffffff',
+                                        textDecoration: 'none',
+                                        fontSize: '12.5px',
                                         fontWeight: 700,
-                                        cursor: 'pointer',
-                                        transition: 'all 0.22s ease'
+                                        boxShadow: '0 4px 14px rgba(37,99,235,0.25)',
+                                        transition: 'all 0.2s ease'
                                     }}
+                                    onMouseOver={e => e.currentTarget.style.background = '#1d4ed8'}
+                                    onMouseOut={e => e.currentTarget.style.background = '#2563eb'}
                                 >
-                                    <span style={{
-                                        width: '7px',
-                                        height: '7px',
-                                        borderRadius: '50%',
-                                        background: previewSlide === idx ? '#2563eb' : '#cbd5e1',
-                                        transition: 'background 0.22s ease'
-                                    }} />
-                                    <span>{slide.title}</span>
-                                </button>
-                            ))}
+                                    <span>Explore Live Portal</span>
+                                    <span>↗</span>
+                                </a>
+                                <span style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8' }}>
+                                    &bull; Auto-syncs every 4s across devices
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </section>
