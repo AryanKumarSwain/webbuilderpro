@@ -85,79 +85,138 @@ const PlayIcon = ({ color = BLUE }) => (
     <svg width="13" height="13" fill={color} viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
 );
 
-// ── Modern, sleek module chip used inside the marquee — clean squircle icon tile,
-// bold title, crisp description, and hover arrow hint matching the SaaS theme. ──
-const ModuleChip = ({ m }) => (
-    <div className="lp-mod-chip" style={{
-        flexShrink: 0, width: '292px', display: 'flex', alignItems: 'center', gap: '14px',
-        padding: '14px 18px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px',
-        boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
-    }}>
-        <div className="lp-mod-tile" style={{
-            width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: `linear-gradient(135deg, ${m.accent}, #0f1f4b)`,
-            boxShadow: `0 6px 16px ${m.accent}30, inset 0 1px 1px rgba(255,255,255,0.35)`,
-        }}>
-            <svg width="21" height="21" fill="none" stroke="#ffffff" strokeWidth="1.9" viewBox="0 0 24 24">{m.icon}</svg>
-        </div>
-        <div style={{ minWidth: 0, flex: 1 }}>
-            <p style={{
-                fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
-                fontSize: '13.8px',
-                fontWeight: 700,
-                color: '#0f1f4b',
-                marginBottom: '2px',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-            }}>{m.title}</p>
-            <p style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '11.8px',
-                color: '#64748b',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-            }}>{m.desc}</p>
-        </div>
-        <div className="lp-mod-arrow" style={{ opacity: 0.25, display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-            <svg width="14" height="14" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                <polyline points="9 18 15 12 9 6" />
-            </svg>
-        </div>
-    </div>
-);
+// ── Colourful, modern module chip with unique gradient, category tag, and vibrant hover effects ──
+const ModuleChip = ({ m }) => {
+    const [hovered, setHovered] = useState(false);
+    return (
+        <div
+            className="lp-mod-chip"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            style={{
+                flexShrink: 0,
+                width: '315px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                padding: '14px 18px',
+                background: hovered ? '#ffffff' : 'linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%)',
+                border: `1.5px solid ${hovered ? m.gradient[0] : '#e5e9f2'}`,
+                borderRadius: '16px',
+                boxShadow: hovered
+                    ? `0 16px 32px -4px ${m.glow}, 0 4px 12px rgba(15,23,42,0.06)`
+                    : '0 4px 16px rgba(15, 23, 42, 0.04)',
+                transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
+                transition: 'all 0.28s cubic-bezier(0.16, 1, 0.3, 1)',
+                cursor: 'default',
+            }}
+        >
+            {/* Colourful gradient icon tile with matching ambient glow */}
+            <div
+                style={{
+                    width: '46px',
+                    height: '46px',
+                    borderRadius: '13px',
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: `linear-gradient(135deg, ${m.gradient[0]}, ${m.gradient[1]})`,
+                    boxShadow: `0 8px 18px ${m.glow}, inset 0 1.5px 1.5px rgba(255,255,255,0.4)`,
+                    transform: hovered ? 'scale(1.08)' : 'scale(1)',
+                    transition: 'transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+            >
+                <svg width="22" height="22" fill="none" stroke="#ffffff" strokeWidth="2" viewBox="0 0 24 24">{m.icon}</svg>
+            </div>
 
-// ── Module showcase — every module built in the platform, rendered as a two-row marquee.
-// Accents cycle through vivid blue/indigo shades matching the hero palette. ──
-const MODULE_ACCENTS = ['#2563eb', '#1d4ed8', '#0284c7', '#3b82f6', '#4f46e5'];
-const rawModules = [
-    { key: 'home', title: 'Home Page', desc: 'Hero banners & highlights', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /> },
-    { key: 'about', title: 'About Us', desc: 'Vision, mission & history', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> },
-    { key: 'fee', title: 'Fee Structure', desc: 'Class-wise fee tables', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /> },
-    { key: 'courses', title: 'Courses & Streams', desc: 'Every stream, explained', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /> },
-    { key: 'faculty', title: 'Faculty', desc: 'Meet the teaching staff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /> },
-    { key: 'infrastructure', title: 'Infrastructure', desc: 'Campus facilities showcase', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /> },
-    { key: 'sports', title: 'Sports', desc: 'Events & certifications', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> },
-    { key: 'gallery', title: 'Gallery', desc: 'Photos & video albums', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /> },
-    { key: 'achievements', title: 'Achievements', desc: 'Awards & recognitions', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /> },
-    { key: 'alumni', title: 'Alumni', desc: 'Success stories network', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /> },
-    { key: 'testimonials', title: 'Testimonials', desc: 'What parents say', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /> },
-    { key: 'admissionProcedure', title: 'Admission Procedure', desc: 'Step-by-step process', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /> },
-    { key: 'bookList', title: 'Book List', desc: 'Class-wise book lists', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /> },
-    { key: 'disclosure', title: 'Public Disclosure', desc: 'Mandatory CBSE info', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /> },
-    { key: 'tc', title: 'TC Information', desc: 'Transfer certificates', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /> },
-    { key: 'announcements', title: 'Announcements', desc: 'Latest school news', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /> },
-    { key: 'events', title: 'Events & Activities', desc: 'Upcoming & past events', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /> },
-    { key: 'calendar', title: 'Event Calendar', desc: 'Academic year at a glance', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /> },
-    { key: 'circulars', title: 'Circulars', desc: 'Official notices & PDFs', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /> },
-    { key: 'admission', title: 'Admission Enquiry', desc: 'Capture every lead', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /> },
-    { key: 'career', title: 'Career Enquiry', desc: 'Teacher job applications', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /> },
-].map((m, i) => ({ ...m, accent: MODULE_ACCENTS[i % MODULE_ACCENTS.length] }));
+            <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
+                    <p style={{
+                        fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
+                        fontSize: '13.8px',
+                        fontWeight: 700,
+                        color: hovered ? m.gradient[1] : '#0f1f4b',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        transition: 'color 0.2s ease',
+                    }}>{m.title}</p>
+                    <span style={{
+                        fontSize: '9.5px',
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em',
+                        color: m.gradient[0],
+                        background: m.lightBg,
+                        padding: '2px 6px',
+                        borderRadius: '6px',
+                        border: `1px solid ${m.gradient[0]}30`,
+                        flexShrink: 0,
+                    }}>{m.tag}</span>
+                </div>
+                <p style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: '11.8px',
+                    color: '#64748b',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    lineHeight: 1.35,
+                }}>{m.desc}</p>
+            </div>
 
-const MODULES_ROW_TOP = rawModules.slice(0, 11);
-const MODULES_ROW_BOTTOM = rawModules.slice(11);
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    background: hovered ? m.lightBg : 'transparent',
+                    color: hovered ? m.gradient[0] : '#cbd5e1',
+                    opacity: hovered ? 1 : 0.45,
+                    transform: hovered ? 'translateX(3px)' : 'translateX(0)',
+                    transition: 'all 0.25s ease',
+                    flexShrink: 0,
+                }}
+            >
+                <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </div>
+        </div>
+    );
+};
+
+// ── Module showcase data — each module has its own vibrant color palette, glow, and category tag ──
+const MODULE_DATA = [
+    { key: 'home', title: 'Home Page', desc: 'Hero banners & highlights', tag: 'Essential', gradient: ['#3b82f6', '#1d4ed8'], glow: 'rgba(59, 130, 246, 0.32)', lightBg: '#eff6ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /> },
+    { key: 'about', title: 'About Us', desc: 'Vision, mission & history', tag: 'Identity', gradient: ['#8b5cf6', '#6d28d9'], glow: 'rgba(139, 92, 246, 0.32)', lightBg: '#f5f3ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> },
+    { key: 'fee', title: 'Fee Structure', desc: 'Class-wise fee tables', tag: 'Finance', gradient: ['#10b981', '#047857'], glow: 'rgba(16, 185, 129, 0.32)', lightBg: '#ecfdf5', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /> },
+    { key: 'courses', title: 'Courses & Streams', desc: 'Every stream, explained', tag: 'Academic', gradient: ['#06b6d4', '#0284c7'], glow: 'rgba(6, 182, 212, 0.32)', lightBg: '#ecfeff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /> },
+    { key: 'faculty', title: 'Faculty', desc: 'Meet the teaching staff', tag: 'Staff', gradient: ['#6366f1', '#4338ca'], glow: 'rgba(99, 102, 241, 0.32)', lightBg: '#eef2ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /> },
+    { key: 'infrastructure', title: 'Infrastructure', desc: 'Campus facilities showcase', tag: 'Campus', gradient: ['#14b8a6', '#0f766e'], glow: 'rgba(20, 184, 166, 0.32)', lightBg: '#f0fdfa', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /> },
+    { key: 'sports', title: 'Sports', desc: 'Events & certifications', tag: 'Athletics', gradient: ['#f97316', '#ea580c'], glow: 'rgba(249, 115, 22, 0.32)', lightBg: '#fff7ed', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> },
+    { key: 'gallery', title: 'Gallery', desc: 'Photos & video albums', tag: 'Media', gradient: ['#ec4899', '#be185d'], glow: 'rgba(236, 72, 153, 0.32)', lightBg: '#fdf2f8', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /> },
+    { key: 'achievements', title: 'Achievements', desc: 'Awards & recognitions', tag: 'Awards', gradient: ['#f59e0b', '#d97706'], glow: 'rgba(245, 158, 11, 0.32)', lightBg: '#fffbeb', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /> },
+    { key: 'alumni', title: 'Alumni', desc: 'Success stories network', tag: 'Network', gradient: ['#2563eb', '#1e40af'], glow: 'rgba(37, 99, 235, 0.32)', lightBg: '#eff6ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /> },
+    { key: 'testimonials', title: 'Testimonials', desc: 'What parents say', tag: 'Trust', gradient: ['#d946ef', '#9333ea'], glow: 'rgba(217, 70, 239, 0.32)', lightBg: '#fdf4ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /> },
+    { key: 'admissionProcedure', title: 'Admission Procedure', desc: 'Step-by-step process', tag: 'Process', gradient: ['#84cc16', '#4d7c0f'], glow: 'rgba(132, 204, 22, 0.32)', lightBg: '#f7fee7', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /> },
+    { key: 'bookList', title: 'Book List', desc: 'Class-wise book lists', tag: 'Syllabus', gradient: ['#d97706', '#92400e'], glow: 'rgba(217, 119, 6, 0.32)', lightBg: '#fffbeb', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /> },
+    { key: 'disclosure', title: 'Public Disclosure', desc: 'Mandatory CBSE info', tag: 'CBSE', gradient: ['#64748b', '#334155'], glow: 'rgba(100, 116, 139, 0.32)', lightBg: '#f8fafc', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /> },
+    { key: 'tc', title: 'TC Information', desc: 'Transfer certificates', tag: 'Official', gradient: ['#0d9488', '#115e59'], glow: 'rgba(13, 148, 136, 0.32)', lightBg: '#f0fdfa', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /> },
+    { key: 'announcements', title: 'Announcements', desc: 'Latest school news', tag: 'Live Alerts', gradient: ['#ef4444', '#b91c1c'], glow: 'rgba(239, 68, 68, 0.32)', lightBg: '#fef2f2', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /> },
+    { key: 'events', title: 'Events & Activities', desc: 'Upcoming & past events', tag: 'Campus', gradient: ['#f43f5e', '#e11d48'], glow: 'rgba(244, 63, 94, 0.32)', lightBg: '#fff1f2', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /> },
+    { key: 'calendar', title: 'Event Calendar', desc: 'Academic year at a glance', tag: 'Planner', gradient: ['#4f46e5', '#3730a3'], glow: 'rgba(79, 70, 229, 0.32)', lightBg: '#eef2ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /> },
+    { key: 'circulars', title: 'Circulars', desc: 'Official notices & PDFs', tag: 'Notices', gradient: ['#0284c7', '#0369a1'], glow: 'rgba(2, 132, 199, 0.32)', lightBg: '#f0f9ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /> },
+    { key: 'admission', title: 'Admission Enquiry', desc: 'Capture every lead', tag: 'Enquiry', gradient: ['#fb7185', '#e11d48'], glow: 'rgba(251, 113, 133, 0.32)', lightBg: '#fff1f2', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /> },
+    { key: 'career', title: 'Career Enquiry', desc: 'Teacher job applications', tag: 'Hiring', gradient: ['#7c3aed', '#5b21b6'], glow: 'rgba(124, 58, 237, 0.32)', lightBg: '#f5f3ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /> },
+];
+
+const MODULES_ROW_TOP = MODULE_DATA.slice(0, 11);
+const MODULES_ROW_BOTTOM = MODULE_DATA.slice(11);
 
 const ICON_GROUPS = [
     {
@@ -333,24 +392,11 @@ const LandingPage = () => {
                     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
                     cursor: default;
                 }
-                .lp-mod-chip:hover {
-                    transform: translateY(-4px);
-                    box-shadow: 0 16px 32px -4px rgba(15, 31, 75, 0.12), 0 0 0 1.5px rgba(37, 99, 235, 0.35) !important;
-                    border-color: rgba(37, 99, 235, 0.35) !important;
-                }
                 .lp-mod-tile {
                     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
                 }
-                .lp-mod-chip:hover .lp-mod-tile {
-                    transform: scale(1.08);
-                    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35) !important;
-                }
                 .lp-mod-arrow {
                     transition: transform 0.25s ease, opacity 0.25s ease;
-                }
-                .lp-mod-chip:hover .lp-mod-arrow {
-                    opacity: 1 !important;
-                    transform: translateX(3px);
                 }
 
                 @media (max-width: 980px) {
@@ -678,43 +724,63 @@ const LandingPage = () => {
                 </section>
 
                 {/* ── Module Showcase — every module in the platform, rendered as a two-row marquee
-                     of sleek modern cards. Styled to match hero section typography and lighting. ── */}
-                <section id="modules" style={{ padding: 'clamp(3.5rem,7vw,5.5rem) 0', background: '#ffffff', position: 'relative', overflow: 'hidden' }}>
+                     of colourful, modern cards with vibrant palettes, category pills, and smooth glows. ── */}
+                <section id="modules" style={{ padding: 'clamp(4rem,7vw,6rem) 0', background: '#ffffff', position: 'relative', overflow: 'hidden' }}>
                     {/* Subtle dot matrix pattern */}
-                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(37, 99, 235, 0.1) 1.2px, transparent 1.2px)', backgroundSize: '24px 24px', pointerEvents: 'none' }}></div>
+                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(99, 102, 241, 0.12) 1.2px, transparent 1.2px)', backgroundSize: '24px 24px', pointerEvents: 'none' }}></div>
                     
-                    {/* Soft theme-matching ambient glows */}
-                    <div style={{ position: 'absolute', width: '480px', height: '480px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(191, 219, 254, 0.45) 0%, transparent 70%)', top: '-160px', left: '-80px', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'absolute', width: '460px', height: '460px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(254, 215, 170, 0.35) 0%, transparent 70%)', bottom: '-140px', right: '-80px', pointerEvents: 'none' }}></div>
+                    {/* Soft theme-matching ambient glows with vivid hints */}
+                    <div style={{ position: 'absolute', width: '520px', height: '520px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(167, 139, 250, 0.22) 0%, transparent 70%)', top: '-180px', left: '-100px', pointerEvents: 'none' }}></div>
+                    <div style={{ position: 'absolute', width: '540px', height: '540px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, transparent 70%)', top: '20%', right: '-120px', pointerEvents: 'none' }}></div>
+                    <div style={{ position: 'absolute', width: '480px', height: '480px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(251, 146, 60, 0.18) 0%, transparent 70%)', bottom: '-160px', left: '30%', pointerEvents: 'none' }}></div>
 
                     <div style={{ maxWidth: '1200px', margin: '0 auto clamp(2.5rem,5vw,3.5rem)', padding: '0 clamp(1.25rem,6vw,4rem)', position: 'relative', textAlign: 'center' }}>
                         <Reveal style={{ textAlign: 'center' }}>
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.07)', border: '1px solid rgba(37, 99, 235, 0.18)', marginBottom: '16px' }}>
-                                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#2563eb', display: 'inline-block' }}></span>
-                                <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#1d4ed8', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                            <div style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '6px 18px',
+                                borderRadius: '999px',
+                                background: 'linear-gradient(90deg, rgba(37,99,235,0.08), rgba(139,92,246,0.08))',
+                                border: '1px solid rgba(99,102,241,0.25)',
+                                marginBottom: '16px',
+                                boxShadow: '0 2px 12px rgba(99,102,241,0.08)'
+                            }}>
+                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'linear-gradient(135deg, #2563eb, #8b5cf6)', display: 'inline-block' }}></span>
+                                <span style={{ fontSize: '11.5px', fontWeight: 800, color: '#4338ca', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
                                     A Module For Every Need
                                 </span>
                             </div>
                             <h2 style={{
                                 fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif",
-                                fontSize: 'clamp(32px, 4.2vw, 48px)',
+                                fontSize: 'clamp(32px, 4.2vw, 50px)',
                                 fontWeight: 900,
                                 letterSpacing: '-1.5px',
                                 marginBottom: '14px',
-                                lineHeight: 1.15
+                                lineHeight: 1.15,
+                                color: '#0f1f4b'
                             }}>
-                                <span className="lp-hero-rtl-shimmer">Explore Every Module</span>
+                                Explore{' '}
+                                <span style={{
+                                    background: 'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 50%, #db2777 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    backgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent'
+                                }}>
+                                    Every Module
+                                </span>
                             </h2>
                             <p style={{
                                 fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
                                 fontSize: '15.5px',
                                 color: '#64748b',
-                                maxWidth: '580px',
+                                maxWidth: '600px',
                                 margin: '0 auto',
                                 lineHeight: 1.7,
                                 fontWeight: 400
                             }}>
-                                Publish once, manage everything — every module below is live in the platform today.
+                                Publish once, manage everything — 21+ purpose-built modules live and ready in the platform today.
                             </p>
                         </Reveal>
                     </div>
@@ -722,8 +788,8 @@ const LandingPage = () => {
                     <Reveal>
                         <div style={{ position: 'relative' }}>
                             {/* Smooth edge fades for the marquee */}
-                            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '140px', background: 'linear-gradient(90deg, #ffffff 40%, rgba(255,255,255,0.7) 70%, transparent 100%)', zIndex: 2, pointerEvents: 'none' }}></div>
-                            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '140px', background: 'linear-gradient(270deg, #ffffff 40%, rgba(255,255,255,0.7) 70%, transparent 100%)', zIndex: 2, pointerEvents: 'none' }}></div>
+                            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '160px', background: 'linear-gradient(90deg, #ffffff 40%, rgba(255,255,255,0.7) 70%, transparent 100%)', zIndex: 2, pointerEvents: 'none' }}></div>
+                            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '160px', background: 'linear-gradient(270deg, #ffffff 40%, rgba(255,255,255,0.7) 70%, transparent 100%)', zIndex: 2, pointerEvents: 'none' }}></div>
 
                             <div style={{ overflow: 'hidden', marginBottom: '16px' }}>
                                 <div className="lp-mod-track lp-mod-track-right">
