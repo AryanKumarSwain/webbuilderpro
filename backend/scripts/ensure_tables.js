@@ -180,6 +180,9 @@ async function main() {
   await addColumnIfMissing('tbl_schools', 'school_app_label', '`school_app_label` VARCHAR(100) NULL');
   await addColumnIfMissing('tbl_schools', 'school_app_url', '`school_app_url` VARCHAR(500) NULL');
   await addColumnIfMissing('tbl_schools', 'intro_message_enabled', '`intro_message_enabled` TINYINT(1) NOT NULL DEFAULT 1');
+  await addColumnIfMissing('tbl_schools', 'welcome_banner_enabled', '`welcome_banner_enabled` TINYINT(1) NOT NULL DEFAULT 0');
+  await addColumnIfMissing('tbl_schools', 'welcome_banner_url', '`welcome_banner_url` VARCHAR(500) NULL');
+  await addColumnIfMissing('tbl_schools', 'welcome_banner_link', '`welcome_banner_link` VARCHAR(500) NULL');
 
   // Make sure created_by is nullable
   await pool.query('ALTER TABLE `tbl_schools` MODIFY COLUMN `created_by` INT NULL DEFAULT NULL');

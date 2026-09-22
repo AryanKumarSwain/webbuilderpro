@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getPublicSchoolApi } from "../../api/school.api";
 import { getPublicModuleContentApi } from "../../api/content.api";
 import Navbar from "../../components/public/Navbar";
@@ -424,16 +424,18 @@ const FaqsPublic = () => {
                                 Can't find the answer you're looking for? Reach out directly to our administration or admissions team.
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                                <Link
-                                    to={`/school/${slug}/contact`}
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 22px', borderRadius: '10px', background: tc.primary, color: '#ffffff', fontWeight: 700, fontSize: '14px', textDecoration: 'none', boxShadow: `0 4px 14px ${tc.primary}35` }}>
-                                    Contact Us
-                                </Link>
                                 {school.phone && (
                                     <a
                                         href={`tel:${school.phone}`}
-                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 22px', borderRadius: '10px', background: '#ffffff', color: '#1e293b', fontWeight: 600, fontSize: '14px', textDecoration: 'none', border: '1.5px solid #e2e8f0' }}>
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 24px', borderRadius: '10px', background: tc.primary, color: '#ffffff', fontWeight: 700, fontSize: '14px', textDecoration: 'none', boxShadow: `0 4px 14px ${tc.primary}35` }}>
                                         Call: {school.phone}
+                                    </a>
+                                )}
+                                {school.email && (
+                                    <a
+                                        href={`mailto:${school.email}`}
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 24px', borderRadius: '10px', background: '#ffffff', color: '#1e293b', fontWeight: 600, fontSize: '14px', textDecoration: 'none', border: '1.5px solid #e2e8f0' }}>
+                                        Email: {school.email}
                                     </a>
                                 )}
                             </div>
