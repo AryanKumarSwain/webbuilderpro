@@ -123,7 +123,7 @@ const SuperAdminLogin = () => {
                         <span style={{ width: '14px', height: '2px', background: '#8C6A3F' }}></span>
                     </div>
 
-                    <p style={{ fontSize: '13.5px', color: '#8a8a8a', lineHeight: 1.6, marginBottom: '36px' }}>
+                    <p style={{ fontSize: '13.5px', color: '#8a8a8a', lineHeight: 1.6, marginBottom: '28px' }}>
                         Please enter your registered email and password<br />correctly to access the management panel.
                     </p>
 

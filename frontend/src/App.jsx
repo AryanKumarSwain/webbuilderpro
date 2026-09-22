@@ -10,6 +10,7 @@ import Signup from './pages/auth/Signup';
 import SuperAdminLogin from './pages/auth/SuperAdminLogin';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
+import GoogleAuthCallback from './pages/auth/GoogleAuthCallback';
 
 // Super Admin
 import SuperAdminDashboard from './pages/superAdmin/Dashboard';
@@ -200,6 +201,7 @@ const RootRouter = () => {
             <Route path="/forgot-password" element={<ForgotPassword role="admin" />} />
             <Route path="/super-admin/forgot-password" element={<ForgotPassword role="super_admin" />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/auth/callback" element={<GoogleAuthCallback />} />
             <Route path="/" element={<LandingPage />} />
 
             {/* Public School Website */}

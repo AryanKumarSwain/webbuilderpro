@@ -1,8 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const { login, logout, refreshToken, forgotPassword, resetPassword, changePassword } = require('./auth.controller');
+const {
+    login,
+    logout,
+    refreshToken,
+    forgotPassword,
+    resetPassword,
+    changePassword,
+    googleAuth,
+    googleCallback,
+    completeGoogleSignup,
+} = require('./auth.controller');
 const { protect } = require('../../middlewares/auth.middleware');
 const { authLimiter } = require('../../middlewares/rateLimit.middleware');
+
+// Google OAuth
+router.get('/google', googleAuth);
+router.get('/google/callback', googleCallback);
+router.post('/google/complete-signup', authLimiter, completeGoogleSignup);
 
 router.post('/login', authLimiter, login);
 router.post('/logout', protect, logout);

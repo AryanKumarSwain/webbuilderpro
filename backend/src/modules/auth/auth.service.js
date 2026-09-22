@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 const { pool } = require("../../config/db");
 const {
@@ -313,6 +314,287 @@ const changePasswordService = async (userId, role, currentPassword, newPassword,
   );
 };
 
+// ── Google OAuth Services ────────────────────────────
+
+const getGoogleAuthUrlService = (role = "admin", returnUrl = "") => {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  if (!clientId) {
+    throw new AppError("Google OAuth is not configured on this server", 500);
+  }
+
+  const redirectUri = process.env.GOOGLE_CALLBACK_URL || `${process.env.FRONTEND_URL}/api/auth/google/callback`;
+
+  const statePayload = Buffer.from(
+    JSON.stringify({
+      role: role || "admin",
+      returnUrl: returnUrl || "",
+      nonce: crypto.randomBytes(12).toString("hex"),
+    })
+  ).toString("base64url");
+
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    response_type: "code",
+    scope: "openid email profile",
+    access_type: "offline",
+    prompt: "select_account",
+    state: statePayload,
+  });
+
+  return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+};
+
+const handleGoogleCallbackService = async (code, state) => {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const redirectUri = process.env.GOOGLE_CALLBACK_URL || `${process.env.FRONTEND_URL}/api/auth/google/callback`;
+
+  if (!clientId || !clientSecret) {
+    throw new AppError("Google OAuth is not properly configured on this server", 500);
+  }
+
+  // Parse state
+  let parsedState = { role: "admin" };
+  if (state) {
+    try {
+      parsedState = JSON.parse(Buffer.from(state, "base64url").toString("utf-8"));
+    } catch {
+      // Fallback
+    }
+  }
+
+  // 1. Exchange authorization code for tokens
+  const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      code,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri,
+      grant_type: "authorization_code",
+    }),
+  });
+
+  const tokenData = await tokenResponse.json();
+  if (!tokenResponse.ok || !tokenData.access_token) {
+    console.error("Google token exchange error:", tokenData);
+    throw new AppError(tokenData.error_description || "Failed to exchange code with Google", 400);
+  }
+
+  // 2. Fetch user profile
+  const userProfileResponse = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+    headers: { Authorization: `Bearer ${tokenData.access_token}` },
+  });
+
+  const profile = await userProfileResponse.json();
+  if (!userProfileResponse.ok || !profile.email) {
+    console.error("Google profile fetch error:", profile);
+    throw new AppError("Failed to retrieve user profile from Google", 400);
+  }
+
+  const email = profile.email.toLowerCase().trim();
+  const name = profile.name || profile.given_name || email.split("@")[0];
+  const picture = profile.picture || null;
+  const googleId = profile.sub;
+
+  // 3. Super Admin accounts must strictly log in with email and password
+  const [superAdmins] = await pool.query(
+    `SELECT id FROM tbl_super_admins WHERE email = ?`,
+    [email]
+  );
+
+  if (superAdmins.length > 0) {
+    throw new AppError("Google login is not available for Super Admin accounts. Please sign in with your email and password.", 403);
+  }
+
+  // 4. Check for existing school admin
+  const [admins] = await pool.query(
+    `SELECT a.id, a.uuid, a.school_id, a.name, a.email, a.phone, a.profile_photo, a.google_id, a.status,
+            s.name as school_name, s.slug as school_slug, s.status as school_status
+     FROM tbl_admins a
+     JOIN tbl_schools s ON a.school_id = s.id
+     WHERE a.email = ? OR (a.google_id IS NOT NULL AND a.google_id = ?)`,
+    [email, googleId]
+  );
+
+  if (admins.length > 0) {
+    const admin = admins[0];
+
+    if (admin.status === "suspended") {
+      throw new AppError("Your account has been suspended", 403);
+    }
+
+    if (admin.school_status === "suspended") {
+      throw new AppError("Your school account has been suspended", 403);
+    }
+
+    // If previously pending verification, Google verified it!
+    if (admin.school_status === "pending") {
+      await pool.query(`UPDATE tbl_schools SET status = 'active' WHERE id = ?`, [admin.school_id]);
+    }
+
+    // Link google_id or update avatar if missing
+    await pool.query(
+      `UPDATE tbl_admins SET google_id = COALESCE(google_id, ?), profile_photo = COALESCE(profile_photo, ?) WHERE id = ?`,
+      [googleId, picture, admin.id]
+    );
+
+    const { accessToken, refreshToken } = await issueSession(admin.id, "admin", admin.school_id);
+    await pool.query(`UPDATE tbl_admins SET last_login = NOW() WHERE id = ?`, [admin.id]);
+
+    return {
+      type: "login",
+      role: "admin",
+      accessToken,
+      refreshToken,
+      user: {
+        id: admin.id,
+        uuid: admin.uuid,
+        school_id: admin.school_id,
+        name: admin.name,
+        email: admin.email,
+        phone: admin.phone,
+        profile_photo: picture || admin.profile_photo,
+        status: "active",
+        school_name: admin.school_name,
+        school_slug: admin.school_slug,
+        role: "admin",
+      },
+    };
+  }
+
+  // 5. User not found in either table -> New School Signup Required
+  // Sign a short-lived token (15 mins) that encodes verified Google details
+  const googleSignupToken = jwt.sign(
+    {
+      email,
+      name,
+      picture,
+      googleId,
+      purpose: "google_signup",
+    },
+    process.env.JWT_ACCESS_SECRET,
+    { expiresIn: "15m" }
+  );
+
+  return {
+    type: "signup_required",
+    googleSignupToken,
+    email,
+    name,
+    picture,
+  };
+};
+
+const completeGoogleSignupService = async ({ googleSignupToken, schoolName, phone }) => {
+  if (!googleSignupToken) {
+    throw new AppError("Google registration token is required", 400);
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(googleSignupToken, process.env.JWT_ACCESS_SECRET);
+  } catch {
+    throw new AppError("Your Google registration session has expired. Please try again.", 400);
+  }
+
+  if (decoded.purpose !== "google_signup" || !decoded.email || !decoded.googleId) {
+    throw new AppError("Invalid registration session", 400);
+  }
+
+  const { email, name, picture, googleId } = decoded;
+
+  if (!schoolName || schoolName.trim().length < 2) {
+    throw new AppError("School name must be at least 2 characters", 400);
+  }
+
+  if (phone && !/^\d{10}$/.test(phone)) {
+    throw new AppError("Phone number must be exactly 10 digits", 400);
+  }
+
+  // Check if school or admin with this email exists
+  const [existingSchools] = await pool.query("SELECT id, status FROM tbl_schools WHERE email = ?", [email]);
+  const [existingAdmins] = await pool.query("SELECT id FROM tbl_admins WHERE email = ?", [email]);
+
+  if (existingAdmins.length > 0 || (existingSchools.length > 0 && existingSchools[0].status !== "pending")) {
+    throw new AppError("An account with this email already exists. Please log in.", 409);
+  }
+
+  let schoolId;
+  let schoolUuid;
+  let slug;
+
+  if (existingSchools.length > 0 && existingSchools[0].status === "pending") {
+    // Re-use pending school
+    schoolId = existingSchools[0].id;
+    schoolUuid = existingSchools[0].uuid;
+    await pool.query("UPDATE tbl_schools SET status = 'active', name = ? WHERE id = ?", [schoolName.trim(), schoolId]);
+  } else {
+    // Generate unique slug
+    const slugBase = schoolName
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-");
+
+    slug = slugBase;
+    let suffix = 1;
+    while (true) {
+      const [slugCheck] = await pool.query("SELECT id FROM tbl_schools WHERE slug = ?", [slug]);
+      if (slugCheck.length === 0) break;
+      suffix += 1;
+      slug = `${slugBase}-${suffix}`;
+    }
+
+    schoolUuid = uuidv4();
+    await pool.query(
+      `INSERT INTO tbl_schools (uuid, name, slug, email, phone, status) VALUES (?, ?, ?, ?, ?, 'active')`,
+      [schoolUuid, schoolName.trim(), slug, email, phone || null]
+    );
+
+    const [newSchool] = await pool.query("SELECT id FROM tbl_schools WHERE uuid = ?", [schoolUuid]);
+    schoolId = newSchool[0].id;
+  }
+
+  // Create or update admin
+  const adminUuid = uuidv4();
+  const randomPass = crypto.randomBytes(32).toString("hex");
+  const hashedPassword = await bcrypt.hash(randomPass, 10);
+
+  await pool.query(
+    `INSERT INTO tbl_admins (uuid, school_id, name, email, password, phone, profile_photo, google_id, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active')
+     ON DUPLICATE KEY UPDATE google_id = VALUES(google_id), profile_photo = VALUES(profile_photo), status = 'active'`,
+    [adminUuid, schoolId, name.trim(), email, hashedPassword, phone || null, picture || null, googleId]
+  );
+
+  const [adminRows] = await pool.query("SELECT * FROM tbl_admins WHERE email = ?", [email]);
+  const admin = adminRows[0];
+
+  const { accessToken, refreshToken } = await issueSession(admin.id, "admin", schoolId);
+  await pool.query("UPDATE tbl_admins SET last_login = NOW() WHERE id = ?", [admin.id]);
+
+  return {
+    accessToken,
+    refreshToken,
+    user: {
+      id: admin.id,
+      uuid: admin.uuid,
+      school_id: schoolId,
+      name: admin.name,
+      email: admin.email,
+      phone: admin.phone,
+      profile_photo: admin.profile_photo,
+      status: "active",
+      school_name: schoolName.trim(),
+      school_slug: slug,
+      role: "admin",
+    },
+  };
+};
+
 module.exports = {
   issueSession,
   loginService,
@@ -321,4 +603,8 @@ module.exports = {
   forgotPasswordService,
   resetPasswordService,
   changePasswordService,
+  getGoogleAuthUrlService,
+  handleGoogleCallbackService,
+  completeGoogleSignupService,
 };
+

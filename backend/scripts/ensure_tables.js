@@ -184,6 +184,10 @@ async function main() {
   // Make sure created_by is nullable
   await pool.query('ALTER TABLE `tbl_schools` MODIFY COLUMN `created_by` INT NULL DEFAULT NULL');
 
+  // 4. Ensure google_id columns for Google OAuth
+  await addColumnIfMissing('tbl_admins', 'google_id', '`google_id` VARCHAR(100) NULL UNIQUE');
+  await addColumnIfMissing('tbl_super_admins', 'google_id', '`google_id` VARCHAR(100) NULL UNIQUE');
+
   console.log('✅ All tables and columns synchronized successfully!');
   await pool.end();
 }

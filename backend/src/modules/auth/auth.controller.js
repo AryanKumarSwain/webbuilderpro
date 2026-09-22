@@ -5,6 +5,9 @@ const {
     forgotPasswordService,
     resetPasswordService,
     changePasswordService,
+    getGoogleAuthUrlService,
+    handleGoogleCallbackService,
+    completeGoogleSignupService,
 } = require('./auth.service');
 const { sendSuccess, sendError, handleControllerError } = require('../../utils/response.utils');
 
@@ -130,4 +133,102 @@ const changePassword = async (req, res) => {
     }
 };
 
-module.exports = { login, logout, refreshToken, forgotPassword, resetPassword, changePassword };
+// ── Google OAuth Controllers ──────────────────────────
+
+const googleAuth = async (req, res) => {
+    try {
+        const { role, returnUrl } = req.query;
+        const redirectUrl = getGoogleAuthUrlService(role, returnUrl);
+        return res.redirect(redirectUrl);
+    } catch (error) {
+        return handleControllerError(res, error);
+    }
+};
+
+const googleCallback = async (req, res) => {
+    const frontendUrl = process.env.FRONTEND_URL || 'https://www.wbpro.in';
+    try {
+        const { code, state, error, error_description } = req.query;
+
+        if (error) {
+            console.warn('Google OAuth returned error:', error, error_description);
+            return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent(error_description || error)}`);
+        }
+
+        if (!code) {
+            return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent('No authorization code provided by Google')}`);
+        }
+
+        const result = await handleGoogleCallbackService(code, state);
+
+        if (result.type === 'login') {
+            const isProd = process.env.NODE_ENV === 'production';
+            res.cookie('refreshToken', result.refreshToken, {
+                httpOnly: true,
+                secure: isProd,
+                sameSite: isProd ? 'none' : 'lax',
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            });
+
+            const userEncoded = encodeURIComponent(JSON.stringify(result.user));
+            return res.redirect(
+                `${frontendUrl}/auth/callback?token=${result.accessToken}&role=${result.role}&user=${userEncoded}`
+            );
+        } else if (result.type === 'signup_required') {
+            return res.redirect(
+                `${frontendUrl}/signup?google_signup_token=${result.googleSignupToken}&email=${encodeURIComponent(result.email)}&name=${encodeURIComponent(result.name || '')}&picture=${encodeURIComponent(result.picture || '')}`
+            );
+        }
+
+        return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent('Unexpected authentication state')}`);
+
+    } catch (error) {
+        console.error('Google Callback Error:', error);
+        const message = error?.message || 'Google authentication failed';
+        return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent(message)}`);
+    }
+};
+
+const completeGoogleSignup = async (req, res) => {
+    try {
+        const { googleSignupToken, schoolName, phone } = req.body;
+
+        if (!googleSignupToken || !schoolName) {
+            return sendError(res, 'Google registration token and school name are required', 400);
+        }
+
+        const { accessToken, refreshToken, user } = await completeGoogleSignupService({
+            googleSignupToken,
+            schoolName,
+            phone
+        });
+
+        const isProd = process.env.NODE_ENV === 'production';
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+
+        return sendSuccess(res, 'School created and logged in successfully', {
+            accessToken,
+            user
+        });
+
+    } catch (error) {
+        return handleControllerError(res, error);
+    }
+};
+
+module.exports = {
+    login,
+    logout,
+    refreshToken,
+    forgotPassword,
+    resetPassword,
+    changePassword,
+    googleAuth,
+    googleCallback,
+    completeGoogleSignup,
+};

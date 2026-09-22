@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { submitSignupApi, verifySignupOtpApi, resendSignupOtpApi } from "../../api/signup.api";
+import { completeGoogleSignupApi, getGoogleAuthUrl } from "../../api/auth.api";
 import useAuthStore from "../../store/authStore";
 import logo from '../../assets/webbuilder-removebg-preview.png';
 import signupHeroImg from '../../assets/signupImage.png';
@@ -30,6 +31,15 @@ const Signup = () => {
   const [resending, setResending] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
+  const [searchParams] = useSearchParams();
+  const googleSignupToken = searchParams.get("google_signup_token");
+  const googleEmail = searchParams.get("email") || "";
+  const googleName = searchParams.get("name") || "";
+  const googlePic = searchParams.get("picture") || "";
+
+  const [googleSchoolName, setGoogleSchoolName] = useState("");
+  const [googlePhone, setGooglePhone] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   useEffect(() => {
     if (resendCooldown <= 0) return;
@@ -100,6 +110,33 @@ const Signup = () => {
     }
   };
 
+  const handleGoogleSignupComplete = async (e) => {
+    e.preventDefault();
+    if (!googleSchoolName.trim()) {
+      toast.error("Please enter your school name");
+      return;
+    }
+    if (googlePhone && googlePhone.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits");
+      return;
+    }
+    setGoogleLoading(true);
+    try {
+      const res = await completeGoogleSignupApi({
+        googleSignupToken,
+        schoolName: googleSchoolName.trim(),
+        phone: googlePhone || undefined,
+      });
+      setAuth(res.data.user, "admin", res.data.accessToken);
+      toast.success("Welcome to Web Builder Pro!");
+      navigate("/admin/dashboard");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Registration failed");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   return (
     <>
       <link
@@ -128,6 +165,15 @@ const Signup = () => {
         .signup-submit-btn:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(65,105,225,0.4) !important; }
         .signup-submit-btn:not(:disabled):hover::after { left: 130%; }
         .signup-submit-btn:not(:disabled):active { transform: scale(0.98); }
+
+        .signup-google-btn { transition: all 0.2s ease; }
+        .signup-google-btn:hover {
+          background: #f8faff !important;
+          border-color: #cbd5e1 !important;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.08) !important;
+          transform: translateY(-1px);
+        }
+        .signup-google-btn:active { transform: scale(0.98); }
 
         .signup-anim-1 { animation: signupFadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.05s both; }
         .signup-anim-2 { animation: signupFadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.12s both; }
@@ -257,12 +303,115 @@ const Signup = () => {
                   </button>
                 </p>
               </>
+            ) : googleSignupToken ? (
+              <>
+                <h1 className="signup-anim-1" style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(24px, 2.8vw, 30px)", fontWeight: 800, color: TEXT_DARK, textAlign: "center", marginBottom: "6px" }}>
+                  Complete School Setup
+                </h1>
+                <p className="signup-anim-1" style={{ textAlign: "center", color: TEXT_MUTED, fontSize: "13px", marginBottom: "1.25rem" }}>
+                  Almost ready! Enter your school details to finish registration
+                </p>
+
+                {/* Google Connected User Card */}
+                <div className="signup-anim-2" style={{
+                  display: "flex", alignItems: "center", gap: "12px", padding: "12px 14px",
+                  background: "#f4f7ff", border: "1.5px solid #d9e2ff", borderRadius: "14px",
+                  marginBottom: "1.25rem",
+                }}>
+                  {googlePic ? (
+                    <img src={googlePic} alt={googleName} style={{ width: "42px", height: "42px", borderRadius: "50%", objectFit: "cover" }} />
+                  ) : (
+                    <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: BLUE, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "16px" }}>
+                      {(googleName || googleEmail || "G").charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: "14px", fontWeight: 700, color: TEXT_DARK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {googleName || "Google User"}
+                    </div>
+                    <div style={{ fontSize: "12px", color: TEXT_MUTED, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {googleEmail}
+                    </div>
+                  </div>
+                  <div style={{
+                    display: "inline-flex", alignItems: "center", gap: "4px",
+                    background: "#e6f8ee", color: "#15803d", fontSize: "11px", fontWeight: 700,
+                    padding: "4px 8px", borderRadius: "20px", whiteSpace: "nowrap"
+                  }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Verified
+                  </div>
+                </div>
+
+                <form onSubmit={handleGoogleSignupComplete} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>
+                      School Name *
+                    </label>
+                    <input
+                      className="signup-anim-3 signup-input"
+                      type="text"
+                      value={googleSchoolName}
+                      onChange={(e) => setGoogleSchoolName(e.target.value)}
+                      placeholder="e.g. St. Xavier's International School"
+                      required
+                      autoFocus
+                      style={inputStyle}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>
+                      Phone Number (Optional)
+                    </label>
+                    <input
+                      className="signup-anim-4 signup-input"
+                      type="tel"
+                      value={googlePhone}
+                      onChange={(e) => setGooglePhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                      placeholder="10-digit mobile number"
+                      inputMode="numeric"
+                      maxLength={10}
+                      pattern="[0-9]{10}"
+                      title="Enter a 10-digit phone number"
+                      style={inputStyle}
+                    />
+                  </div>
+
+                  <button type="submit" disabled={googleLoading} className="signup-anim-5 signup-submit-btn"
+                    style={{ width: "100%", padding: "15px", background: googleLoading ? "#a9b8ea" : `linear-gradient(135deg, ${BLUE}, ${BLUE_DARK})`, color: "#fff", border: "none", borderRadius: "13px", fontSize: "14.5px", fontWeight: 700, cursor: googleLoading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "8px", boxShadow: "0 10px 26px rgba(65,105,225,0.32)", transition: "all 0.2s" }}>
+                    {googleLoading ? (
+                      <>
+                        <svg style={{ animation: "spin 1s linear infinite", width: "17px", height: "17px" }} viewBox="0 0 24 24" fill="none">
+                          <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                        </svg>
+                        Launching School Portal...
+                      </>
+                    ) : (
+                      <>
+                        Launch School Website
+                        <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                <p className="signup-anim-6" style={{ textAlign: "center", marginTop: "1rem" }}>
+                  <button type="button" onClick={() => navigate("/signup", { replace: true })}
+                    style={{ background: "none", border: "none", padding: 0, color: "#9aa3b8", fontSize: "12.5px", cursor: "pointer", textDecoration: "underline" }}>
+                    ← Use a different account
+                  </button>
+                </p>
+              </>
             ) : (
               <>
                 <h1 className="signup-anim-1" style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(26px, 3vw, 32px)", fontWeight: 800, color: TEXT_DARK, textAlign: "center", marginBottom: "6px" }}>
                   Sign Up
                 </h1>
-                <p className="signup-anim-1" style={{ textAlign: "center", color: TEXT_MUTED, fontSize: "13px", marginBottom: "1.75rem" }}>
+                <p className="signup-anim-1" style={{ textAlign: "center", color: TEXT_MUTED, fontSize: "13px", marginBottom: "1.25rem" }}>
                   Tell us about your school to get started
                 </p>
 
@@ -314,7 +463,54 @@ const Signup = () => {
                   </button>
                 </form>
 
-                <p className="signup-anim-7" style={{ textAlign: "center", color: "#9aa3b8", fontSize: "12.5px", marginTop: "1.5rem" }}>
+                {/* Divider */}
+                <div className="signup-anim-6" style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBlock: "1.25rem",
+                  gap: "12px",
+                }}>
+                  <div style={{ flex: 1, height: "1px", background: "#edf2f7" }} />
+                  <span style={{ fontSize: "11px", color: "#9aa3b8", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                    or continue with
+                  </span>
+                  <div style={{ flex: 1, height: "1px", background: "#edf2f7" }} />
+                </div>
+
+                {/* Google Sign Up Button */}
+                <div className="signup-anim-6">
+                  <button
+                    type="button"
+                    onClick={() => { window.location.href = getGoogleAuthUrl('admin'); }}
+                    className="signup-google-btn"
+                    style={{
+                      width: "100%",
+                      padding: "13px 18px",
+                      background: "#ffffff",
+                      color: TEXT_DARK,
+                      border: "1.5px solid #e2e8f0",
+                      borderRadius: "13px",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "10px",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                    }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    Sign up with Google
+                  </button>
+                </div>
+
+                <p className="signup-anim-7" style={{ textAlign: "center", color: "#9aa3b8", fontSize: "12.5px", marginTop: "1.25rem" }}>
                   Already have an account? <Link to="/login" style={{ color: BLUE, fontWeight: 600, textDecoration: "none" }}>Log in</Link>
                 </p>
               </>
