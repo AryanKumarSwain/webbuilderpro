@@ -218,6 +218,14 @@ const LandingPage = () => {
                     background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
                     animation: lpShimmer 8s linear infinite;
                 }
+                .lp-hero-heading-shimmer {
+                    background: linear-gradient(90deg, #0f1f4b 0%, #1d4ed8 35%, #60a5fa 55%, #1d4ed8 75%, #0f1f4b 100%);
+                    background-size: 300% auto;
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    animation: lpShimmer 10s linear infinite;
+                }
 
                 .lp-nav-link { transition: color 0.2s ease, text-shadow 0.2s ease; }
                 .lp-nav-link-dark:hover { color: ${BLUE} !important; }
@@ -413,55 +421,37 @@ const LandingPage = () => {
 
                         {/* Left — copy */}
                         <div>
-                            <Reveal>
-                                <div style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    padding: '6px 16px',
-                                    background: '#ffffff',
-                                    border: '1px solid rgba(226,232,240,0.9)',
-                                    borderRadius: '999px',
-                                    marginBottom: '1.4rem',
-                                    boxShadow: '0 2px 12px rgba(15,23,42,0.06)'
-                                }}>
-                                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#e15241' }}></span>
-                                    <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#334155', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                                        School Website & Management Platform
-                                    </span>
-                                    <span style={{ fontSize: '12px' }}>✨</span>
-                                </div>
-                            </Reveal>
-                            <Reveal delay={0.08}>
+                            <Reveal delay={0.05}>
                                 <h1 style={{
                                     fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif",
-                                    fontSize: 'clamp(38px, 5.2vw, 64px)',
-                                    fontWeight: 800,
-                                    lineHeight: 1.12,
-                                    letterSpacing: '-1.5px',
-                                    color: '#0f172a',
-                                    marginBottom: '1.35rem'
+                                    fontSize: 'clamp(40px, 5.6vw, 68px)',
+                                    fontWeight: 900,
+                                    lineHeight: 1.08,
+                                    letterSpacing: '-2px',
+                                    color: '#0f1f4b',
+                                    marginBottom: '1.5rem'
                                 }}>
                                     Build a School Website That{' '}
-                                    <span style={{ position: 'relative', display: 'inline-block', color: '#0f172a', paddingBottom: '4px' }}>
+                                    <span className="lp-hero-heading-shimmer" style={{ position: 'relative', display: 'inline-block', paddingBottom: '8px' }}>
                                         Stands Apart.
+                                        {/* Wavy underline — thicker, more pronounced */}
                                         <svg
                                             style={{
                                                 position: 'absolute',
                                                 left: 0,
-                                                bottom: '-4px',
+                                                bottom: '-2px',
                                                 width: '100%',
-                                                height: '14px',
+                                                height: '16px',
                                                 overflow: 'visible'
                                             }}
-                                            viewBox="0 0 250 14"
+                                            viewBox="0 0 300 16"
                                             fill="none"
                                             preserveAspectRatio="none"
                                         >
                                             <path
-                                                d="M 2 7 Q 15 1, 30 7 T 60 7 T 90 7 T 120 7 T 150 7 T 180 7 T 210 7 T 240 7 T 250 7"
+                                                d="M 2 8 Q 18 1, 37 8 T 75 8 T 113 8 T 151 8 T 189 8 T 227 8 T 265 8 T 298 8"
                                                 stroke="#e15241"
-                                                strokeWidth="3.8"
+                                                strokeWidth="4.5"
                                                 strokeLinecap="round"
                                                 fill="none"
                                                 vectorEffect="non-scaling-stroke"
