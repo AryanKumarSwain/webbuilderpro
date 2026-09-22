@@ -46,6 +46,7 @@ import TCInformation from './pages/admin/modules/TCInformation';
 import Announcements from './pages/admin/modules/Announcements';
 import Events from './pages/admin/modules/Events';
 import Circulars from './pages/admin/modules/Circulars';
+import Faqs from './pages/admin/modules/Faqs';
 import Calendar from './pages/admin/modules/Calendar';
 import Results from './pages/admin/modules/Results';
 import AdmissionEnquiry from './pages/admin/modules/AdmissionEnquiry';
@@ -75,6 +76,7 @@ import EventsPublic from './pages/school/EventsPublic';
 import EventDetailPublic from './pages/school/EventDetailPublic';
 import CircularsPublic from './pages/school/CircularsPublic';
 import CircularDetailPublic from './pages/school/CircularDetailPublic';
+import FaqsPublic from './pages/school/FaqsPublic';
 import CalendarPublic from './pages/school/CalendarPublic';
 import ResultsPublic from './pages/school/ResultsPublic';
 // Layouts
@@ -113,6 +115,7 @@ const PUBLIC_SCHOOL_ROUTE_DEFS = [
     { path: '/school/:slug/events', element: <EventsPublic /> },
     { path: '/school/:slug/circulars/:id', element: <CircularDetailPublic /> },
     { path: '/school/:slug/circulars', element: <CircularsPublic /> },
+    { path: '/school/:slug/faqs', element: <FaqsPublic /> },
     { path: '/school/:slug/calendar', element: <CalendarPublic /> },
     { path: '/school/:slug/results', element: <ResultsPublic /> },
     { path: '/school/:slug/:levelSlug', element: <SchoolLevelPublic /> },
@@ -255,6 +258,7 @@ const RootRouter = () => {
                 <Route path="module/announcements" element={<Announcements />} />
                 <Route path="module/events" element={<Events />} />
                 <Route path="module/circulars" element={<Circulars />} />
+                <Route path="module/faqs" element={<Faqs />} />
                 <Route path="module/calendar" element={<Calendar />} />
                 <Route path="module/results" element={<Results />} />
                 <Route path="module/admission" element={<AdmissionEnquiry />} />

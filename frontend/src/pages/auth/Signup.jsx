@@ -14,15 +14,42 @@ const TEXT_MUTED = '#8b93a7';
 const TEXT_DARK = '#171a23';
 
 const inputStyle = {
-  width: "100%", padding: "14px 18px", borderRadius: "13px", border: "1.5px solid transparent",
-  background: "#f4f5f9", color: TEXT_DARK, fontSize: "14px", outline: "none", boxSizing: "border-box",
+  width: "100%", padding: "12px 16px", borderRadius: "12px", border: "1.5px solid transparent",
+  background: "#f4f5f9", color: TEXT_DARK, fontSize: "13.5px", outline: "none", boxSizing: "border-box",
   transition: "all 0.2s", fontFamily: "'Inter', system-ui, sans-serif",
+};
+
+const labelStyle = {
+  display: "block", fontSize: "11px", fontWeight: 700, color: TEXT_MUTED,
+  textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "5px",
+};
+
+const getPasswordStrength = (pwd) => {
+  if (!pwd) return { score: 0, label: "", color: "#e2e8f0", percent: 0 };
+  let score = 0;
+  if (pwd.length >= 8) score += 1;
+  if (/[a-zA-Z]/.test(pwd)) score += 1;
+  if (/\d/.test(pwd)) score += 1;
+  if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)) score += 1;
+
+  if (score === 1) return { score: 1, label: "Weak", color: "#ef4444", percent: 25 };
+  if (score === 2) return { score: 2, label: "Fair", color: "#f59e0b", percent: 50 };
+  if (score === 3) return { score: 3, label: "Good", color: BLUE, percent: 75 };
+  if (score === 4) return { score: 4, label: "Strong", color: "#10b981", percent: 100 };
+  return { score: 0, label: "Weak", color: "#ef4444", percent: 15 };
 };
 
 const Signup = () => {
   const navigate = useNavigate();
   const { setAuth } = useAuthStore();
-  const [formData, setFormData] = useState({ schoolName: "", adminName: "", email: "", phone: "", password: "" });
+  const [formData, setFormData] = useState({
+    schoolName: "",
+    adminName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState("form"); // 'form' | 'otp'
   const [schoolUuid, setSchoolUuid] = useState(null);
@@ -31,6 +58,7 @@ const Signup = () => {
   const [resending, setResending] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [searchParams] = useSearchParams();
   const googleSignupToken = searchParams.get("google_signup_token");
   const googleEmail = searchParams.get("email") || "";
@@ -41,6 +69,8 @@ const Signup = () => {
   const [googlePhone, setGooglePhone] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  const pwdStrength = getPasswordStrength(formData.password);
+
   useEffect(() => {
     if (resendCooldown <= 0) return;
     const t = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
@@ -49,25 +79,57 @@ const Signup = () => {
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // Phone is optional, but when filled it must be exactly 10 digits — strip
-  // anything non-numeric as the user types rather than validating after the fact.
   const handlePhoneChange = (e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "").slice(0, 10) });
 
   const handleOtpChange = (e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.phone && formData.phone.length !== 10) {
-      toast.error("Phone number must be exactly 10 digits");
+    if (!formData.schoolName.trim()) {
+      toast.error("School name is required");
+      return;
+    }
+    if (!formData.adminName.trim()) {
+      toast.error("Admin / Principal name is required");
+      return;
+    }
+    if (!formData.email.trim()) {
+      toast.error("Email is required");
+      return;
+    }
+    if (!formData.phone || formData.phone.length !== 10) {
+      toast.error("Phone number is mandatory and must be exactly 10 digits");
       return;
     }
     if (formData.password.length < 8) {
       toast.error("Password must be at least 8 characters");
       return;
     }
+    const hasLetter = /[a-zA-Z]/.test(formData.password);
+    const hasDigit = /\d/.test(formData.password);
+    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password);
+    if (!hasLetter || !hasDigit || !hasSpecial) {
+      toast.error("Password must be alphanumeric with at least 1 special character");
+      return;
+    }
+    if (!formData.confirmPassword) {
+      toast.error("Please confirm your password");
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await submitSignupApi(formData);
+      const res = await submitSignupApi({
+        schoolName: formData.schoolName.trim(),
+        adminName: formData.adminName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        password: formData.password,
+      });
       setSchoolUuid(res.data.uuid);
       setStep("otp");
     } catch (error) {
@@ -116,8 +178,8 @@ const Signup = () => {
       toast.error("Please enter your school name");
       return;
     }
-    if (googlePhone && googlePhone.length !== 10) {
-      toast.error("Phone number must be exactly 10 digits");
+    if (!googlePhone || googlePhone.length !== 10) {
+      toast.error("Phone number is mandatory and must be exactly 10 digits");
       return;
     }
     setGoogleLoading(true);
@@ -125,7 +187,7 @@ const Signup = () => {
       const res = await completeGoogleSignupApi({
         googleSignupToken,
         schoolName: googleSchoolName.trim(),
-        phone: googlePhone || undefined,
+        phone: googlePhone.trim(),
       });
       setAuth(res.data.user, "admin", res.data.accessToken);
       toast.success("Welcome to Web Builder Pro!");
@@ -255,8 +317,32 @@ const Signup = () => {
           {/* ── Right panel — the actual form ── */}
           <div className="signup-right-panel" style={{
             position: "relative", zIndex: 1, background: "#ffffff",
-            padding: "2.75rem 3rem 2.5rem", display: "flex", flexDirection: "column", justifyContent: "center",
+            padding: "2.25rem 2.75rem 2rem", display: "flex", flexDirection: "column", justifyContent: "center",
           }}>
+            {/* Back to landing page */}
+            <Link
+              to="/"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                color: TEXT_MUTED,
+                fontSize: "12.5px",
+                fontWeight: 600,
+                textDecoration: "none",
+                marginBottom: "0.85rem",
+                alignSelf: "flex-start",
+                transition: "color 0.15s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = BLUE; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = TEXT_MUTED; }}
+            >
+              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to landing page
+            </Link>
+
             <img src={logo} alt="Web Builder Pro" className="signup-mobile-logo signup-anim-1"
               style={{ height: "150px", objectFit: "contain", margin: "0 auto 1.75rem", display: "none" }} />
             {step === "otp" ? (
@@ -363,19 +449,20 @@ const Signup = () => {
                   </div>
 
                   <div>
-                    <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>
-                      Phone Number (Optional)
+                    <label style={labelStyle}>
+                      Phone Number <span style={{ color: "#ef4444" }}>*</span>
                     </label>
                     <input
                       className="signup-anim-4 signup-input"
                       type="tel"
                       value={googlePhone}
                       onChange={(e) => setGooglePhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                      placeholder="10-digit mobile number"
+                      placeholder="Enter phone number"
                       inputMode="numeric"
                       maxLength={10}
                       pattern="[0-9]{10}"
                       title="Enter a 10-digit phone number"
+                      required
                       style={inputStyle}
                     />
                   </div>
@@ -415,37 +502,182 @@ const Signup = () => {
                   Tell us about your school to get started
                 </p>
 
-                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  <input className="signup-anim-2 signup-input" type="text" name="schoolName" value={formData.schoolName} onChange={handleChange} placeholder="Enter school name" required style={inputStyle} />
-                  <input className="signup-anim-3 signup-input" type="text" name="adminName" value={formData.adminName} onChange={handleChange} placeholder="Enter your full name" required style={inputStyle} />
-                  <div className="signup-anim-4 signup-field-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                    <input className="signup-input" type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Enter email address" required style={inputStyle} />
-                    <input className="signup-input" type="tel" name="phone" value={formData.phone} onChange={handlePhoneChange} placeholder="Enter phone number" inputMode="numeric" maxLength={10} pattern="[0-9]{10}" title="Enter a 10-digit phone number" style={inputStyle} />
-                  </div>
-                  <div className="signup-anim-5" style={{ position: "relative" }}>
+                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {/* School Name */}
+                  <div className="signup-anim-2">
+                    <label style={labelStyle}>
+                      School Name <span style={{ color: "#ef4444" }}>*</span>
+                    </label>
                     <input
-                      type={showPassword ? "text" : "password"} name="password" value={formData.password}
-                      onChange={handleChange} placeholder="Create a password (min. 8 characters)" required minLength={8}
-                      className="signup-input" style={{ ...inputStyle, paddingRight: "44px" }}
+                      className="signup-input"
+                      type="text"
+                      name="schoolName"
+                      value={formData.schoolName}
+                      onChange={handleChange}
+                      placeholder="Enter school name"
+                      required
+                      style={inputStyle}
                     />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)}
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                      style={{ position: "absolute", right: "14px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", padding: 0, color: "#9aa3b8", display: "flex", alignItems: "center" }}>
-                      {showPassword ? (
-                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
-                        </svg>
-                      ) : (
-                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                        </svg>
-                      )}
-                    </button>
                   </div>
 
+                  {/* Admin / Principal Name */}
+                  <div className="signup-anim-3">
+                    <label style={labelStyle}>
+                      Admin / Principal Name <span style={{ color: "#ef4444" }}>*</span>
+                    </label>
+                    <input
+                      className="signup-input"
+                      type="text"
+                      name="adminName"
+                      value={formData.adminName}
+                      onChange={handleChange}
+                      placeholder="Enter admin/principal name"
+                      required
+                      style={inputStyle}
+                    />
+                  </div>
+
+                  {/* Email & Phone */}
+                  <div className="signup-anim-4 signup-field-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                    <div>
+                      <label style={labelStyle}>
+                        Email <span style={{ color: "#ef4444" }}>*</span>
+                      </label>
+                      <input
+                        className="signup-input"
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="Enter email"
+                        required
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>
+                        Phone Number <span style={{ color: "#ef4444" }}>*</span>
+                      </label>
+                      <input
+                        className="signup-input"
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handlePhoneChange}
+                        placeholder="Enter phone number"
+                        inputMode="numeric"
+                        maxLength={10}
+                        pattern="[0-9]{10}"
+                        title="Enter a 10-digit phone number"
+                        required
+                        style={inputStyle}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Password & Confirm Password */}
+                  <div className="signup-anim-5 signup-field-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                    <div>
+                      <label style={labelStyle}>
+                        Password <span style={{ color: "#ef4444" }}>*</span>
+                      </label>
+                      <div style={{ position: "relative" }}>
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          name="password"
+                          value={formData.password}
+                          onChange={handleChange}
+                          placeholder="Create password"
+                          required
+                          minLength={8}
+                          className="signup-input"
+                          style={{ ...inputStyle, paddingRight: "38px" }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          aria-label={showPassword ? "Hide password" : "Show password"}
+                          style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", padding: 0, color: "#9aa3b8", display: "flex", alignItems: "center" }}
+                        >
+                          {showPassword ? (
+                            <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                            </svg>
+                          ) : (
+                            <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={labelStyle}>
+                        Confirm Password <span style={{ color: "#ef4444" }}>*</span>
+                      </label>
+                      <div style={{ position: "relative" }}>
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          name="confirmPassword"
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          placeholder="Re-enter password"
+                          required
+                          minLength={8}
+                          className="signup-input"
+                          style={{
+                            ...inputStyle,
+                            paddingRight: "38px",
+                            border: formData.confirmPassword && formData.password !== formData.confirmPassword ? "1.5px solid #f87171" : "1.5px solid transparent",
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                          style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", padding: 0, color: "#9aa3b8", display: "flex", alignItems: "center" }}
+                        >
+                          {showConfirmPassword ? (
+                            <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                            </svg>
+                          ) : (
+                            <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Password Strength Meter & Requirement hint */}
+                  {formData.password && (
+                    <div className="signup-anim-5" style={{ background: "#f8fafc", borderRadius: "10px", padding: "8px 12px", border: "1px solid #e2e8f0" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                        <span style={{ fontSize: "11px", color: TEXT_MUTED }}>Password strength</span>
+                        <span style={{ fontSize: "11px", fontWeight: 700, color: pwdStrength.color }}>{pwdStrength.label}</span>
+                      </div>
+                      <div style={{ height: "4px", width: "100%", background: "#e2e8f0", borderRadius: "2px", overflow: "hidden" }}>
+                        <div style={{ height: "100%", width: `${pwdStrength.percent}%`, background: pwdStrength.color, transition: "width 0.3s ease, background 0.3s ease" }} />
+                      </div>
+                      <p style={{ fontSize: "10.5px", color: TEXT_MUTED, marginTop: "4px", marginBottom: 0, lineHeight: 1.3 }}>
+                        Must be at least 8 characters, alphanumeric with at least 1 special character (!@#$%^&*...).
+                      </p>
+                    </div>
+                  )}
+
+                  {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                    <span style={{ fontSize: "11px", color: "#ef4444", fontWeight: 500 }}>
+                      Passwords do not match
+                    </span>
+                  )}
+
                   <button type="submit" disabled={loading} className="signup-anim-6 signup-submit-btn"
-                    style={{ width: "100%", padding: "15px", background: loading ? "#a9b8ea" : `linear-gradient(135deg, ${BLUE}, ${BLUE_DARK})`, color: "#fff", border: "none", borderRadius: "13px", fontSize: "14.5px", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "8px", boxShadow: "0 10px 26px rgba(65,105,225,0.32)", transition: "all 0.2s" }}>
+                    style={{ width: "100%", padding: "14px", background: loading ? "#a9b8ea" : `linear-gradient(135deg, ${BLUE}, ${BLUE_DARK})`, color: "#fff", border: "none", borderRadius: "13px", fontSize: "14.5px", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "6px", boxShadow: "0 10px 26px rgba(65,105,225,0.32)", transition: "all 0.2s" }}>
                     {loading ? (
                       <>
                         <svg style={{ animation: "spin 1s linear infinite", width: "17px", height: "17px" }} viewBox="0 0 24 24" fill="none">

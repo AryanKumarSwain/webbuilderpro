@@ -33,7 +33,7 @@ const loadRazorpayScript = () => new Promise((resolve) => {
 const Billing = () => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
-    const { school } = useSchoolStore();
+    const { school, fetchSchool } = useSchoolStore();
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [payingId, setPayingId] = useState(null);
@@ -48,6 +48,7 @@ const Billing = () => {
     };
 
     useEffect(() => {
+        fetchSchool?.();
         getActivePlansApi()
             .then((res) => setPlans(res.data || []))
             .catch(() => toast.error('Failed to load plans'))
@@ -68,6 +69,21 @@ const Billing = () => {
     const isExpired = !!planEndDate && planEndDate < new Date();
     const isRenewal = !!school?.plan_id && isExpired;
     const isProactiveManage = !!school?.plan_id && !isExpired;
+
+    const currentPlan = plans.find((p) => p.id === school?.plan_id);
+    const currentPlanName = currentPlan?.name || school?.plan_name || null;
+
+    const formattedEndDate = planEndDate
+        ? planEndDate.toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+        })
+        : null;
+
+    const daysRemaining = planEndDate
+        ? Math.max(0, Math.ceil((new Date(planEndDate).setHours(23, 59, 59, 999) - Date.now()) / (1000 * 60 * 60 * 24)))
+        : null;
 
     const handlePay = async (plan) => {
         if (payingId) return;
@@ -208,13 +224,109 @@ const Billing = () => {
                         <h1 className="bill-shimmer" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(26px, 3.4vw, 36px)', fontWeight: 800, letterSpacing: '-0.5px', marginBottom: '8px' }}>
                             {isRenewal ? 'Renew your plan' : isProactiveManage ? 'Extend or upgrade your plan' : 'Choose your plan'}
                         </h1>
-                        <p style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.82)', lineHeight: 1.65, maxWidth: '520px' }}>
+                        <p style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.82)', lineHeight: 1.65, maxWidth: '540px', margin: 0 }}>
                             {isRenewal
                                 ? `${school?.name ? `${school.name}'s ` : 'Your '}plan has ended — renew to keep your school website live and editable.`
                                 : isProactiveManage
                                     ? `${school?.name ? `${school.name}'s ` : 'Your '}plan is active — renew early or switch to a bigger plan any time. Your remaining days are never lost.`
                                     : `${school?.name ? `${school.name}'s ` : 'Your '}account is approved — pick a plan to take your school website live.`}
                         </p>
+
+                        {/* Existing Plan Validity Banner */}
+                        {planEndDate && (
+                            <div style={{
+                                marginTop: '18px',
+                                display: 'inline-flex',
+                                flexWrap: 'wrap',
+                                alignItems: 'center',
+                                gap: '12px 16px',
+                                padding: '12px 18px',
+                                borderRadius: '14px',
+                                background: isExpired
+                                    ? 'rgba(239, 68, 68, 0.22)'
+                                    : 'rgba(255, 255, 255, 0.14)',
+                                border: `1px solid ${isExpired ? 'rgba(239, 68, 68, 0.45)' : 'rgba(255, 255, 255, 0.28)'}`,
+                                backdropFilter: 'blur(10px)',
+                                WebkitBackdropFilter: 'blur(10px)',
+                            }}>
+                                <div style={{
+                                    width: '36px', height: '36px', borderRadius: '10px',
+                                    background: isExpired ? 'rgba(239, 68, 68, 0.35)' : 'rgba(255, 255, 255, 0.2)',
+                                    border: `1px solid ${isExpired ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.35)'}`,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    flexShrink: 0,
+                                }}>
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                        <line x1="16" y1="2" x2="16" y2="6" />
+                                        <line x1="8" y1="2" x2="8" y2="6" />
+                                        <line x1="3" y1="10" x2="21" y2="10" />
+                                    </svg>
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                    <div style={{
+                                        fontSize: '10.5px',
+                                        fontWeight: 700,
+                                        letterSpacing: '0.08em',
+                                        textTransform: 'uppercase',
+                                        color: isExpired ? '#fca5a5' : 'rgba(255, 255, 255, 0.78)',
+                                    }}>
+                                        {isExpired ? 'Plan Expired On' : 'Existing Plan Validity'}
+                                    </div>
+                                    <div style={{
+                                        fontSize: '15px',
+                                        fontWeight: 700,
+                                        color: '#ffffff',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        flexWrap: 'wrap',
+                                    }}>
+                                        <span>{formattedEndDate}</span>
+                                        {currentPlanName && (
+                                            <span style={{
+                                                fontSize: '11px',
+                                                fontWeight: 600,
+                                                padding: '2px 8px',
+                                                borderRadius: '6px',
+                                                background: 'rgba(255, 255, 255, 0.2)',
+                                                border: '1px solid rgba(255, 255, 255, 0.25)',
+                                                color: '#fff',
+                                            }}>
+                                                {currentPlanName}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {!isExpired && daysRemaining !== null && (
+                                    <div style={{
+                                        fontSize: '12px',
+                                        fontWeight: 700,
+                                        padding: '5px 12px',
+                                        borderRadius: '999px',
+                                        background: daysRemaining <= 7 ? 'rgba(245, 158, 11, 0.35)' : 'rgba(34, 197, 94, 0.32)',
+                                        border: `1px solid ${daysRemaining <= 7 ? 'rgba(253, 230, 138, 0.6)' : 'rgba(187, 247, 208, 0.6)'}`,
+                                        color: '#ffffff',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        whiteSpace: 'nowrap',
+                                    }}>
+                                        <span style={{
+                                            width: '7px', height: '7px', borderRadius: '50%',
+                                            background: daysRemaining <= 7 ? '#fde047' : '#4ade80',
+                                            display: 'inline-block',
+                                            boxShadow: daysRemaining <= 7 ? '0 0 6px #fde047' : '0 0 6px #4ade80',
+                                        }} />
+                                        {daysRemaining === 0
+                                            ? 'Expires today'
+                                            : `${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'} left`}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -261,15 +373,32 @@ const Billing = () => {
                                             </div>
                                         )}
 
-                                        {/* 3D beveled monogram tile */}
-                                        <div className="bill-3d-tile" style={{
-                                            width: '46px', height: '46px', borderRadius: '13px',
-                                            background: `linear-gradient(145deg, ${BLUE}, ${BLUE_DARK})`,
-                                            boxShadow: `inset 0 2px 2px rgba(255,255,255,0.35), inset 0 -3px 6px rgba(0,0,0,0.28), 0 12px 22px ${BLUE}50`,
-                                            color: '#fff', fontWeight: 800, fontSize: '19px', fontFamily: "'Playfair Display', serif",
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px',
-                                        }}>
-                                            {plan.name?.trim()?.[0]?.toUpperCase() || 'P'}
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                                            {/* 3D beveled monogram tile */}
+                                            <div className="bill-3d-tile" style={{
+                                                width: '46px', height: '46px', borderRadius: '13px',
+                                                background: `linear-gradient(145deg, ${BLUE}, ${BLUE_DARK})`,
+                                                boxShadow: `inset 0 2px 2px rgba(255,255,255,0.35), inset 0 -3px 6px rgba(0,0,0,0.28), 0 12px 22px ${BLUE}50`,
+                                                color: '#fff', fontWeight: 800, fontSize: '19px', fontFamily: "'Playfair Display', serif",
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            }}>
+                                                {plan.name?.trim()?.[0]?.toUpperCase() || 'P'}
+                                            </div>
+
+                                            {plan.id === school?.plan_id && (
+                                                <span style={{
+                                                    fontSize: '11px',
+                                                    fontWeight: 700,
+                                                    padding: '4px 10px',
+                                                    borderRadius: '8px',
+                                                    background: isExpired ? '#fef2f2' : '#f0fdf4',
+                                                    color: isExpired ? '#dc2626' : '#16a34a',
+                                                    border: `1px solid ${isExpired ? '#fecaca' : '#bbf7d0'}`,
+                                                    letterSpacing: '0.02em',
+                                                }}>
+                                                    {isExpired ? 'Previous Plan' : 'Current Plan'}
+                                                </span>
+                                            )}
                                         </div>
 
                                         <p style={{ fontSize: '16.5px', fontWeight: 700, color: TEXT_DARK, marginBottom: '2px' }}>{plan.name}</p>
@@ -306,7 +435,11 @@ const Billing = () => {
                                                 boxShadow: featured && !busy ? `0 14px 28px ${BLUE}44` : 'none',
                                                 opacity: disabled && !busy ? 0.55 : 1,
                                             }}>
-                                            {busy ? 'Processing…' : 'Get this plan'}
+                                            {busy
+                                                ? 'Processing…'
+                                                : plan.id === school?.plan_id
+                                                    ? (isExpired ? 'Renew this plan' : 'Extend this plan')
+                                                    : (isProactiveManage ? 'Upgrade to this plan' : 'Get this plan')}
                                         </button>
 
                                         <div style={{ height: '1px', background: '#eef1f6', marginBottom: '16px' }} />

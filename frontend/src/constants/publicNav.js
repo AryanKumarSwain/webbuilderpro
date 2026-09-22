@@ -2,6 +2,7 @@ import { COURSE_LEVELS } from "../utils/courseLevels";
 
 // ── Single source of truth for theme colors used across ALL public pages ──
 const THEME_COLORS_MAP = {
+    // ── Classic Gradient Themes ──
     default:   { primary: "#8b2252", secondary: "#c9687e", light: "#fdf2f6", dark: "#2d0a1a" },
     blue:      { primary: "#1e3a5f", secondary: "#2563eb", light: "#eff6ff", dark: "#0f1e3d" },
     green:     { primary: "#064e3b", secondary: "#059669", light: "#f0fdf4", dark: "#022c22" },
@@ -24,6 +25,40 @@ const THEME_COLORS_MAP = {
     plainCream: { primary: "#8a7550", secondary: "#f3ecd9", light: "#fdfaf3", dark: "#332a1a" },
     mustard:   { primary: "#7a5c00", secondary: "#eab308", light: "#fffbeb", dark: "#332600" },
     indigo:    { primary: "#312e81", secondary: "#6366f1", light: "#eef2ff", dark: "#181650" },
+
+    // ── Light & Bright Gradient Themes ──
+    brightCyan:        { primary: "#0891b2", secondary: "#06b6d4", light: "#ecfeff", dark: "#155e75" },
+    brightLime:        { primary: "#4d7c0f", secondary: "#84cc16", light: "#f7fee7", dark: "#365314" },
+    brightViolet:      { primary: "#7c3aed", secondary: "#a855f7", light: "#faf5ff", dark: "#581c87" },
+    brightTangerine:   { primary: "#ea580c", secondary: "#f97316", light: "#fff7ed", dark: "#9a3412" },
+    brightMagenta:     { primary: "#c026d3", secondary: "#e879f9", light: "#fdf4ff", dark: "#701a75" },
+    brightSunshine:    { primary: "#ca8a04", secondary: "#facc15", light: "#fefce8", dark: "#854d0e" },
+    brightSky:         { primary: "#0284c7", secondary: "#38bdf8", light: "#f0f9ff", dark: "#075985" },
+    brightWatermelon:  { primary: "#e11d48", secondary: "#fb7185", light: "#fff1f2", dark: "#881337" },
+    pastelMint:        { primary: "#059669", secondary: "#34d399", light: "#ecfdf5", dark: "#064e3b" },
+    pastelLilac:       { primary: "#6d28d9", secondary: "#c4b5fd", light: "#f5f3ff", dark: "#4c1d95" },
+    pastelPeach:       { primary: "#c2410c", secondary: "#fdba74", light: "#fff7ed", dark: "#7c2d12" },
+    pastelSky:         { primary: "#0369a1", secondary: "#7dd3fc", light: "#f0f9ff", dark: "#0c4a6e" },
+
+    // ── Solid Flat Themes (Without Gradient) ──
+    solidRoyalBlue:    { primary: "#1d4ed8", secondary: "#1d4ed8", light: "#eff6ff", dark: "#1e3a8a" },
+    solidNavy:         { primary: "#0f2b5c", secondary: "#0f2b5c", light: "#eef2ff", dark: "#091a38" },
+    solidSky:          { primary: "#0284c7", secondary: "#0284c7", light: "#f0f9ff", dark: "#0369a1" },
+    solidTeal:         { primary: "#0f766e", secondary: "#0f766e", light: "#f0fdfa", dark: "#115e59" },
+    solidEmerald:      { primary: "#047857", secondary: "#047857", light: "#f0fdf4", dark: "#064e3b" },
+    solidForest:       { primary: "#14532d", secondary: "#14532d", light: "#f0fdf4", dark: "#052e16" },
+    solidCrimson:      { primary: "#b91c1c", secondary: "#b91c1c", light: "#fef2f2", dark: "#7f1d1d" },
+    solidMaroon:       { primary: "#831843", secondary: "#831843", light: "#fdf2f8", dark: "#500724" },
+    solidPurple:       { primary: "#6b21a8", secondary: "#6b21a8", light: "#faf5ff", dark: "#3b0764" },
+    solidSaffron:      { primary: "#d97706", secondary: "#d97706", light: "#fffbeb", dark: "#92400e" },
+    solidAmber:        { primary: "#b45309", secondary: "#b45309", light: "#fffbeb", dark: "#78350f" },
+    solidCoral:        { primary: "#e11d48", secondary: "#e11d48", light: "#fff1f2", dark: "#881337" },
+    solidCharcoal:     { primary: "#18181b", secondary: "#18181b", light: "#fafafa", dark: "#09090b" },
+    solidSlate:        { primary: "#334155", secondary: "#334155", light: "#f8fafc", dark: "#0f172a" },
+    solidIndigo:       { primary: "#3730a3", secondary: "#3730a3", light: "#eef2ff", dark: "#1e1b4b" },
+    solidLemon:        { primary: "#ca8a04", secondary: "#ca8a04", light: "#fefce8", dark: "#713f12" },
+    solidLime:         { primary: "#4d7c0f", secondary: "#4d7c0f", light: "#f7fee7", dark: "#1a2e05" },
+    solidRose:         { primary: "#9f1239", secondary: "#9f1239", light: "#fff1f2", dark: "#4c0519" },
 };
 
 export const getThemeColors = (theme) => THEME_COLORS_MAP[theme] || THEME_COLORS_MAP.default;
@@ -138,6 +173,7 @@ export const NAVBAR_ITEMS = [
             { key: 'events',        label: 'Events & Activities', path: (slug) => `/school/${slug}/events` },
             { key: 'calendar',      label: 'Event Calendar',      path: (slug) => `/school/${slug}/calendar` },
             { key: 'circulars',     label: 'Circulars',           path: (slug) => `/school/${slug}/circulars` },
+            { key: 'faqs',          label: 'FAQs',                path: (slug) => `/school/${slug}/faqs` },
         ],
     },
 ];
@@ -179,6 +215,7 @@ export const FOOTER_NAV_GROUPS = [
             { key: 'events',        label: 'Events & Activities', path: (slug) => `/school/${slug}/events` },
             { key: 'calendar',      label: 'Event Calendar', path: (slug) => `/school/${slug}/calendar` },
             { key: 'circulars',     label: 'Circulars', path: (slug) => `/school/${slug}/circulars` },
+            { key: 'faqs',          label: 'FAQs', path: (slug) => `/school/${slug}/faqs` },
         ],
     },
 ];

@@ -30,6 +30,7 @@ const SectionLabel = ({ children, tc }) => (
 const AdminLayout = () => {
     // Desktop-only icon-collapse toggle (≥900px) — below that the sidebar hides entirely
     // and a hamburger + slide-in drawer takes over, same pattern as the public site's Navbar.
+    const [hasActivePlan, setHasActivePlan] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
     const [selectedModules, setSelectedModules] = useState([]);
@@ -37,7 +38,9 @@ const AdminLayout = () => {
     const [showBackToTop, setShowBackToTop] = useState(false);
     const [moduleSearch, setModuleSearch] = useState("");
     const [searchFocused, setSearchFocused] = useState(false);
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const searchInputRef = useRef(null);
+    const mobileSearchInputRef = useRef(null);
     const { school, tc, bc, fetchSchool } = useSchoolStore();
     const { user, clearAuth } = useAuthStore();
     const location = useLocation();
@@ -45,6 +48,7 @@ const AdminLayout = () => {
 
     // ⌘K / Ctrl+K focuses the module search from anywhere in the admin panel.
     useEffect(() => {
+        if (!hasActivePlan) return;
         const onKeyDown = (e) => {
             if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault();
@@ -53,10 +57,10 @@ const AdminLayout = () => {
         };
         window.addEventListener('keydown', onKeyDown);
         return () => window.removeEventListener('keydown', onKeyDown);
-    }, []);
+    }, [hasActivePlan]);
 
-    // Close the mobile drawer on route change, and lock background scroll while it's open.
-    useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+    // Close the mobile drawer and search on route change, and lock background scroll while drawer is open.
+    useEffect(() => { setMobileOpen(false); setMobileSearchOpen(false); }, [location.pathname]);
     useEffect(() => {
         document.body.style.overflow = mobileOpen ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
@@ -108,13 +112,14 @@ const AdminLayout = () => {
     const fetchModules = async () => {
         try {
             const res = await getSelectedModulesApi();
-            const { selectedModules: mods, isFirstLogin, hasActivePlan, hasAcceptedTerms } = res.data;
+            const { selectedModules: mods, isFirstLogin, hasActivePlan: planActive, hasAcceptedTerms } = res.data;
+            setHasActivePlan(Boolean(planActive));
             if (!hasAcceptedTerms) {
                 if (location.pathname !== "/admin/accept-terms") navigate("/admin/accept-terms");
                 setLoading(false);
                 return;
             }
-            if (!hasActivePlan) {
+            if (!planActive) {
                 if (location.pathname !== "/admin/billing") navigate("/admin/billing");
                 setLoading(false);
                 return;
@@ -175,7 +180,9 @@ const AdminLayout = () => {
             path: m.key === 'home' ? '/admin/module/home' : `/admin/module/${m.key}`,
             icon: m.icon,
         }))
-        .sort((a, b) => a.label.localeCompare(b.label));
+    const visibleCoreItems = hasActivePlan
+        ? coreItems
+        : coreItems.filter((item) => item.key === "billing");
 
     const title =
         pageTitles[location.pathname] ||
@@ -260,6 +267,7 @@ const AdminLayout = () => {
                     .admin-desktop-toggle { display: none !important; }
                     .admin-hamburger { display: flex !important; }
                     .admin-navbar-search { display: none !important; }
+                    .admin-mobile-search-btn { display: flex !important; }
                 }
                 @keyframes adminDrawerBackdropIn { from { opacity: 0; } to { opacity: 1; } }
                 @keyframes adminDrawerSlideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
@@ -320,12 +328,12 @@ const AdminLayout = () => {
                             <SectionLabel tc={tc}>Main</SectionLabel>
                         )}
                         <nav style={{ padding: "4px 0" }}>
-                            {coreItems.map((item, i) => <NavItem key={item.key} item={item} index={i} />)}
+                            {visibleCoreItems.map((item, i) => <NavItem key={item.key} item={item} index={i} />)}
                         </nav>
                     </div>
 
                     {/* Modules Nav */}
-                    {moduleItems.length > 0 && (
+                    {hasActivePlan && moduleItems.length > 0 && (
                         <div style={{ border: "1px solid #f1f5f9", borderRadius: "14px", background: "rgba(255,255,255,0.6)", padding: "4px 0" }}>
                             {!collapsed && (
                                 <SectionLabel tc={tc}>Modules</SectionLabel>
@@ -380,114 +388,198 @@ const AdminLayout = () => {
                     height: "64px", background: theme.navbarBg,
                     display: "flex", alignItems: "center",
                     justifyContent: "space-between",
-                    padding: "0 24px 0 16px",
+                    padding: "0 16px",
                     position: "sticky", top: 0, zIndex: 100,
                 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                        <button
-                            className="admin-desktop-toggle"
-                            onClick={() => setCollapsed(!collapsed)}
-                            style={{ width: "32px", height: "32px", background: "transparent", border: "0.5px solid #e2e8f0", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: theme.navbarText }}
-                        >
-                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-                            </svg>
-                        </button>
-                        <button
-                            className="admin-hamburger"
-                            onClick={() => setMobileOpen(true)}
-                            style={{ display: "none", width: "32px", height: "32px", background: "transparent", border: "0.5px solid #e2e8f0", borderRadius: "8px", alignItems: "center", justifyContent: "center", cursor: "pointer", color: theme.navbarText }}
-                            aria-label="Open menu"
-                        >
-                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-                            </svg>
-                        </button>
-                        <div>
-                            <span style={{ fontSize: "11px", color: "#94a3b8" }}>Admin / </span>
-                            <span style={{ fontSize: "14px", fontWeight: 500, color: theme.navbarText }}>{title}</span>
-                        </div>
-                    </div>
-
-                    <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                        {/* Module search — searches this school's active modules only; picking a
-                            result navigates straight into that module's admin page. Sits just
-                            left of the admin avatar, ⌘K/Ctrl+K focuses it from anywhere. */}
-                        <div className="admin-navbar-search" style={{ position: "relative", width: "236px" }}>
-                            <svg width="14" height="14" fill="none" stroke={searchFocused ? tc.primary : "#94a3b8"} strokeWidth="2.2" viewBox="0 0 24 24" style={{ position: "absolute", left: "11px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", transition: "stroke 0.15s ease" }}>
-                                <circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
-                            </svg>
-                            <input
-                                ref={searchInputRef}
-                                type="text"
-                                value={moduleSearch}
-                                onChange={(e) => setModuleSearch(e.target.value)}
-                                onFocus={() => setSearchFocused(true)}
-                                onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
-                                placeholder="Search modules"
-                                style={{
-                                    width: "100%", padding: moduleSearch || searchFocused ? "8px 12px 8px 32px" : "8px 44px 8px 32px",
-                                    borderRadius: "8px", fontSize: "13px", color: theme.navbarText, outline: "none", boxSizing: "border-box",
-                                    background: searchFocused ? "#ffffff" : "#f8fafc",
-                                    border: `1px solid ${searchFocused ? tc.primary : "#e2e8f0"}`,
-                                    boxShadow: searchFocused ? `0 0 0 3px ${hexToRgba(tc.primary, 0.12)}` : "none",
-                                    transition: "border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease",
-                                }}
-                            />
-                            {!moduleSearch && !searchFocused && (
-                                <span style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", display: "flex", alignItems: "center", gap: "1px", padding: "2px 6px", borderRadius: "5px", background: "#eef1f6", border: "0.5px solid #e2e8f0", fontSize: "10.5px", fontWeight: 600, color: "#94a3b8", pointerEvents: "none" }}>
-                                    ⌘K
-                                </span>
-                            )}
-                            {searchFocused && moduleSearch.trim() && (
-                                <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: "300px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", boxShadow: "0 16px 36px rgba(15,23,42,0.16)", overflow: "hidden", zIndex: 150 }}>
+                    {mobileSearchOpen ? (
+                        <div style={{ display: "flex", alignItems: "center", width: "100%", gap: "10px", position: "relative" }}>
+                            <button
+                                onClick={() => { setMobileSearchOpen(false); setModuleSearch(""); }}
+                                style={{ width: "34px", height: "34px", background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: theme.navbarText, flexShrink: 0 }}
+                                aria-label="Close search"
+                            >
+                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                            </button>
+                            <div style={{ flex: 1, position: "relative" }}>
+                                <svg width="14" height="14" fill="none" stroke={tc.primary} strokeWidth="2.2" viewBox="0 0 24 24" style={{ position: "absolute", left: "11px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                                    <circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
+                                </svg>
+                                <input
+                                    ref={mobileSearchInputRef}
+                                    type="text"
+                                    value={moduleSearch}
+                                    onChange={(e) => setModuleSearch(e.target.value)}
+                                    placeholder="Search modules..."
+                                    autoFocus
+                                    style={{
+                                        width: "100%", padding: "8px 30px 8px 32px",
+                                        borderRadius: "9px", fontSize: "14px", color: theme.navbarText, outline: "none", boxSizing: "border-box",
+                                        background: "#f8fafc", border: `1.5px solid ${tc.primary}`,
+                                        boxShadow: `0 0 0 3px ${hexToRgba(tc.primary, 0.12)}`,
+                                    }}
+                                />
+                                {moduleSearch && (
+                                    <button
+                                        onClick={() => setModuleSearch("")}
+                                        style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: 0, fontSize: "14px" }}
+                                    >
+                                        ✕
+                                    </button>
+                                )}
+                            </div>
+                            {moduleSearch.trim() && (
+                                <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, right: 0, background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", boxShadow: "0 16px 36px rgba(15,23,42,0.16)", overflow: "hidden", zIndex: 150, maxHeight: "360px", overflowY: "auto" }}>
                                     {searchResults.length === 0 ? (
-                                        <div style={{ padding: "22px 16px", textAlign: "center" }}>
-                                            <p style={{ fontSize: "12.5px", color: "#94a3b8" }}>No active modules match <span style={{ fontWeight: 600, color: "#64748b" }}>"{moduleSearch.trim()}"</span></p>
+                                        <div style={{ padding: "20px 16px", textAlign: "center" }}>
+                                            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>No modules match "{moduleSearch.trim()}"</p>
                                         </div>
                                     ) : (
-                                        <>
-                                            <div style={{ padding: "9px 14px", borderBottom: "0.5px solid #f1f5f9", background: "#fafbfc" }}>
-                                                <span style={{ fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                                                    Modules · {searchResults.length}
+                                        searchResults.map((item, i) => (
+                                            <div key={item.key} onClick={() => { goToSearchResult(item); setMobileSearchOpen(false); }}
+                                                style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 14px", cursor: "pointer", borderBottom: i < searchResults.length - 1 ? "0.5px solid #f8fafc" : "none" }}
+                                            >
+                                                <span style={{ width: "28px", height: "28px", borderRadius: "8px", background: hexToRgba(tc.primary, 0.1), display: "flex", alignItems: "center", justifyContent: "center", color: tc.primary, flexShrink: 0 }}>
+                                                    {item.icon}
                                                 </span>
+                                                <span style={{ fontSize: "13.5px", fontWeight: 500, color: theme.navbarText, flex: 1 }}>{item.label}</span>
+                                                <svg width="13" height="13" fill="none" stroke="#cbd5e1" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                                             </div>
-                                            {searchResults.map((item, i) => (
-                                                <div key={item.key} onMouseDown={() => goToSearchResult(item)} className="admin-search-result"
-                                                    style={{ display: "flex", alignItems: "center", gap: "10px", padding: "9px 14px", cursor: "pointer", borderBottom: i < searchResults.length - 1 ? "0.5px solid #f8fafc" : "none" }}
-                                                    onMouseEnter={(e) => { e.currentTarget.style.background = theme.sidebarHover; }}
-                                                    onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-                                                >
-                                                    <span style={{ width: "28px", height: "28px", borderRadius: "8px", background: hexToRgba(tc.primary, 0.1), display: "flex", alignItems: "center", justifyContent: "center", color: tc.primary, flexShrink: 0 }}>
-                                                        {item.icon}
-                                                    </span>
-                                                    <span style={{ fontSize: "13px", fontWeight: 500, color: theme.navbarText, flex: 1 }}>{item.label}</span>
-                                                    <svg width="13" height="13" fill="none" stroke="#cbd5e1" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-                                                </div>
-                                            ))}
-                                        </>
+                                        ))
                                     )}
                                 </div>
                             )}
                         </div>
+                    ) : (
+                        <>
+                            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                                <button
+                                    className="admin-desktop-toggle"
+                                    onClick={() => setCollapsed(!collapsed)}
+                                    style={{ width: "32px", height: "32px", background: "transparent", border: "0.5px solid #e2e8f0", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: theme.navbarText }}
+                                >
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                                    </svg>
+                                </button>
+                                <button
+                                    className="admin-hamburger"
+                                    onClick={() => setMobileOpen(true)}
+                                    style={{ display: "none", width: "32px", height: "32px", background: "transparent", border: "0.5px solid #e2e8f0", borderRadius: "8px", alignItems: "center", justifyContent: "center", cursor: "pointer", color: theme.navbarText }}
+                                    aria-label="Open menu"
+                                >
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                                    </svg>
+                                </button>
+                                <div>
+                                    <span style={{ fontSize: "11px", color: "#94a3b8" }}>Admin / </span>
+                                    <span style={{ fontSize: "14px", fontWeight: 500, color: theme.navbarText }}>{title}</span>
+                                </div>
+                            </div>
 
-                        <div style={{ width: "30px", height: "30px", background: `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#fff" }}>
-                            {user?.name?.charAt(0)?.toUpperCase() || "A"}
-                        </div>
-                        <span className="admin-navbar-username" style={{ fontSize: "13px", fontWeight: 500, color: theme.navbarText }}>
-                            {user?.name || "Admin"}
-                        </span>
-                        <div style={{ width: "1px", height: "20px", background: "#e2e8f0" }}></div>
-                        <button
-                            onClick={handleLogout}
-                            style={{ padding: "6px 12px", background: "transparent", border: "0.5px solid #e2e8f0", borderRadius: "8px", fontSize: "12px", color: "#64748b", cursor: "pointer", display: "flex", alignItems: "center", gap: "5px" }}
-                        >
-                            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                            </svg>
-                            <span className="admin-navbar-logout-text">Logout</span>
-                        </button>
-                    </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                {/* Desktop Module search */}
+                                {hasActivePlan && (
+                                    <div className="admin-navbar-search" style={{ position: "relative", width: "236px" }}>
+                                        <svg width="14" height="14" fill="none" stroke={searchFocused ? tc.primary : "#94a3b8"} strokeWidth="2.2" viewBox="0 0 24 24" style={{ position: "absolute", left: "11px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", transition: "stroke 0.15s ease" }}>
+                                            <circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
+                                        </svg>
+                                        <input
+                                            ref={searchInputRef}
+                                            type="text"
+                                            value={moduleSearch}
+                                            onChange={(e) => setModuleSearch(e.target.value)}
+                                            onFocus={() => setSearchFocused(true)}
+                                            onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+                                            placeholder="Search modules"
+                                            style={{
+                                                width: "100%", padding: moduleSearch || searchFocused ? "8px 12px 8px 32px" : "8px 44px 8px 32px",
+                                                borderRadius: "8px", fontSize: "13px", color: theme.navbarText, outline: "none", boxSizing: "border-box",
+                                                background: searchFocused ? "#ffffff" : "#f8fafc",
+                                                border: `1px solid ${searchFocused ? tc.primary : "#e2e8f0"}`,
+                                                boxShadow: searchFocused ? `0 0 0 3px ${hexToRgba(tc.primary, 0.12)}` : "none",
+                                                transition: "border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease",
+                                            }}
+                                        />
+                                        {!moduleSearch && !searchFocused && (
+                                            <span style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", display: "flex", alignItems: "center", gap: "1px", padding: "2px 6px", borderRadius: "5px", background: "#eef1f6", border: "0.5px solid #e2e8f0", fontSize: "10.5px", fontWeight: 600, color: "#94a3b8", pointerEvents: "none" }}>
+                                                ⌘K
+                                            </span>
+                                        )}
+                                        {searchFocused && moduleSearch.trim() && (
+                                            <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: "300px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", boxShadow: "0 16px 36px rgba(15,23,42,0.16)", overflow: "hidden", zIndex: 150 }}>
+                                                {searchResults.length === 0 ? (
+                                                    <div style={{ padding: "22px 16px", textAlign: "center" }}>
+                                                        <p style={{ fontSize: "12.5px", color: "#94a3b8" }}>No active modules match <span style={{ fontWeight: 600, color: "#64748b" }}>"{moduleSearch.trim()}"</span></p>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <div style={{ padding: "9px 14px", borderBottom: "0.5px solid #f1f5f9", background: "#fafbfc" }}>
+                                                            <span style={{ fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                                                                Modules · {searchResults.length}
+                                                            </span>
+                                                        </div>
+                                                        {searchResults.map((item, i) => (
+                                                            <div key={item.key} onMouseDown={() => goToSearchResult(item)} className="admin-search-result"
+                                                                style={{ display: "flex", alignItems: "center", gap: "10px", padding: "9px 14px", cursor: "pointer", borderBottom: i < searchResults.length - 1 ? "0.5px solid #f8fafc" : "none" }}
+                                                                onMouseEnter={(e) => { e.currentTarget.style.background = theme.sidebarHover; }}
+                                                                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                                                            >
+                                                                <span style={{ width: "28px", height: "28px", borderRadius: "8px", background: hexToRgba(tc.primary, 0.1), display: "flex", alignItems: "center", justifyContent: "center", color: tc.primary, flexShrink: 0 }}>
+                                                                    {item.icon}
+                                                                </span>
+                                                                <span style={{ fontSize: "13px", fontWeight: 500, color: theme.navbarText, flex: 1 }}>{item.label}</span>
+                                                                <svg width="13" height="13" fill="none" stroke="#cbd5e1" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                            </div>
+                                                        ))}
+                                                    </>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Mobile Search Icon Trigger */}
+                                {hasActivePlan && (
+                                    <button
+                                        className="admin-mobile-search-btn"
+                                        onClick={() => {
+                                            setMobileSearchOpen(true);
+                                            setTimeout(() => mobileSearchInputRef.current?.focus(), 80);
+                                        }}
+                                        style={{
+                                            width: "32px", height: "32px", background: "transparent",
+                                            border: "0.5px solid #e2e8f0", borderRadius: "8px",
+                                            display: "none", alignItems: "center", justifyContent: "center",
+                                            cursor: "pointer", color: theme.navbarText,
+                                        }}
+                                        aria-label="Search modules"
+                                    >
+                                        <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                                            <circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
+                                        </svg>
+                                    </button>
+                                )}
+
+                                <div style={{ width: "30px", height: "30px", background: `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#fff" }}>
+                                    {user?.name?.charAt(0)?.toUpperCase() || "A"}
+                                </div>
+                                <span className="admin-navbar-username" style={{ fontSize: "13px", fontWeight: 500, color: theme.navbarText }}>
+                                    {user?.name || "Admin"}
+                                </span>
+                                <div style={{ width: "1px", height: "20px", background: "#e2e8f0" }}></div>
+                                <button
+                                    onClick={handleLogout}
+                                    style={{ padding: "6px 12px", background: "transparent", border: "0.5px solid #e2e8f0", borderRadius: "8px", fontSize: "12px", color: "#64748b", cursor: "pointer", display: "flex", alignItems: "center", gap: "5px" }}
+                                >
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                    </svg>
+                                    <span className="admin-navbar-logout-text">Logout</span>
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Content */}
@@ -546,14 +638,61 @@ const AdminLayout = () => {
                             </button>
                         </div>
 
+                        {/* Mobile Drawer Search */}
+                        {hasActivePlan && (
+                            <div style={{ padding: "10px 12px 4px", position: "relative", zIndex: 2 }}>
+                                <div style={{ position: "relative" }}>
+                                    <svg width="14" height="14" fill="none" stroke="#94a3b8" strokeWidth="2.2" viewBox="0 0 24 24" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                                        <circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
+                                    </svg>
+                                    <input
+                                        type="text"
+                                        value={moduleSearch}
+                                        onChange={(e) => setModuleSearch(e.target.value)}
+                                        placeholder="Search modules..."
+                                        style={{
+                                            width: "100%", padding: "8px 28px 8px 30px",
+                                            borderRadius: "10px", fontSize: "13px", color: theme.navbarText, outline: "none", boxSizing: "border-box",
+                                            background: "rgba(255,255,255,0.9)", border: "1px solid #e2e8f0",
+                                        }}
+                                    />
+                                    {moduleSearch && (
+                                        <button onClick={() => setModuleSearch("")} style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: 0, fontSize: "13px" }}>
+                                            ✕
+                                        </button>
+                                    )}
+                                </div>
+                                {moduleSearch.trim() && (
+                                    <div style={{ marginTop: "6px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "10px", overflow: "hidden", maxHeight: "220px", overflowY: "auto", boxShadow: "0 8px 20px rgba(0,0,0,0.1)" }}>
+                                        {searchResults.length === 0 ? (
+                                            <div style={{ padding: "12px", textAlign: "center" }}>
+                                                <p style={{ fontSize: "12px", color: "#94a3b8", margin: 0 }}>No matches found</p>
+                                            </div>
+                                        ) : (
+                                            searchResults.map((item) => (
+                                                <div key={item.key} onClick={() => { goToSearchResult(item); setMobileOpen(false); }}
+                                                    style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", cursor: "pointer", borderBottom: "0.5px solid #f8fafc" }}
+                                                >
+                                                    <span style={{ width: "24px", height: "24px", borderRadius: "6px", background: hexToRgba(tc.primary, 0.1), display: "flex", alignItems: "center", justifyContent: "center", color: tc.primary, flexShrink: 0 }}>
+                                                        {item.icon}
+                                                    </span>
+                                                    <span style={{ fontSize: "13px", fontWeight: 500, color: theme.navbarText, flex: 1 }}>{item.label}</span>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "10px", padding: "10px 8px 0", position: "relative", zIndex: 1 }}>
                             <div style={{ border: "1px solid #f1f5f9", borderRadius: "14px", background: "rgba(255,255,255,0.6)", padding: "4px 0" }}>
                                 <SectionLabel tc={tc}>Main</SectionLabel>
                                 <nav style={{ padding: "4px 0" }}>
-                                    {coreItems.map((item, i) => <NavItem key={item.key} item={item} index={i} forceExpanded onNavigate={() => setMobileOpen(false)} />)}
+                                    {visibleCoreItems.map((item, i) => <NavItem key={item.key} item={item} index={i} forceExpanded onNavigate={() => setMobileOpen(false)} />)}
                                 </nav>
                             </div>
-                            {moduleItems.length > 0 && (
+                            {hasActivePlan && moduleItems.length > 0 && (
                                 <div style={{ border: "1px solid #f1f5f9", borderRadius: "14px", background: "rgba(255,255,255,0.6)", padding: "4px 0" }}>
                                     <SectionLabel tc={tc}>Modules</SectionLabel>
                                     <nav style={{ padding: "4px 0" }}>
