@@ -118,7 +118,7 @@ const ImageCropModal = ({ imageSrc, aspect = 16 / 9, onCancel, onCropComplete, a
                             </svg>
                         ) : undefined}
                     >
-                        <img ref={imgRef} src={imageSrc} onLoad={onImageLoad} alt="Crop preview" style={{ maxHeight: '60vh', display: 'block' }} />
+                        <img ref={imgRef} src={imageSrc} crossOrigin="anonymous" onLoad={onImageLoad} alt="Crop preview" style={{ maxHeight: '60vh', display: 'block' }} />
                     </ReactCrop>
                 </div>
                 {maskShape === 'shield' && (

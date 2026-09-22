@@ -24,6 +24,13 @@ const BannerIcon = ({ size = 28, color = '#94a3b8' }) => (
     <svg width={size} height={size} fill="none" stroke={color} strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M4 6h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1z" /></svg>
 );
 
+const CropIcon = ({ size = 12, color = 'currentColor' }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6.13 1L6 16a2 2 0 0 0 2 2h15" />
+        <path d="M1 6.13L16 6a2 2 0 0 1 2 2v15" />
+    </svg>
+);
+
 const SaveIcon = ({ size = 13, color = 'currentColor' }) => (
     <svg width={size} height={size} fill="none" stroke={color} strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /><path strokeLinecap="round" strokeLinejoin="round" d="M17 21v-8H7v8M7 3v5h8" /></svg>
 );
@@ -275,7 +282,8 @@ const HomePage = () => {
     const [removingVideo, setRemovingVideo] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
     const [cropSrc, setCropSrc] = useState(null);
-    const [cropTarget, setCropTarget] = useState('banner'); // 'banner' | 'intro1' | 'intro2' | 'campus'
+    const [cropTarget, setCropTarget] = useState('banner'); // 'banner' | 'recrop-banner' | 'intro1' | 'intro2' | 'campus' | 'recrop-campus'
+    const [recropId, setRecropId] = useState(null);
     const [imageQueue, setImageQueue] = useState([]); // remaining files still waiting to be cropped
     const [activeTab, setActiveTab] = useState('hero');
     const [testimonialUploading, setTestimonialUploading] = useState({});
@@ -389,14 +397,28 @@ const HomePage = () => {
         setUploadingImage(true);
         try {
             const res = await uploadContentImageApi(croppedFile);
-            if (cropTarget === 'banner') {
+            if (cropTarget === 'recrop-banner') {
+                setContent(prev => ({
+                    ...prev,
+                    heroBanners: prev.heroBanners.map(b => b.id === recropId ? { ...b, url: res.data.url } : b)
+                }));
+                setRecropId(null);
+                toast.success('Banner updated!');
+            } else if (cropTarget === 'banner') {
                 setContent(prev => ({ ...prev, heroBanners: [...prev.heroBanners, { id: `banner-${Date.now()}`, url: res.data.url }] }));
+            } else if (cropTarget === 'recrop-campus') {
+                setContent(prev => ({
+                    ...prev,
+                    campusImages: prev.campusImages.map(img => img.id === recropId ? { ...img, url: res.data.url } : img)
+                }));
+                setRecropId(null);
+                toast.success('Campus image updated!');
+            } else if (cropTarget === 'campus') {
+                setContent(prev => ({ ...prev, campusImages: [...prev.campusImages, { id: `campus-${Date.now()}`, url: res.data.url }] }));
             } else if (cropTarget === 'intro1') {
                 setContent(prev => ({ ...prev, introImage1: res.data.url }));
             } else if (cropTarget === 'intro2') {
                 setContent(prev => ({ ...prev, introImage2: res.data.url }));
-            } else if (cropTarget === 'campus') {
-                setContent(prev => ({ ...prev, campusImages: [...prev.campusImages, { id: `campus-${Date.now()}`, url: res.data.url }] }));
             }
         } catch (e) {
             toast.error(e?.response?.data?.message || 'Failed to upload image');
@@ -410,8 +432,52 @@ const HomePage = () => {
         }
     };
 
+    const moveBanner = (index, direction) => {
+        const next = [...content.heroBanners];
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= next.length) return;
+        const temp = next[index];
+        next[index] = next[targetIndex];
+        next[targetIndex] = temp;
+        handleChange('heroBanners', next);
+    };
+
+    const recropBanner = async (banner) => {
+        setRecropId(banner.id);
+        setCropTarget('recrop-banner');
+        try {
+            const res = await fetch(banner.url);
+            const blob = await res.blob();
+            setCropSrc(URL.createObjectURL(blob));
+        } catch (e) {
+            setCropSrc(banner.url);
+        }
+    };
+
     const removeBanner = (id) => {
         setContent(prev => ({ ...prev, heroBanners: prev.heroBanners.filter(b => b.id !== id) }));
+    };
+
+    const moveCampusImage = (index, direction) => {
+        const next = [...content.campusImages];
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= next.length) return;
+        const temp = next[index];
+        next[index] = next[targetIndex];
+        next[targetIndex] = temp;
+        handleChange('campusImages', next);
+    };
+
+    const recropCampusImage = async (img) => {
+        setRecropId(img.id);
+        setCropTarget('recrop-campus');
+        try {
+            const res = await fetch(img.url);
+            const blob = await res.blob();
+            setCropSrc(URL.createObjectURL(blob));
+        } catch (e) {
+            setCropSrc(img.url);
+        }
     };
 
     const removeCampusImage = (id) => {
@@ -737,20 +803,103 @@ const HomePage = () => {
                                 </p>
                                 <span style={{ fontSize: '11px', color: content.heroBanners.length >= HERO_BANNERS_MAX ? '#dc2626' : '#94a3b8', fontWeight: 600, whiteSpace: 'nowrap' }}>{content.heroBanners.length} / {HERO_BANNERS_MAX}</span>
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '12px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '14px' }}>
                                 {content.heroBanners.map((b, i) => (
-                                    <div key={b.id} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '0.5px solid #e2e8f0', height: '90px' }}>
+                                    <div key={b.id} style={{
+                                        position: 'relative', borderRadius: '10px', overflow: 'hidden',
+                                        border: '1px solid #e2e8f0', height: '110px',
+                                        boxShadow: '0 2px 6px rgba(0,0,0,0.06)', background: '#0f172a'
+                                    }}>
                                         <img src={b.url} alt={`Banner ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                                        <button onClick={() => removeBanner(b.id)}
-                                            style={{ position: 'absolute', top: '5px', right: '5px', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '12px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            ✕
-                                        </button>
-                                        <div style={{ position: 'absolute', bottom: '5px', left: '6px', fontSize: '10px', color: '#fff', background: 'rgba(0,0,0,0.5)', padding: '1px 6px', borderRadius: '4px' }}>#{i + 1}</div>
+
+                                        {/* Top Controls: Recrop & Delete */}
+                                        <div style={{ position: 'absolute', top: '6px', left: '6px', right: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 2 }}>
+                                            <button
+                                                type="button"
+                                                onClick={() => recropBanner(b)}
+                                                title="Recrop this banner"
+                                                style={{
+                                                    padding: '3px 8px', borderRadius: '5px',
+                                                    background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                                    color: '#ffffff', border: '1px solid rgba(255,255,255,0.25)',
+                                                    cursor: 'pointer', fontSize: '11px', fontWeight: 600,
+                                                    display: 'flex', alignItems: 'center', gap: '4px',
+                                                    boxShadow: '0 2px 5px rgba(0,0,0,0.25)',
+                                                }}
+                                            >
+                                                <CropIcon size={11} color="#ffffff" />
+                                                <span>Recrop</span>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => removeBanner(b.id)}
+                                                title="Delete banner"
+                                                style={{
+                                                    width: '22px', height: '22px', borderRadius: '50%',
+                                                    background: 'rgba(239, 68, 68, 0.85)', backdropFilter: 'blur(4px)',
+                                                    color: '#ffffff', border: 'none',
+                                                    cursor: 'pointer', fontSize: '12px', fontWeight: 700,
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    boxShadow: '0 2px 5px rgba(0,0,0,0.25)',
+                                                }}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+
+                                        {/* Bottom Bar: Badge + Reorder Left / Right */}
+                                        <div style={{
+                                            position: 'absolute', bottom: 0, left: 0, right: 0,
+                                            padding: '4px 8px',
+                                            background: 'linear-gradient(to top, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.4) 70%, transparent 100%)',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                            zIndex: 2,
+                                        }}>
+                                            <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#ffffff', background: 'rgba(255,255,255,0.22)', padding: '1px 6px', borderRadius: '4px' }}>
+                                                #{i + 1}
+                                            </span>
+
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <button
+                                                    type="button"
+                                                    disabled={i === 0}
+                                                    onClick={() => moveBanner(i, -1)}
+                                                    title="Move Left"
+                                                    style={{
+                                                        width: '22px', height: '22px', borderRadius: '4px',
+                                                        background: i === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)',
+                                                        color: i === 0 ? 'rgba(255,255,255,0.35)' : '#ffffff',
+                                                        border: 'none', cursor: i === 0 ? 'not-allowed' : 'pointer',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        fontSize: '9px', fontWeight: 800,
+                                                    }}
+                                                >
+                                                    ◀
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    disabled={i === content.heroBanners.length - 1}
+                                                    onClick={() => moveBanner(i, 1)}
+                                                    title="Move Right"
+                                                    style={{
+                                                        width: '22px', height: '22px', borderRadius: '4px',
+                                                        background: i === content.heroBanners.length - 1 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)',
+                                                        color: i === content.heroBanners.length - 1 ? 'rgba(255,255,255,0.35)' : '#ffffff',
+                                                        border: 'none', cursor: i === content.heroBanners.length - 1 ? 'not-allowed' : 'pointer',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        fontSize: '9px', fontWeight: 800,
+                                                    }}
+                                                >
+                                                    ▶
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 ))}
                                 {content.heroBanners.length < HERO_BANNERS_MAX && (
                                     <div onClick={() => document.getElementById('heroBannerInput').click()}
-                                        style={{ height: '90px', border: '1.5px dashed #e2e8f0', borderRadius: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: (uploadingImage && cropTarget === 'banner') ? 'not-allowed' : 'pointer', background: '#fafafa' }}>
+                                        style={{ height: '110px', border: '1.5px dashed #e2e8f0', borderRadius: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: (uploadingImage && cropTarget === 'banner') ? 'not-allowed' : 'pointer', background: '#fafafa' }}>
                                         {(uploadingImage && cropTarget === 'banner') ? (
                                             <svg style={{ animation: 'spin 1s linear infinite', width: '18px', height: '18px' }} viewBox="0 0 24 24" fill="none"><circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke={tc.primary} strokeWidth="4"/><path style={{ opacity: 0.75 }} fill={tc.primary} d="M4 12a8 8 0 018-8v8z"/></svg>
                                         ) : (
@@ -947,19 +1096,103 @@ const HomePage = () => {
                                 <label style={{ ...labelStyle, marginBottom: 0 }}>Photos</label>
                                 <span style={{ fontSize: '11px', color: content.campusImages.length >= CAMPUS_IMAGES_MAX ? '#dc2626' : '#94a3b8', fontWeight: 600 }}>{content.campusImages.length} / {CAMPUS_IMAGES_MAX}</span>
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '12px' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '14px' }}>
                                 {content.campusImages.map((img, i) => (
-                                    <div key={img.id} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '0.5px solid #e2e8f0', height: '110px' }}>
+                                    <div key={img.id} style={{
+                                        position: 'relative', borderRadius: '10px', overflow: 'hidden',
+                                        border: '1px solid #e2e8f0', height: '110px',
+                                        boxShadow: '0 2px 6px rgba(0,0,0,0.06)', background: '#0f172a'
+                                    }}>
                                         <img src={img.url} alt={`Campus ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                                        <button onClick={() => removeCampusImage(img.id)}
-                                            style={{ position: 'absolute', top: '5px', right: '5px', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '12px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            ✕
-                                        </button>
+
+                                        {/* Top Controls: Recrop & Delete */}
+                                        <div style={{ position: 'absolute', top: '6px', left: '6px', right: '6px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 2 }}>
+                                            <button
+                                                type="button"
+                                                onClick={() => recropCampusImage(img)}
+                                                title="Recrop this photo"
+                                                style={{
+                                                    padding: '3px 8px', borderRadius: '5px',
+                                                    background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                                    color: '#ffffff', border: '1px solid rgba(255,255,255,0.25)',
+                                                    cursor: 'pointer', fontSize: '11px', fontWeight: 600,
+                                                    display: 'flex', alignItems: 'center', gap: '4px',
+                                                    boxShadow: '0 2px 5px rgba(0,0,0,0.25)',
+                                                }}
+                                            >
+                                                <CropIcon size={11} color="#ffffff" />
+                                                <span>Recrop</span>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => removeCampusImage(img.id)}
+                                                title="Delete photo"
+                                                style={{
+                                                    width: '22px', height: '22px', borderRadius: '50%',
+                                                    background: 'rgba(239, 68, 68, 0.85)', backdropFilter: 'blur(4px)',
+                                                    color: '#ffffff', border: 'none',
+                                                    cursor: 'pointer', fontSize: '12px', fontWeight: 700,
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    boxShadow: '0 2px 5px rgba(0,0,0,0.25)',
+                                                }}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+
+                                        {/* Bottom Bar: Badge + Reorder Left / Right */}
+                                        <div style={{
+                                            position: 'absolute', bottom: 0, left: 0, right: 0,
+                                            padding: '4px 8px',
+                                            background: 'linear-gradient(to top, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.4) 70%, transparent 100%)',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                            zIndex: 2,
+                                        }}>
+                                            <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#ffffff', background: 'rgba(255,255,255,0.22)', padding: '1px 6px', borderRadius: '4px' }}>
+                                                #{i + 1}
+                                            </span>
+
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <button
+                                                    type="button"
+                                                    disabled={i === 0}
+                                                    onClick={() => moveCampusImage(i, -1)}
+                                                    title="Move Left"
+                                                    style={{
+                                                        width: '22px', height: '22px', borderRadius: '4px',
+                                                        background: i === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)',
+                                                        color: i === 0 ? 'rgba(255,255,255,0.35)' : '#ffffff',
+                                                        border: 'none', cursor: i === 0 ? 'not-allowed' : 'pointer',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        fontSize: '9px', fontWeight: 800,
+                                                    }}
+                                                >
+                                                    ◀
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    disabled={i === content.campusImages.length - 1}
+                                                    onClick={() => moveCampusImage(i, 1)}
+                                                    title="Move Right"
+                                                    style={{
+                                                        width: '22px', height: '22px', borderRadius: '4px',
+                                                        background: i === content.campusImages.length - 1 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.3)',
+                                                        color: i === content.campusImages.length - 1 ? 'rgba(255,255,255,0.35)' : '#ffffff',
+                                                        border: 'none', cursor: i === content.campusImages.length - 1 ? 'not-allowed' : 'pointer',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        fontSize: '9px', fontWeight: 800,
+                                                    }}
+                                                >
+                                                    ▶
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 ))}
                                 {content.campusImages.length < CAMPUS_IMAGES_MAX && (
                                     <div onClick={() => document.getElementById('campusImagesInput').click()}
-                                        style={{ height: '110px', border: '1.5px dashed #e2e8f0', borderRadius: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: (uploadingImage && cropTarget === 'campus') ? 'not-allowed' : 'pointer', background: '#fafafa' }}>
+                                        style={{ height: '110px', border: '1.5px dashed #e2e8f0', borderRadius: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: (uploadingImage && cropTarget === 'campus') ? 'not-allowed' : 'pointer', background: '#fafafa' }}>
                                         {(uploadingImage && cropTarget === 'campus') ? (
                                             <svg style={{ animation: 'spin 1s linear infinite', width: '18px', height: '18px' }} viewBox="0 0 24 24" fill="none"><circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke={tc.primary} strokeWidth="4" /><path style={{ opacity: 0.75 }} fill={tc.primary} d="M4 12a8 8 0 018-8v8z" /></svg>
                                         ) : (
