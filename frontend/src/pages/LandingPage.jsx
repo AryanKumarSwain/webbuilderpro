@@ -85,33 +85,53 @@ const PlayIcon = ({ color = BLUE }) => (
     <svg width="13" height="13" fill={color} viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
 );
 
-// ── Sharp, rectangular module chip used inside the marquee — icon tile left, title +
-// one-line description right. Deliberately low-radius (sharp corners) per design brief. ──
+// ── Modern, sleek module chip used inside the marquee — clean squircle icon tile,
+// bold title, crisp description, and hover arrow hint matching the SaaS theme. ──
 const ModuleChip = ({ m }) => (
     <div className="lp-mod-chip" style={{
-        flexShrink: 0, width: '272px', display: 'flex', alignItems: 'center', gap: '14px',
-        padding: '14px 18px', background: '#ffffff', border: '1px solid #e7ebf5', borderRadius: '10px',
-        boxShadow: '0 4px 14px rgba(15,23,42,0.05)',
+        flexShrink: 0, width: '292px', display: 'flex', alignItems: 'center', gap: '14px',
+        padding: '14px 18px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px',
+        boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
     }}>
         <div className="lp-mod-tile" style={{
-            width: '44px', height: '44px', borderRadius: '10px', flexShrink: 0,
+            width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: `linear-gradient(145deg, ${m.accent}, ${BLUE_DARK})`,
-            boxShadow: `inset 0 2px 2px rgba(255,255,255,0.4), inset 0 -3px 6px rgba(0,0,0,0.25), 0 8px 16px ${m.accent}45`,
+            background: `linear-gradient(135deg, ${m.accent}, #0f1f4b)`,
+            boxShadow: `0 6px 16px ${m.accent}30, inset 0 1px 1px rgba(255,255,255,0.35)`,
         }}>
-            <svg width="20" height="20" fill="none" stroke="#ffffff" strokeWidth="1.8" viewBox="0 0 24 24">{m.icon}</svg>
+            <svg width="21" height="21" fill="none" stroke="#ffffff" strokeWidth="1.9" viewBox="0 0 24 24">{m.icon}</svg>
         </div>
-        <div style={{ minWidth: 0 }}>
-            <p style={{ fontSize: '13.5px', fontWeight: 700, color: TEXT_DARK, marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.title}</p>
-            <p style={{ fontSize: '11.5px', color: TEXT_MUTED_LIGHT, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.desc}</p>
+        <div style={{ minWidth: 0, flex: 1 }}>
+            <p style={{
+                fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
+                fontSize: '13.8px',
+                fontWeight: 700,
+                color: '#0f1f4b',
+                marginBottom: '2px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+            }}>{m.title}</p>
+            <p style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: '11.8px',
+                color: '#64748b',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+            }}>{m.desc}</p>
+        </div>
+        <div className="lp-mod-arrow" style={{ opacity: 0.25, display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            <svg width="14" height="14" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6" />
+            </svg>
         </div>
     </div>
 );
 
-// ── Module showcase — every module actually built in the platform (matches App.jsx's
-// module/:key routes 1:1), rendered as a two-row infinite marquee rather than a static grid.
-// `accent` cycles through the blue/grey palette for the icon tile + title color-grade. ──
-const MODULE_ACCENTS = [BLUE, '#6C8EEF', BLUE_DARK, '#7C93E8', '#5B78D8'];
+// ── Module showcase — every module built in the platform, rendered as a two-row marquee.
+// Accents cycle through vivid blue/indigo shades matching the hero palette. ──
+const MODULE_ACCENTS = ['#2563eb', '#1d4ed8', '#0284c7', '#3b82f6', '#4f46e5'];
 const rawModules = [
     { key: 'home', title: 'Home Page', desc: 'Hero banners & highlights', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /> },
     { key: 'about', title: 'About Us', desc: 'Vision, mission & history', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> },
@@ -305,14 +325,33 @@ const LandingPage = () => {
                      pause on hover so a module can actually be read. ── */
                 @keyframes lpMarqueeRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
                 @keyframes lpMarqueeLeft { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-                .lp-mod-track { display: flex; gap: 16px; width: max-content; }
-                .lp-mod-track-right { animation: lpMarqueeRight 46s linear infinite; }
-                .lp-mod-track-left { animation: lpMarqueeLeft 42s linear infinite; }
+                .lp-mod-track { display: flex; gap: 18px; width: max-content; padding: 6px 0; }
+                .lp-mod-track-right { animation: lpMarqueeRight 48s linear infinite; }
+                .lp-mod-track-left { animation: lpMarqueeLeft 44s linear infinite; }
                 .lp-mod-track:hover { animation-play-state: paused; }
-                .lp-mod-chip { transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease, border-color 0.25s ease; }
-                .lp-mod-chip:hover { transform: translateY(-5px); box-shadow: 0 16px 30px rgba(65,105,225,0.18) !important; border-color: ${BLUE}55 !important; }
-                .lp-mod-tile { transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); transform: perspective(500px) rotateX(14deg) rotateY(-16deg); }
-                .lp-mod-chip:hover .lp-mod-tile { transform: perspective(500px) rotateX(0deg) rotateY(0deg) scale(1.08); }
+                .lp-mod-chip {
+                    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+                    cursor: default;
+                }
+                .lp-mod-chip:hover {
+                    transform: translateY(-4px);
+                    box-shadow: 0 16px 32px -4px rgba(15, 31, 75, 0.12), 0 0 0 1.5px rgba(37, 99, 235, 0.35) !important;
+                    border-color: rgba(37, 99, 235, 0.35) !important;
+                }
+                .lp-mod-tile {
+                    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+                }
+                .lp-mod-chip:hover .lp-mod-tile {
+                    transform: scale(1.08);
+                    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35) !important;
+                }
+                .lp-mod-arrow {
+                    transition: transform 0.25s ease, opacity 0.25s ease;
+                }
+                .lp-mod-chip:hover .lp-mod-arrow {
+                    opacity: 1 !important;
+                    transform: translateX(3px);
+                }
 
                 @media (max-width: 980px) {
                     .lp-hero-grid { grid-template-columns: 1fr !important; text-align: center; }
@@ -638,23 +677,43 @@ const LandingPage = () => {
                     </div>
                 </section>
 
-                {/* ── Module Showcase — every module in the platform, as a two-row infinite
-                     marquee of sharp rectangular chips (top row scrolls right, bottom row
-                     scrolls left). White base with a faint dot-grid + soft blue glows. ── */}
-                <section id="modules" style={{ padding: 'clamp(3rem,7vw,5.5rem) 0', background: '#ffffff', position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', inset: 0, backgroundImage: `radial-gradient(${BLUE}18 1px, transparent 1px)`, backgroundSize: '26px 26px', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'absolute', width: '420px', height: '420px', borderRadius: '50%', background: `radial-gradient(circle, ${BLUE}12 0%, transparent 70%)`, top: '-160px', left: '-80px', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'absolute', width: '380px', height: '380px', borderRadius: '50%', background: `radial-gradient(circle, ${BLUE_DARK}10 0%, transparent 70%)`, bottom: '-140px', right: '-80px', pointerEvents: 'none' }}></div>
+                {/* ── Module Showcase — every module in the platform, rendered as a two-row marquee
+                     of sleek modern cards. Styled to match hero section typography and lighting. ── */}
+                <section id="modules" style={{ padding: 'clamp(3.5rem,7vw,5.5rem) 0', background: '#ffffff', position: 'relative', overflow: 'hidden' }}>
+                    {/* Subtle dot matrix pattern */}
+                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(37, 99, 235, 0.1) 1.2px, transparent 1.2px)', backgroundSize: '24px 24px', pointerEvents: 'none' }}></div>
+                    
+                    {/* Soft theme-matching ambient glows */}
+                    <div style={{ position: 'absolute', width: '480px', height: '480px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(191, 219, 254, 0.45) 0%, transparent 70%)', top: '-160px', left: '-80px', pointerEvents: 'none' }}></div>
+                    <div style={{ position: 'absolute', width: '460px', height: '460px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(254, 215, 170, 0.35) 0%, transparent 70%)', bottom: '-140px', right: '-80px', pointerEvents: 'none' }}></div>
 
-                    <div style={{ maxWidth: '1200px', margin: '0 auto clamp(2.5rem,5vw,3.5rem)', padding: '0 clamp(1.25rem,6vw,4rem)', position: 'relative' }}>
+                    <div style={{ maxWidth: '1200px', margin: '0 auto clamp(2.5rem,5vw,3.5rem)', padding: '0 clamp(1.25rem,6vw,4rem)', position: 'relative', textAlign: 'center' }}>
                         <Reveal style={{ textAlign: 'center' }}>
-                            <span style={{ display: 'inline-block', fontSize: '11.5px', fontWeight: 700, color: BLUE_DARK, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '12px' }}>
-                                A Module For Every Need
-                            </span>
-                            <h2 className="lp-hero-heading-shimmer" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, marginBottom: '12px', letterSpacing: '-0.6px' }}>
-                                Explore Every Module
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '999px', background: 'rgba(37, 99, 235, 0.07)', border: '1px solid rgba(37, 99, 235, 0.18)', marginBottom: '16px' }}>
+                                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#2563eb', display: 'inline-block' }}></span>
+                                <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#1d4ed8', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                                    A Module For Every Need
+                                </span>
+                            </div>
+                            <h2 style={{
+                                fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif",
+                                fontSize: 'clamp(32px, 4.2vw, 48px)',
+                                fontWeight: 900,
+                                letterSpacing: '-1.5px',
+                                marginBottom: '14px',
+                                lineHeight: 1.15
+                            }}>
+                                <span className="lp-hero-rtl-shimmer">Explore Every Module</span>
                             </h2>
-                            <p style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: '14.5px', color: TEXT_MUTED_LIGHT, maxWidth: '560px', margin: '0 auto', lineHeight: 1.7 }}>
+                            <p style={{
+                                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                                fontSize: '15.5px',
+                                color: '#64748b',
+                                maxWidth: '580px',
+                                margin: '0 auto',
+                                lineHeight: 1.7,
+                                fontWeight: 400
+                            }}>
                                 Publish once, manage everything — every module below is live in the platform today.
                             </p>
                         </Reveal>
@@ -662,8 +721,9 @@ const LandingPage = () => {
 
                     <Reveal>
                         <div style={{ position: 'relative' }}>
-                            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '90px', background: 'linear-gradient(90deg,#ffffff,transparent)', zIndex: 2, pointerEvents: 'none' }}></div>
-                            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '90px', background: 'linear-gradient(270deg,#ffffff,transparent)', zIndex: 2, pointerEvents: 'none' }}></div>
+                            {/* Smooth edge fades for the marquee */}
+                            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '140px', background: 'linear-gradient(90deg, #ffffff 40%, rgba(255,255,255,0.7) 70%, transparent 100%)', zIndex: 2, pointerEvents: 'none' }}></div>
+                            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '140px', background: 'linear-gradient(270deg, #ffffff 40%, rgba(255,255,255,0.7) 70%, transparent 100%)', zIndex: 2, pointerEvents: 'none' }}></div>
 
                             <div style={{ overflow: 'hidden', marginBottom: '16px' }}>
                                 <div className="lp-mod-track lp-mod-track-right">
