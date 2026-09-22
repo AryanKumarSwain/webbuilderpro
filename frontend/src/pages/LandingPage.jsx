@@ -776,18 +776,10 @@ const LandingPage = () => {
                                 fontWeight: 900,
                                 letterSpacing: '-1.5px',
                                 marginBottom: '14px',
-                                lineHeight: 1.15,
-                                color: '#0f1f4b'
+                                lineHeight: 1.15
                             }}>
-                                Explore{' '}
-                                <span style={{
-                                    background: 'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 50%, #db2777 100%)',
-                                    WebkitBackgroundClip: 'text',
-                                    backgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent'
-                                }}>
-                                    Every Module
-                                </span>
+                                <span className="lp-hero-rtl-shimmer">Explore </span>
+                                <span className="lp-hero-ltr-shimmer">Every Module</span>
                             </h2>
                             <p style={{
                                 fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
