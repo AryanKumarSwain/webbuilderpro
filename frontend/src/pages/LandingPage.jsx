@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/webbuilder-removebg-preview.png";
 import schoolHeroBg from "../assets/school-hero-bg.jpg";
+import previewSlide1 from "../assets/preview-slide-1.jpg";
+import previewSlide2 from "../assets/preview-slide-2.jpg";
+import previewSlide3 from "../assets/preview-slide-3.jpg";
 
 // ── Scroll-triggered fade+slide-up, same IntersectionObserver pattern used on every public page ──
 const useScrollReveal = () => {
@@ -283,11 +286,38 @@ const TRUST_CARDS = [
 
 const DEMO_URL = 'https://jdis.wbpro.in';
 
+const PREVIEW_DESKTOP_SLIDES = [
+    {
+        image: previewSlide1,
+        title: "Modern Architectural Presence",
+        tag: "Heritage & Infrastructure"
+    },
+    {
+        image: previewSlide2,
+        title: "Discipline & Athletic Excellence",
+        tag: "NCC Cadets & Sports"
+    },
+    {
+        image: previewSlide3,
+        title: "Vibrant School Life & Celebrations",
+        tag: "Annual Day & Culture"
+    }
+];
+
 const LandingPage = () => {
     const navigate = useNavigate();
     const [scrolled, setScrolled] = useState(false);
     const [tilt, setTilt] = useState({ x: 0, y: 0 });
     const [heroTilt, setHeroTilt] = useState({ x: 0, y: 0 });
+    const [previewSlide, setPreviewSlide] = useState(0);
+
+    // Auto-advance preview slides synchronously every 4 seconds
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setPreviewSlide(prev => (prev + 1) % PREVIEW_DESKTOP_SLIDES.length);
+        }, 4000);
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 20);
@@ -1066,7 +1096,7 @@ const LandingPage = () => {
                         </Reveal>
 
                         <div className="lp-preview-grid" style={{ display: 'grid', gridTemplateColumns: '1.35fr 0.65fr', gap: 'clamp(1.75rem,4vw,2.75rem)', alignItems: 'center' }}>
-                            {/* Desktop Admin Dashboard Mockup */}
+                            {/* Desktop Live Website Carousel Window */}
                             <Reveal>
                                 <div style={{ perspective: '1600px' }} onMouseMove={handlePreviewMove} onMouseLeave={handlePreviewLeave}>
                                     <div className="lp-tilt-frame" style={{ transform: `perspective(1600px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}>
@@ -1074,8 +1104,9 @@ const LandingPage = () => {
                                             background: '#ffffff',
                                             borderRadius: '22px',
                                             overflow: 'hidden',
-                                            boxShadow: '0 30px 70px -15px rgba(15, 23, 42, 0.15), 0 10px 24px rgba(0,0,0,0.04)',
-                                            border: '1.5px solid #e2e8f0'
+                                            boxShadow: '0 30px 70px -15px rgba(15, 23, 42, 0.16), 0 10px 24px rgba(0,0,0,0.04)',
+                                            border: '1.5px solid #e2e8f0',
+                                            position: 'relative'
                                         }}>
                                             {/* Browser Window Header */}
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 18px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
@@ -1086,96 +1117,134 @@ const LandingPage = () => {
                                                 </div>
                                                 <div style={{
                                                     display: 'flex', alignItems: 'center', gap: '8px',
-                                                    padding: '4px 14px', borderRadius: '999px',
+                                                    padding: '5px 16px', borderRadius: '999px',
                                                     background: '#ffffff', border: '1px solid #e2e8f0',
-                                                    fontSize: '11.5px', color: '#64748b', fontWeight: 600,
-                                                    maxWidth: '280px', width: '100%', justifyContent: 'center'
+                                                    fontSize: '11.5px', color: '#475569', fontWeight: 600,
+                                                    maxWidth: '290px', width: '100%', justifyContent: 'center'
                                                 }}>
                                                     <span style={{ color: '#059669', fontSize: '10px' }}>🔒</span>
-                                                    <span>jdis.wbpro.in/admin</span>
+                                                    <span>https://jdis.wbpro.in</span>
                                                 </div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                    <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981' }}></span>
-                                                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#059669' }}>Live</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                        <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }}></span>
+                                                        <span style={{ fontSize: '11px', fontWeight: 700, color: '#059669' }}>Live Website</span>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            {/* Dashboard Internal Layout */}
-                                            <div style={{ display: 'flex', minHeight: '340px' }}>
-                                                {/* Left Sidebar */}
-                                                <div style={{ width: '130px', flexShrink: 0, background: '#f8fafc', padding: '16px 10px', display: 'flex', flexDirection: 'column', gap: '6px', borderRight: '1px solid #e2e8f0' }}>
-                                                    <div style={{ padding: '6px 10px', borderRadius: '8px', background: '#eff6ff', color: '#1d4ed8', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <span style={{ fontSize: '13px' }}>📊</span> Overview
+                                            {/* Slides Container Area */}
+                                            <div style={{
+                                                position: 'relative',
+                                                height: 'clamp(280px, 32vw, 390px)',
+                                                background: '#0f172a',
+                                                overflow: 'hidden'
+                                            }}>
+                                                {PREVIEW_DESKTOP_SLIDES.map((s, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        style={{
+                                                            position: 'absolute',
+                                                            inset: 0,
+                                                            opacity: previewSlide === idx ? 1 : 0,
+                                                            transform: previewSlide === idx ? 'scale(1)' : 'scale(1.03)',
+                                                            transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                            pointerEvents: previewSlide === idx ? 'auto' : 'none'
+                                                        }}
+                                                    >
+                                                        <img
+                                                            src={s.image}
+                                                            alt={s.title}
+                                                            style={{
+                                                                width: '100%',
+                                                                height: '100%',
+                                                                objectFit: 'cover',
+                                                                objectPosition: 'top center',
+                                                                display: 'block'
+                                                            }}
+                                                        />
                                                     </div>
-                                                    <div style={{ padding: '6px 10px', borderRadius: '8px', color: '#64748b', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <span style={{ fontSize: '13px' }}>👥</span> Students
-                                                    </div>
-                                                    <div style={{ padding: '6px 10px', borderRadius: '8px', color: '#64748b', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <span style={{ fontSize: '13px' }}>💳</span> Fee Portal
-                                                    </div>
-                                                    <div style={{ padding: '6px 10px', borderRadius: '8px', color: '#64748b', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <span style={{ fontSize: '13px' }}>📢</span> Notices
-                                                    </div>
-                                                    <div style={{ padding: '6px 10px', borderRadius: '8px', color: '#64748b', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <span style={{ fontSize: '13px' }}>⚙️</span> Settings
-                                                    </div>
-                                                </div>
+                                                ))}
 
-                                                {/* Main Content Area */}
-                                                <div style={{ flex: 1, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '14px', background: '#ffffff' }}>
-                                                    {/* Top Dashboard Title Bar */}
-                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
-                                                        <div>
-                                                            <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>School Administration</div>
-                                                            <div style={{ fontSize: '11.5px', color: '#64748b' }}>Academic Session 2025–26</div>
-                                                        </div>
-                                                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '6px', background: '#ecfdf5', color: '#059669', fontSize: '11px', fontWeight: 700 }}>
-                                                            <span>●</span> System Healthy
-                                                        </div>
+                                                {/* Floating Glassmorphic Slide Controller Bar */}
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    bottom: '12px',
+                                                    left: '14px',
+                                                    right: '14px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    padding: '7px 14px',
+                                                    borderRadius: '12px',
+                                                    background: 'rgba(15, 23, 42, 0.76)',
+                                                    backdropFilter: 'blur(10px)',
+                                                    border: '1px solid rgba(255, 255, 255, 0.16)',
+                                                    color: '#ffffff',
+                                                    zIndex: 10
+                                                }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                        <span style={{
+                                                            fontSize: '10.5px',
+                                                            fontWeight: 800,
+                                                            padding: '2px 8px',
+                                                            borderRadius: '5px',
+                                                            background: '#2563eb',
+                                                            color: '#ffffff',
+                                                            letterSpacing: '0.04em',
+                                                            textTransform: 'uppercase'
+                                                        }}>
+                                                            {PREVIEW_DESKTOP_SLIDES[previewSlide].tag}
+                                                        </span>
+                                                        <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#f1f5f9' }}>
+                                                            {PREVIEW_DESKTOP_SLIDES[previewSlide].title}
+                                                        </span>
                                                     </div>
 
-                                                    {/* 3 Metrics KPI Cards */}
-                                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                                                        <div style={{ padding: '10px 12px', borderRadius: '12px', background: '#eff6ff', border: '1px solid #bfdbfe' }}>
-                                                            <div style={{ fontSize: '11px', fontWeight: 600, color: '#1d4ed8' }}>Total Students</div>
-                                                            <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a', margin: '2px 0' }}>1,420</div>
-                                                            <div style={{ fontSize: '10.5px', color: '#059669', fontWeight: 700 }}>↑ +12% this term</div>
-                                                        </div>
-                                                        <div style={{ padding: '10px 12px', borderRadius: '12px', background: '#ecfdf5', border: '1px solid #a7f3d0' }}>
-                                                            <div style={{ fontSize: '11px', fontWeight: 600, color: '#047857' }}>Fee Collected</div>
-                                                            <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a', margin: '2px 0' }}>₹34.8 L</div>
-                                                            <div style={{ fontSize: '10.5px', color: '#059669', fontWeight: 700 }}>✓ 94.2% on time</div>
-                                                        </div>
-                                                        <div style={{ padding: '10px 12px', borderRadius: '12px', background: '#fffbeb', border: '1px solid #fde68a' }}>
-                                                            <div style={{ fontSize: '11px', fontWeight: 600, color: '#b45309' }}>Active Modules</div>
-                                                            <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a', margin: '2px 0' }}>22 Live</div>
-                                                            <div style={{ fontSize: '10.5px', color: '#b45309', fontWeight: 700 }}>All synced</div>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Visual Analytics Chart Widget */}
-                                                    <div style={{ padding: '12px 14px', borderRadius: '14px', background: '#f8fafc', border: '1px solid #e2e8f0', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                                            <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>Monthly Fee Collection Trend</span>
-                                                            <span style={{ fontSize: '11px', color: '#64748b' }}>Last 10 Months</span>
-                                                        </div>
-                                                        <div style={{ height: '78px', display: 'flex', alignItems: 'flex-end', gap: '8px', padding: '4px 0' }}>
-                                                            {[
-                                                                { h: 42, m: 'Apr' }, { h: 65, m: 'May' }, { h: 54, m: 'Jun' },
-                                                                { h: 80, m: 'Jul' }, { h: 70, m: 'Aug' }, { h: 92, m: 'Sep' },
-                                                                { h: 84, m: 'Oct' }, { h: 76, m: 'Nov' }, { h: 88, m: 'Dec' },
-                                                                { h: 96, m: 'Jan' }
-                                                            ].map((b, i) => (
-                                                                <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end', gap: '4px' }}>
-                                                                    <div style={{
-                                                                        width: '100%',
-                                                                        height: `${b.h}%`,
-                                                                        borderRadius: '4px 4px 0 0',
-                                                                        background: i === 9 ? 'linear-gradient(180deg, #2563eb, #1e3a8a)' : 'linear-gradient(180deg, #93c5fd, #3b82f6)'
-                                                                    }}></div>
-                                                                    <span style={{ fontSize: '9px', color: '#94a3b8', fontWeight: 600 }}>{b.m}</span>
-                                                                </div>
+                                                    {/* Dots & Nav Arrows */}
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                            {PREVIEW_DESKTOP_SLIDES.map((_, i) => (
+                                                                <button
+                                                                    key={i}
+                                                                    onClick={() => setPreviewSlide(i)}
+                                                                    title={`Go to slide ${i + 1}`}
+                                                                    style={{
+                                                                        width: previewSlide === i ? '20px' : '6px',
+                                                                        height: '6px',
+                                                                        borderRadius: '999px',
+                                                                        background: previewSlide === i ? '#38bdf8' : 'rgba(255, 255, 255, 0.35)',
+                                                                        border: 'none',
+                                                                        cursor: 'pointer',
+                                                                        padding: 0,
+                                                                        transition: 'all 0.3s ease'
+                                                                    }}
+                                                                />
                                                             ))}
+                                                        </div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginLeft: '6px' }}>
+                                                            <button
+                                                                onClick={() => setPreviewSlide(prev => (prev - 1 + PREVIEW_DESKTOP_SLIDES.length) % PREVIEW_DESKTOP_SLIDES.length)}
+                                                                style={{
+                                                                    width: '22px', height: '22px', borderRadius: '50%',
+                                                                    background: 'rgba(255, 255, 255, 0.16)', border: 'none',
+                                                                    color: '#ffffff', cursor: 'pointer', display: 'flex',
+                                                                    alignItems: 'center', justifyContent: 'center', fontSize: '12px'
+                                                                }}
+                                                            >
+                                                                ‹
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setPreviewSlide(prev => (prev + 1) % PREVIEW_DESKTOP_SLIDES.length)}
+                                                                style={{
+                                                                    width: '22px', height: '22px', borderRadius: '50%',
+                                                                    background: 'rgba(255, 255, 255, 0.16)', border: 'none',
+                                                                    color: '#ffffff', cursor: 'pointer', display: 'flex',
+                                                                    alignItems: 'center', justifyContent: 'center', fontSize: '12px'
+                                                                }}
+                                                            >
+                                                                ›
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1185,64 +1254,188 @@ const LandingPage = () => {
                                 </div>
                             </Reveal>
 
-                            {/* Mobile Website Mockup */}
+                            {/* Mobile Website Mockup (Synchronized with Preview Slide) */}
                             <Reveal delay={0.12}>
-                                <div style={{ width: 'min(230px, 75vw)', margin: '0 auto' }}>
+                                <div style={{ width: 'min(235px, 75vw)', margin: '0 auto' }}>
                                     <div style={{
                                         background: '#0f172a',
-                                        borderRadius: '34px',
+                                        borderRadius: '36px',
                                         padding: '12px 10px',
-                                        boxShadow: '0 30px 60px -10px rgba(15, 23, 42, 0.22), 0 10px 24px rgba(0,0,0,0.08)',
-                                        border: '3px solid #1e293b'
+                                        boxShadow: '0 30px 60px -10px rgba(15, 23, 42, 0.25), 0 10px 24px rgba(0,0,0,0.08)',
+                                        border: '3px solid #1e293b',
+                                        position: 'relative'
                                     }}>
                                         {/* Dynamic Island */}
-                                        <div style={{ width: '60px', height: '12px', borderRadius: '999px', background: '#000000', margin: '0 auto 10px auto' }}></div>
+                                        <div style={{ width: '64px', height: '13px', borderRadius: '999px', background: '#000000', margin: '0 auto 10px auto' }}></div>
 
-                                        {/* Mobile Screen */}
-                                        <div style={{ background: '#ffffff', borderRadius: '22px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                                            {/* Mobile School Nav */}
-                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: '#ffffff', borderBottom: '1px solid #f1f5f9' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                    <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '10px' }}>🏫</span>
-                                                    <span style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a' }}>DPS School</span>
+                                        {/* Mobile Screen Container */}
+                                        <div style={{
+                                            position: 'relative',
+                                            height: '345px',
+                                            background: '#ffffff',
+                                            borderRadius: '22px',
+                                            overflow: 'hidden',
+                                            border: '1px solid #e2e8f0'
+                                        }}>
+                                            {/* Slide 0 (Architecture & Heritage) */}
+                                            <div style={{
+                                                position: 'absolute', inset: 0,
+                                                opacity: previewSlide === 0 ? 1 : 0,
+                                                transform: previewSlide === 0 ? 'translateX(0)' : 'translateX(16px)',
+                                                transition: 'all 0.5s ease',
+                                                pointerEvents: previewSlide === 0 ? 'auto' : 'none',
+                                                display: 'flex', flexDirection: 'column'
+                                            }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', background: '#ffffff', borderBottom: '1px solid #f1f5f9' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                        <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '10px' }}>🏫</span>
+                                                        <span style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a' }}>J D International</span>
+                                                    </div>
+                                                    <span style={{ fontSize: '12px', color: '#64748b' }}>☰</span>
                                                 </div>
-                                                <span style={{ fontSize: '12px', color: '#64748b' }}>☰</span>
+                                                <div style={{ padding: '14px 12px', background: 'linear-gradient(135deg, #0f172a, #1e3a8a)', color: '#ffffff' }}>
+                                                    <div style={{ fontSize: '8.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#93c5fd', marginBottom: '3px' }}>Jaipur Campus</div>
+                                                    <div style={{ fontSize: '13px', fontWeight: 800, lineHeight: 1.25, marginBottom: '6px' }}>School of Unique Excellence</div>
+                                                    <div style={{ display: 'inline-block', padding: '3px 9px', borderRadius: '999px', background: '#2563eb', color: '#ffffff', fontSize: '9.5px', fontWeight: 700 }}>
+                                                        Explore School →
+                                                    </div>
+                                                </div>
+                                                <div style={{ padding: '10px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', flex: 1 }}>
+                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', border: '1px solid #dbeafe', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '12px' }}>🏛️</div>
+                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#1d4ed8', marginTop: '2px' }}>Campus Tour</div>
+                                                    </div>
+                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#ecfdf5', border: '1px solid #d1fae5', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '12px' }}>📋</div>
+                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#047857', marginTop: '2px' }}>Admissions</div>
+                                                    </div>
+                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#f5f3ff', border: '1px solid #ede9fe', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '12px' }}>📚</div>
+                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#6d28d9', marginTop: '2px' }}>Academics</div>
+                                                    </div>
+                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#fff7ed', border: '1px solid #fed7aa', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '12px' }}>📞</div>
+                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#c2410c', marginTop: '2px' }}>Contact</div>
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                            {/* Mobile Hero Banner */}
-                                            <div style={{ padding: '14px 12px', background: 'linear-gradient(135deg, #1e3a8a, #2563eb)', color: '#ffffff' }}>
-                                                <div style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#93c5fd', marginBottom: '4px' }}>Admissions 2025–26</div>
-                                                <div style={{ fontSize: '13px', fontWeight: 800, lineHeight: 1.25, marginBottom: '8px' }}>Shaping Future Leaders</div>
-                                                <div style={{ display: 'inline-block', padding: '4px 10px', borderRadius: '999px', background: '#e15241', color: '#ffffff', fontSize: '10px', fontWeight: 700 }}>
-                                                    Apply Online →
+                                            {/* Slide 1 (Sports & Cadets) */}
+                                            <div style={{
+                                                position: 'absolute', inset: 0,
+                                                opacity: previewSlide === 1 ? 1 : 0,
+                                                transform: previewSlide === 1 ? 'translateX(0)' : 'translateX(16px)',
+                                                transition: 'all 0.5s ease',
+                                                pointerEvents: previewSlide === 1 ? 'auto' : 'none',
+                                                display: 'flex', flexDirection: 'column'
+                                            }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', background: '#ffffff', borderBottom: '1px solid #f1f5f9' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                        <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '10px' }}>🎖️</span>
+                                                        <span style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a' }}>JDIS Sports</span>
+                                                    </div>
+                                                    <span style={{ fontSize: '12px', color: '#64748b' }}>☰</span>
+                                                </div>
+                                                <div style={{ padding: '14px 12px', background: 'linear-gradient(135deg, #065f46, #059669)', color: '#ffffff' }}>
+                                                    <div style={{ fontSize: '8.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#a7f3d0', marginBottom: '3px' }}>Discipline & Pride</div>
+                                                    <div style={{ fontSize: '13px', fontWeight: 800, lineHeight: 1.25, marginBottom: '6px' }}>NCC Cadets & Athletics</div>
+                                                    <div style={{ display: 'inline-block', padding: '3px 9px', borderRadius: '999px', background: '#ffffff', color: '#065f46', fontSize: '9.5px', fontWeight: 700 }}>
+                                                        Sports Meet 2025 →
+                                                    </div>
+                                                </div>
+                                                <div style={{ padding: '10px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', flex: 1 }}>
+                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#ecfdf5', border: '1px solid #a7f3d0', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '12px' }}>🏆</div>
+                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#047857', marginTop: '2px' }}>Trophies</div>
+                                                    </div>
+                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', border: '1px solid #bfdbfe', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '12px' }}>🎖️</div>
+                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#1d4ed8', marginTop: '2px' }}>NCC Unit</div>
+                                                    </div>
+                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#fefce8', border: '1px solid #fde68a', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '12px' }}>⚽</div>
+                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#b45309', marginTop: '2px' }}>Football</div>
+                                                    </div>
+                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#fff1f0', border: '1px solid #fecdd3', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '12px' }}>🥋</div>
+                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#e15241', marginTop: '2px' }}>Martial Arts</div>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            {/* Quick Mobile Modules */}
-                                            <div style={{ padding: '12px 10px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                                <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', border: '1px solid #dbeafe', textAlign: 'center' }}>
-                                                    <div style={{ fontSize: '13px' }}>💳</div>
-                                                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#1d4ed8', marginTop: '2px' }}>Pay Fees</div>
+                                            {/* Slide 2 (Cultural Fiesta) */}
+                                            <div style={{
+                                                position: 'absolute', inset: 0,
+                                                opacity: previewSlide === 2 ? 1 : 0,
+                                                transform: previewSlide === 2 ? 'translateX(0)' : 'translateX(16px)',
+                                                transition: 'all 0.5s ease',
+                                                pointerEvents: previewSlide === 2 ? 'auto' : 'none',
+                                                display: 'flex', flexDirection: 'column'
+                                            }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', background: '#ffffff', borderBottom: '1px solid #f1f5f9' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                        <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '10px' }}>🎭</span>
+                                                        <span style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a' }}>JDIS Culture</span>
+                                                    </div>
+                                                    <span style={{ fontSize: '12px', color: '#64748b' }}>☰</span>
                                                 </div>
-                                                <div style={{ padding: '8px', borderRadius: '8px', background: '#ecfdf5', border: '1px solid #d1fae5', textAlign: 'center' }}>
-                                                    <div style={{ fontSize: '13px' }}>📅</div>
-                                                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#047857', marginTop: '2px' }}>Calendar</div>
+                                                <div style={{ padding: '14px 12px', background: 'linear-gradient(135deg, #c2410c, #ea580c)', color: '#ffffff' }}>
+                                                    <div style={{ fontSize: '8.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#fed7aa', marginBottom: '3px' }}>Pre-Primary Fiesta</div>
+                                                    <div style={{ fontSize: '13px', fontWeight: 800, lineHeight: 1.25, marginBottom: '6px' }}>Annual Carnival Celebrations</div>
+                                                    <div style={{ display: 'inline-block', padding: '3px 9px', borderRadius: '999px', background: '#ffffff', color: '#c2410c', fontSize: '9.5px', fontWeight: 700 }}>
+                                                        View Photo Gallery →
+                                                    </div>
                                                 </div>
-                                                <div style={{ padding: '8px', borderRadius: '8px', background: '#f5f3ff', border: '1px solid #ede9fe', textAlign: 'center' }}>
-                                                    <div style={{ fontSize: '13px' }}>🖼️</div>
-                                                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#6d28d9', marginTop: '2px' }}>Gallery</div>
-                                                </div>
-                                                <div style={{ padding: '8px', borderRadius: '8px', background: '#fff7ed', border: '1px solid #fed7aa', textAlign: 'center' }}>
-                                                    <div style={{ fontSize: '13px' }}>📞</div>
-                                                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#c2410c', marginTop: '2px' }}>Enquiry</div>
+                                                <div style={{ padding: '10px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', flex: 1 }}>
+                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#fff7ed', border: '1px solid #fed7aa', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '12px' }}>🦋</div>
+                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#c2410c', marginTop: '2px' }}>Carnival</div>
+                                                    </div>
+                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#f5f3ff', border: '1px solid #ddd6fe', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '12px' }}>🎨</div>
+                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#6d28d9', marginTop: '2px' }}>Art & Craft</div>
+                                                    </div>
+                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', border: '1px solid #bfdbfe', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '12px' }}>📸</div>
+                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#1d4ed8', marginTop: '2px' }}>Gallery</div>
+                                                    </div>
+                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#fefce8', border: '1px solid #fde68a', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '12px' }}>🌟</div>
+                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#b45309', marginTop: '2px' }}>Awards</div>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            {/* Bottom Mobile Home Indicator */}
-                                            <div style={{ height: '16px', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <div style={{ width: '40px', height: '3px', borderRadius: '999px', background: '#cbd5e1' }}></div>
+                                            {/* Bottom Home Indicator */}
+                                            <div style={{
+                                                position: 'absolute', bottom: 0, left: 0, right: 0,
+                                                height: '18px', background: 'rgba(255,255,255,0.95)',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                zIndex: 10
+                                            }}>
+                                                <div style={{ width: '40px', height: '3.5px', borderRadius: '999px', background: '#94a3b8' }}></div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '6px',
+                                        marginTop: '14px'
+                                    }}>
+                                        {PREVIEW_DESKTOP_SLIDES.map((_, i) => (
+                                            <span
+                                                key={i}
+                                                style={{
+                                                    width: previewSlide === i ? '16px' : '5px',
+                                                    height: '5px',
+                                                    borderRadius: '999px',
+                                                    background: previewSlide === i ? '#2563eb' : '#cbd5e1',
+                                                    transition: 'all 0.3s ease'
+                                                }}
+                                            />
+                                        ))}
                                     </div>
                                     <p style={{
                                         textAlign: 'center',
@@ -1250,9 +1443,9 @@ const LandingPage = () => {
                                         fontSize: '12.5px',
                                         fontWeight: 600,
                                         color: '#64748b',
-                                        marginTop: '14px'
+                                        marginTop: '6px'
                                     }}>
-                                        Public website, responsive on every screen
+                                        Public website, synchronized on mobile
                                     </p>
                                 </div>
                             </Reveal>
