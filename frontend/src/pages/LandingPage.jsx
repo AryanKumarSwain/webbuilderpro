@@ -1144,14 +1144,45 @@ const LandingPage = () => {
                                                     <span>https://jdis.wbpro.in</span>
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                                        <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }}></span>
-                                                        <span style={{ fontSize: '11px', fontWeight: 700, color: '#059669' }}>Live Website</span>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '3px', background: '#f1f5f9', padding: '2px 6px', borderRadius: '999px', border: '1px solid #e2e8f0' }}>
+                                                        <button
+                                                            onClick={() => setPreviewSlide(prev => (prev - 1 + PREVIEW_DESKTOP_SLIDES.length) % PREVIEW_DESKTOP_SLIDES.length)}
+                                                            aria-label="Previous slide"
+                                                            style={{
+                                                                width: '20px', height: '20px', borderRadius: '50%',
+                                                                background: '#ffffff', border: '1px solid #cbd5e1',
+                                                                color: '#334155', cursor: 'pointer', display: 'flex',
+                                                                alignItems: 'center', justifyContent: 'center', fontSize: '12px',
+                                                                fontWeight: 700, padding: 0
+                                                            }}
+                                                        >
+                                                            ‹
+                                                        </button>
+                                                        <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#64748b', minWidth: '24px', textAlign: 'center' }}>
+                                                            {previewSlide + 1}/{PREVIEW_DESKTOP_SLIDES.length}
+                                                        </span>
+                                                        <button
+                                                            onClick={() => setPreviewSlide(prev => (prev + 1) % PREVIEW_DESKTOP_SLIDES.length)}
+                                                            aria-label="Next slide"
+                                                            style={{
+                                                                width: '20px', height: '20px', borderRadius: '50%',
+                                                                background: '#ffffff', border: '1px solid #cbd5e1',
+                                                                color: '#334155', cursor: 'pointer', display: 'flex',
+                                                                alignItems: 'center', justifyContent: 'center', fontSize: '12px',
+                                                                fontWeight: 700, padding: 0
+                                                            }}
+                                                        >
+                                                            ›
+                                                        </button>
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '3px 9px', borderRadius: '999px', background: '#ecfdf5', border: '1px solid #a7f3d0' }}>
+                                                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 6px #10b981' }}></span>
+                                                        <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#047857' }}>Live</span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* Slides Container Area */}
+                                            {/* Slides Container Area (Clean, 100% Unobstructed Full View) */}
                                             <div style={{
                                                 position: 'relative',
                                                 height: 'clamp(280px, 32vw, 390px)',
@@ -1183,118 +1214,121 @@ const LandingPage = () => {
                                                         />
                                                     </div>
                                                 ))}
-
-                                                {/* Floating Glassmorphic Slide Controller Bar */}
-                                                <div style={{
-                                                    position: 'absolute',
-                                                    bottom: '12px',
-                                                    left: '14px',
-                                                    right: '14px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'space-between',
-                                                    padding: '7px 14px',
-                                                    borderRadius: '12px',
-                                                    background: 'rgba(15, 23, 42, 0.76)',
-                                                    backdropFilter: 'blur(10px)',
-                                                    border: '1px solid rgba(255, 255, 255, 0.16)',
-                                                    color: '#ffffff',
-                                                    zIndex: 10
-                                                }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                        <span style={{
-                                                            fontSize: '10.5px',
-                                                            fontWeight: 800,
-                                                            padding: '2px 8px',
-                                                            borderRadius: '5px',
-                                                            background: '#2563eb',
-                                                            color: '#ffffff',
-                                                            letterSpacing: '0.04em',
-                                                            textTransform: 'uppercase'
-                                                        }}>
-                                                            {PREVIEW_DESKTOP_SLIDES[previewSlide].tag}
-                                                        </span>
-                                                        <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#f1f5f9' }}>
-                                                            {PREVIEW_DESKTOP_SLIDES[previewSlide].title}
-                                                        </span>
-                                                    </div>
-
-                                                    {/* Dots & Nav Arrows */}
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                                            {PREVIEW_DESKTOP_SLIDES.map((_, i) => (
-                                                                <button
-                                                                    key={i}
-                                                                    onClick={() => setPreviewSlide(i)}
-                                                                    title={`Go to slide ${i + 1}`}
-                                                                    style={{
-                                                                        width: previewSlide === i ? '20px' : '6px',
-                                                                        height: '6px',
-                                                                        borderRadius: '999px',
-                                                                        background: previewSlide === i ? '#38bdf8' : 'rgba(255, 255, 255, 0.35)',
-                                                                        border: 'none',
-                                                                        cursor: 'pointer',
-                                                                        padding: 0,
-                                                                        transition: 'all 0.3s ease'
-                                                                    }}
-                                                                />
-                                                            ))}
-                                                        </div>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginLeft: '6px' }}>
-                                                            <button
-                                                                onClick={() => setPreviewSlide(prev => (prev - 1 + PREVIEW_DESKTOP_SLIDES.length) % PREVIEW_DESKTOP_SLIDES.length)}
-                                                                style={{
-                                                                    width: '22px', height: '22px', borderRadius: '50%',
-                                                                    background: 'rgba(255, 255, 255, 0.16)', border: 'none',
-                                                                    color: '#ffffff', cursor: 'pointer', display: 'flex',
-                                                                    alignItems: 'center', justifyContent: 'center', fontSize: '12px'
-                                                                }}
-                                                            >
-                                                                ‹
-                                                            </button>
-                                                            <button
-                                                                onClick={() => setPreviewSlide(prev => (prev + 1) % PREVIEW_DESKTOP_SLIDES.length)}
-                                                                style={{
-                                                                    width: '22px', height: '22px', borderRadius: '50%',
-                                                                    background: 'rgba(255, 255, 255, 0.16)', border: 'none',
-                                                                    color: '#ffffff', cursor: 'pointer', display: 'flex',
-                                                                    alignItems: 'center', justifyContent: 'center', fontSize: '12px'
-                                                                }}
-                                                            >
-                                                                ›
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </Reveal>
 
-                            {/* Mobile Website Mockup (Synchronized with Preview Slide) */}
+                            {/* Mobile Website Mockup (Ultra-Realistic Modern iPhone Pro Chassis) */}
                             <Reveal delay={0.12}>
-                                <div style={{ width: 'min(235px, 75vw)', margin: '0 auto' }}>
+                                <div style={{ width: 'min(245px, 80vw)', margin: '0 auto', position: 'relative' }}>
+                                    {/* Realistic iPhone Titanium Outer Frame */}
                                     <div style={{
-                                        background: '#0f172a',
-                                        borderRadius: '36px',
-                                        padding: '12px 10px',
-                                        boxShadow: '0 30px 60px -10px rgba(15, 23, 42, 0.25), 0 10px 24px rgba(0,0,0,0.08)',
-                                        border: '3px solid #1e293b',
-                                        position: 'relative'
+                                        position: 'relative',
+                                        background: 'linear-gradient(155deg, #334155 0%, #1e293b 40%, #0f172a 100%)',
+                                        borderRadius: '46px',
+                                        padding: '10px',
+                                        boxShadow: '0 30px 60px -15px rgba(15, 23, 42, 0.4), 0 10px 24px -4px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.3)',
+                                        border: '1.5px solid #475569'
                                     }}>
-                                        {/* Dynamic Island */}
-                                        <div style={{ width: '64px', height: '13px', borderRadius: '999px', background: '#000000', margin: '0 auto 10px auto' }}></div>
+                                        {/* Physical Hardware Buttons */}
+                                        {/* Silent / Action Button (Left) */}
+                                        <div style={{
+                                            position: 'absolute',
+                                            left: '-4px',
+                                            top: '64px',
+                                            width: '3.5px',
+                                            height: '22px',
+                                            background: 'linear-gradient(to bottom, #64748b, #334155)',
+                                            borderRadius: '3px 0 0 3px',
+                                            boxShadow: '-1px 0 2px rgba(0,0,0,0.35)'
+                                        }} />
+                                        {/* Volume Up (Left) */}
+                                        <div style={{
+                                            position: 'absolute',
+                                            left: '-4px',
+                                            top: '98px',
+                                            width: '3.5px',
+                                            height: '40px',
+                                            background: 'linear-gradient(to bottom, #64748b, #334155)',
+                                            borderRadius: '3px 0 0 3px',
+                                            boxShadow: '-1px 0 2px rgba(0,0,0,0.35)'
+                                        }} />
+                                        {/* Volume Down (Left) */}
+                                        <div style={{
+                                            position: 'absolute',
+                                            left: '-4px',
+                                            top: '148px',
+                                            width: '3.5px',
+                                            height: '40px',
+                                            background: 'linear-gradient(to bottom, #64748b, #334155)',
+                                            borderRadius: '3px 0 0 3px',
+                                            boxShadow: '-1px 0 2px rgba(0,0,0,0.35)'
+                                        }} />
+                                        {/* Power Button (Right) */}
+                                        <div style={{
+                                            position: 'absolute',
+                                            right: '-4px',
+                                            top: '112px',
+                                            width: '3.5px',
+                                            height: '52px',
+                                            background: 'linear-gradient(to bottom, #64748b, #334155)',
+                                            borderRadius: '0 3px 3px 0',
+                                            boxShadow: '1px 0 2px rgba(0,0,0,0.35)'
+                                        }} />
 
-                                        {/* Mobile Screen Container */}
+                                        {/* Inner OLED Display Glass */}
                                         <div style={{
                                             position: 'relative',
-                                            height: '375px',
-                                            background: '#0f172a',
-                                            borderRadius: '22px',
+                                            height: '390px',
+                                            background: '#020617',
+                                            borderRadius: '36px',
                                             overflow: 'hidden',
-                                            border: '1px solid rgba(255,255,255,0.08)'
+                                            boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.8), inset 0 2px 4px rgba(0,0,0,0.6)'
                                         }}>
+                                            {/* Dynamic Island Floating Notch */}
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '9px',
+                                                left: '50%',
+                                                transform: 'translateX(-50%)',
+                                                width: '72px',
+                                                height: '18px',
+                                                background: '#000000',
+                                                borderRadius: '999px',
+                                                zIndex: 30,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                padding: '0 7px',
+                                                boxShadow: '0 2px 6px rgba(0,0,0,0.6)'
+                                            }}>
+                                                <div style={{
+                                                    width: '7.5px',
+                                                    height: '7.5px',
+                                                    borderRadius: '50%',
+                                                    background: '#0f172a',
+                                                    border: '1px solid #1e293b'
+                                                }} />
+                                                <div style={{
+                                                    width: '5px',
+                                                    height: '5px',
+                                                    borderRadius: '50%',
+                                                    background: '#082f49'
+                                                }} />
+                                            </div>
+
+                                            {/* Subtle Diagonal Glass Gloss Highlight */}
+                                            <div style={{
+                                                position: 'absolute',
+                                                inset: 0,
+                                                background: 'linear-gradient(135deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.02) 34%, transparent 54%)',
+                                                pointerEvents: 'none',
+                                                zIndex: 25
+                                            }} />
+
+                                            {/* Synchronized Mobile Slides */}
                                             {PREVIEW_MOBILE_SLIDES.map((slide, idx) => (
                                                 <div
                                                     key={idx}
@@ -1303,7 +1337,7 @@ const LandingPage = () => {
                                                         inset: 0,
                                                         opacity: previewSlide === idx ? 1 : 0,
                                                         transform: previewSlide === idx ? 'scale(1)' : 'scale(1.04)',
-                                                        transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                        transition: 'opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1), transform 0.65s cubic-bezier(0.4, 0, 0.2, 1)',
                                                         pointerEvents: previewSlide === idx ? 'auto' : 'none'
                                                     }}
                                                 >
@@ -1321,28 +1355,30 @@ const LandingPage = () => {
                                                 </div>
                                             ))}
 
-                                            {/* Bottom Home Indicator */}
+                                            {/* Bottom iOS Home Indicator Bar */}
                                             <div style={{
                                                 position: 'absolute',
-                                                bottom: '6px',
+                                                bottom: '7px',
                                                 left: '50%',
                                                 transform: 'translateX(-50%)',
-                                                width: '42px',
+                                                width: '48px',
                                                 height: '3.5px',
                                                 borderRadius: '999px',
-                                                background: 'rgba(255,255,255,0.85)',
-                                                boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
-                                                zIndex: 10,
+                                                background: 'rgba(255, 255, 255, 0.92)',
+                                                boxShadow: '0 1px 4px rgba(0,0,0,0.5)',
+                                                zIndex: 30,
                                                 pointerEvents: 'none'
-                                            }}></div>
+                                            }} />
                                         </div>
                                     </div>
+
+                                    {/* Synchronized Mobile Switcher Dots */}
                                     <div style={{
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         gap: '6px',
-                                        marginTop: '14px'
+                                        marginTop: '15px'
                                     }}>
                                         {PREVIEW_MOBILE_SLIDES.map((_, i) => (
                                             <button
@@ -1350,7 +1386,7 @@ const LandingPage = () => {
                                                 onClick={() => setPreviewSlide(i)}
                                                 aria-label={`Switch preview to slide ${i + 1}`}
                                                 style={{
-                                                    width: previewSlide === i ? '18px' : '6px',
+                                                    width: previewSlide === i ? '20px' : '6px',
                                                     height: '6px',
                                                     borderRadius: '999px',
                                                     border: 'none',
@@ -1370,10 +1406,51 @@ const LandingPage = () => {
                                         color: '#64748b',
                                         marginTop: '6px'
                                     }}>
-                                        Public website, synchronized on mobile
+                                        Mobile preview &bull; 100% responsive
                                     </p>
                                 </div>
                             </Reveal>
+                        </div>
+
+                        {/* Synchronized Interactive Slide Switcher Pills */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexWrap: 'wrap',
+                            gap: '10px',
+                            marginTop: '28px'
+                        }}>
+                            {PREVIEW_DESKTOP_SLIDES.map((slide, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setPreviewSlide(idx)}
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        padding: '8px 18px',
+                                        borderRadius: '999px',
+                                        border: previewSlide === idx ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
+                                        background: previewSlide === idx ? '#eff6ff' : '#ffffff',
+                                        color: previewSlide === idx ? '#1d4ed8' : '#64748b',
+                                        boxShadow: previewSlide === idx ? '0 4px 12px -2px rgba(37,99,235,0.22)' : '0 2px 6px rgba(0,0,0,0.03)',
+                                        fontSize: '13px',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                        transition: 'all 0.22s ease'
+                                    }}
+                                >
+                                    <span style={{
+                                        width: '7px',
+                                        height: '7px',
+                                        borderRadius: '50%',
+                                        background: previewSlide === idx ? '#2563eb' : '#cbd5e1',
+                                        transition: 'background 0.22s ease'
+                                    }} />
+                                    <span>{slide.title}</span>
+                                </button>
+                            ))}
                         </div>
                     </div>
                 </section>
