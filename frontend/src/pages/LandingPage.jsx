@@ -1008,51 +1008,175 @@ const LandingPage = () => {
                 </section>
 
                 {/* ── Screenshots / Product Preview ── */}
-                <section id="preview" style={{ padding: 'clamp(3rem,7vw,5rem) clamp(1.25rem,6vw,4rem)', position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', inset: 0, backgroundImage: `radial-gradient(${BLUE}12 1px, transparent 1px)`, backgroundSize: '28px 28px', pointerEvents: 'none' }}></div>
+                <section id="preview" style={{
+                    padding: 'clamp(3.5rem, 6vw, 5.5rem) clamp(1.25rem, 5vw, 3.5rem)',
+                    background: 'linear-gradient(180deg, #ffffff 0%, #fbfcfe 50%, #fdfbf7 100%)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    borderTop: '1px solid #edf2f7'
+                }}>
+                    {/* Soft ambient background glows */}
+                    <div style={{ position: 'absolute', width: '560px', height: '560px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(254, 237, 213, 0.5) 0%, transparent 70%)', top: '-100px', right: '-120px', pointerEvents: 'none' }}></div>
+                    <div style={{ position: 'absolute', width: '520px', height: '520px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(219, 234, 254, 0.55) 0%, transparent 70%)', bottom: '-80px', left: '-100px', pointerEvents: 'none' }}></div>
+
                     <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative' }}>
-                        <Reveal style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                            <span style={{ display: 'inline-block', fontSize: '11.5px', fontWeight: 700, color: BLUE_DARK, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '12px' }}>
-                                See It In Action
-                            </span>
-                            <h2 className="lp-hero-heading-shimmer" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, marginBottom: '12px', letterSpacing: '-0.6px' }}>
-                                A Dashboard That Feels Effortless
+                        <Reveal style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+                            <div style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '5px 15px',
+                                borderRadius: '999px',
+                                background: '#eff6ff',
+                                border: '1px solid #bfdbfe',
+                                marginBottom: '14px'
+                            }}>
+                                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#2563eb', display: 'inline-block' }}></span>
+                                <span style={{ fontSize: '11px', fontWeight: 800, color: '#1d4ed8', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+                                    Live Platform Preview
+                                </span>
+                            </div>
+                            <h2 style={{
+                                fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
+                                fontSize: 'clamp(28px, 3.8vw, 42px)',
+                                fontWeight: 900,
+                                letterSpacing: '-0.8px',
+                                marginBottom: '14px',
+                                lineHeight: 1.18
+                            }}>
+                                <span style={{ color: '#0f172a' }}>A Dashboard That </span>
+                                <span style={{
+                                    background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    backgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                    display: 'inline-block'
+                                }}>Feels Effortless</span>
                             </h2>
-                            <p style={{ fontSize: '14.5px', color: TEXT_MUTED_LIGHT, maxWidth: '560px', margin: '0 auto', lineHeight: 1.7 }}>
+                            <p style={{
+                                fontFamily: "'Inter', sans-serif",
+                                fontSize: '15px',
+                                color: '#64748b',
+                                maxWidth: '580px',
+                                margin: '0 auto',
+                                lineHeight: 1.7
+                            }}>
                                 Move your mouse over the preview below — every module in your admin panel follows the same clean, guided layout.
                             </p>
                         </Reveal>
 
-                        <div className="lp-preview-grid" style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.7fr', gap: 'clamp(1.5rem,4vw,2.5rem)', alignItems: 'center' }}>
+                        <div className="lp-preview-grid" style={{ display: 'grid', gridTemplateColumns: '1.35fr 0.65fr', gap: 'clamp(1.75rem,4vw,2.75rem)', alignItems: 'center' }}>
+                            {/* Desktop Admin Dashboard Mockup */}
                             <Reveal>
                                 <div style={{ perspective: '1600px' }} onMouseMove={handlePreviewMove} onMouseLeave={handlePreviewLeave}>
                                     <div className="lp-tilt-frame" style={{ transform: `perspective(1600px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}>
-                                        <div style={{ background: '#ffffff', borderRadius: '20px', overflow: 'hidden', boxShadow: `0 40px 80px rgba(65,105,225,0.22), 0 10px 26px rgba(0,0,0,0.1)`, border: '1px solid #eef0f6' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '13px 18px', background: '#fafbfe', borderBottom: '1px solid #eef0f6' }}>
-                                                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f87171' }}></span>
-                                                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#fbbf24' }}></span>
-                                                <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#4ade80' }}></span>
-                                                <div style={{ marginLeft: '14px', flex: 1, height: '20px', borderRadius: '999px', background: '#ffffff', border: '1px solid #eef0f6' }}></div>
-                                            </div>
-                                            <div style={{ display: 'flex' }}>
-                                                <div style={{ width: '90px', flexShrink: 0, background: '#fafbfe', padding: '18px 12px', display: 'flex', flexDirection: 'column', gap: '13px', borderRight: '1px solid #eef0f6' }}>
-                                                    {[BLUE, '#dbe2f5', '#dbe2f5', '#dbe2f5', '#dbe2f5', '#dbe2f5'].map((c, i) => (
-                                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                                                            <div style={{ width: '9px', height: '9px', borderRadius: '4px', background: c, flexShrink: 0 }}></div>
-                                                            <div style={{ height: '6px', flex: 1, borderRadius: '3px', background: c, opacity: 0.7 }}></div>
-                                                        </div>
-                                                    ))}
+                                        <div style={{
+                                            background: '#ffffff',
+                                            borderRadius: '22px',
+                                            overflow: 'hidden',
+                                            boxShadow: '0 30px 70px -15px rgba(15, 23, 42, 0.15), 0 10px 24px rgba(0,0,0,0.04)',
+                                            border: '1.5px solid #e2e8f0'
+                                        }}>
+                                            {/* Browser Window Header */}
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 18px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                                                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f87171' }}></span>
+                                                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#fbbf24' }}></span>
+                                                    <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#4ade80' }}></span>
                                                 </div>
-                                                <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                                                        {[BLUE, BLUE_DARK, GREY].map((c, i) => (
-                                                            <div key={i} style={{ height: '54px', borderRadius: '10px', background: `${c}14`, border: `1px solid ${c}35` }}></div>
-                                                        ))}
+                                                <div style={{
+                                                    display: 'flex', alignItems: 'center', gap: '8px',
+                                                    padding: '4px 14px', borderRadius: '999px',
+                                                    background: '#ffffff', border: '1px solid #e2e8f0',
+                                                    fontSize: '11.5px', color: '#64748b', fontWeight: 600,
+                                                    maxWidth: '280px', width: '100%', justifyContent: 'center'
+                                                }}>
+                                                    <span style={{ color: '#059669', fontSize: '10px' }}>🔒</span>
+                                                    <span>jdis.wbpro.in/admin</span>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                    <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981' }}></span>
+                                                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#059669' }}>Live</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Dashboard Internal Layout */}
+                                            <div style={{ display: 'flex', minHeight: '340px' }}>
+                                                {/* Left Sidebar */}
+                                                <div style={{ width: '130px', flexShrink: 0, background: '#f8fafc', padding: '16px 10px', display: 'flex', flexDirection: 'column', gap: '6px', borderRight: '1px solid #e2e8f0' }}>
+                                                    <div style={{ padding: '6px 10px', borderRadius: '8px', background: '#eff6ff', color: '#1d4ed8', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <span style={{ fontSize: '13px' }}>📊</span> Overview
                                                     </div>
-                                                    <div style={{ height: '110px', borderRadius: '12px', background: `linear-gradient(180deg, ${BLUE_LIGHT}, #eef1fb)`, display: 'flex', alignItems: 'flex-end', gap: '8px', padding: '14px' }}>
-                                                        {[35, 55, 45, 70, 50, 85, 60, 75, 40].map((h, i) => (
-                                                            <div key={i} style={{ flex: 1, height: `${h}%`, borderRadius: '3px', background: `linear-gradient(180deg,${BLUE},${BLUE_DARK})` }}></div>
-                                                        ))}
+                                                    <div style={{ padding: '6px 10px', borderRadius: '8px', color: '#64748b', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <span style={{ fontSize: '13px' }}>👥</span> Students
+                                                    </div>
+                                                    <div style={{ padding: '6px 10px', borderRadius: '8px', color: '#64748b', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <span style={{ fontSize: '13px' }}>💳</span> Fee Portal
+                                                    </div>
+                                                    <div style={{ padding: '6px 10px', borderRadius: '8px', color: '#64748b', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <span style={{ fontSize: '13px' }}>📢</span> Notices
+                                                    </div>
+                                                    <div style={{ padding: '6px 10px', borderRadius: '8px', color: '#64748b', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <span style={{ fontSize: '13px' }}>⚙️</span> Settings
+                                                    </div>
+                                                </div>
+
+                                                {/* Main Content Area */}
+                                                <div style={{ flex: 1, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '14px', background: '#ffffff' }}>
+                                                    {/* Top Dashboard Title Bar */}
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
+                                                        <div>
+                                                            <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>School Administration</div>
+                                                            <div style={{ fontSize: '11.5px', color: '#64748b' }}>Academic Session 2025–26</div>
+                                                        </div>
+                                                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '6px', background: '#ecfdf5', color: '#059669', fontSize: '11px', fontWeight: 700 }}>
+                                                            <span>●</span> System Healthy
+                                                        </div>
+                                                    </div>
+
+                                                    {/* 3 Metrics KPI Cards */}
+                                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                                                        <div style={{ padding: '10px 12px', borderRadius: '12px', background: '#eff6ff', border: '1px solid #bfdbfe' }}>
+                                                            <div style={{ fontSize: '11px', fontWeight: 600, color: '#1d4ed8' }}>Total Students</div>
+                                                            <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a', margin: '2px 0' }}>1,420</div>
+                                                            <div style={{ fontSize: '10.5px', color: '#059669', fontWeight: 700 }}>↑ +12% this term</div>
+                                                        </div>
+                                                        <div style={{ padding: '10px 12px', borderRadius: '12px', background: '#ecfdf5', border: '1px solid #a7f3d0' }}>
+                                                            <div style={{ fontSize: '11px', fontWeight: 600, color: '#047857' }}>Fee Collected</div>
+                                                            <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a', margin: '2px 0' }}>₹34.8 L</div>
+                                                            <div style={{ fontSize: '10.5px', color: '#059669', fontWeight: 700 }}>✓ 94.2% on time</div>
+                                                        </div>
+                                                        <div style={{ padding: '10px 12px', borderRadius: '12px', background: '#fffbeb', border: '1px solid #fde68a' }}>
+                                                            <div style={{ fontSize: '11px', fontWeight: 600, color: '#b45309' }}>Active Modules</div>
+                                                            <div style={{ fontSize: '17px', fontWeight: 800, color: '#0f172a', margin: '2px 0' }}>22 Live</div>
+                                                            <div style={{ fontSize: '10.5px', color: '#b45309', fontWeight: 700 }}>All synced</div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Visual Analytics Chart Widget */}
+                                                    <div style={{ padding: '12px 14px', borderRadius: '14px', background: '#f8fafc', border: '1px solid #e2e8f0', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                                            <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>Monthly Fee Collection Trend</span>
+                                                            <span style={{ fontSize: '11px', color: '#64748b' }}>Last 10 Months</span>
+                                                        </div>
+                                                        <div style={{ height: '78px', display: 'flex', alignItems: 'flex-end', gap: '8px', padding: '4px 0' }}>
+                                                            {[
+                                                                { h: 42, m: 'Apr' }, { h: 65, m: 'May' }, { h: 54, m: 'Jun' },
+                                                                { h: 80, m: 'Jul' }, { h: 70, m: 'Aug' }, { h: 92, m: 'Sep' },
+                                                                { h: 84, m: 'Oct' }, { h: 76, m: 'Nov' }, { h: 88, m: 'Dec' },
+                                                                { h: 96, m: 'Jan' }
+                                                            ].map((b, i) => (
+                                                                <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end', gap: '4px' }}>
+                                                                    <div style={{
+                                                                        width: '100%',
+                                                                        height: `${b.h}%`,
+                                                                        borderRadius: '4px 4px 0 0',
+                                                                        background: i === 9 ? 'linear-gradient(180deg, #2563eb, #1e3a8a)' : 'linear-gradient(180deg, #93c5fd, #3b82f6)'
+                                                                    }}></div>
+                                                                    <span style={{ fontSize: '9px', color: '#94a3b8', fontWeight: 600 }}>{b.m}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1061,23 +1185,75 @@ const LandingPage = () => {
                                 </div>
                             </Reveal>
 
+                            {/* Mobile Website Mockup */}
                             <Reveal delay={0.12}>
-                                <div style={{ width: 'min(200px, 60vw)', margin: '0 auto' }}>
-                                    <div style={{ background: GREY, borderRadius: '26px', padding: '10px 8px', boxShadow: `0 30px 60px rgba(65,105,225,0.22)` }}>
-                                        <div style={{ background: '#ffffff', borderRadius: '18px', overflow: 'hidden' }}>
-                                            <div style={{ height: '70px', background: `linear-gradient(150deg,${BLUE_DARK},${BLUE})` }}></div>
-                                            <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                                <div style={{ height: '9px', width: '70%', borderRadius: '3px', background: '#dbe2f5' }}></div>
-                                                <div style={{ height: '7px', width: '90%', borderRadius: '3px', background: '#eef1fb' }}></div>
-                                                <div style={{ height: '7px', width: '80%', borderRadius: '3px', background: '#eef1fb' }}></div>
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginTop: '4px' }}>
-                                                    <div style={{ height: '38px', borderRadius: '7px', background: '#fafbfe' }}></div>
-                                                    <div style={{ height: '38px', borderRadius: '7px', background: '#fafbfe' }}></div>
+                                <div style={{ width: 'min(230px, 75vw)', margin: '0 auto' }}>
+                                    <div style={{
+                                        background: '#0f172a',
+                                        borderRadius: '34px',
+                                        padding: '12px 10px',
+                                        boxShadow: '0 30px 60px -10px rgba(15, 23, 42, 0.22), 0 10px 24px rgba(0,0,0,0.08)',
+                                        border: '3px solid #1e293b'
+                                    }}>
+                                        {/* Dynamic Island */}
+                                        <div style={{ width: '60px', height: '12px', borderRadius: '999px', background: '#000000', margin: '0 auto 10px auto' }}></div>
+
+                                        {/* Mobile Screen */}
+                                        <div style={{ background: '#ffffff', borderRadius: '22px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                                            {/* Mobile School Nav */}
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: '#ffffff', borderBottom: '1px solid #f1f5f9' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                    <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '10px' }}>🏫</span>
+                                                    <span style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a' }}>DPS School</span>
                                                 </div>
+                                                <span style={{ fontSize: '12px', color: '#64748b' }}>☰</span>
+                                            </div>
+
+                                            {/* Mobile Hero Banner */}
+                                            <div style={{ padding: '14px 12px', background: 'linear-gradient(135deg, #1e3a8a, #2563eb)', color: '#ffffff' }}>
+                                                <div style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#93c5fd', marginBottom: '4px' }}>Admissions 2025–26</div>
+                                                <div style={{ fontSize: '13px', fontWeight: 800, lineHeight: 1.25, marginBottom: '8px' }}>Shaping Future Leaders</div>
+                                                <div style={{ display: 'inline-block', padding: '4px 10px', borderRadius: '999px', background: '#e15241', color: '#ffffff', fontSize: '10px', fontWeight: 700 }}>
+                                                    Apply Online →
+                                                </div>
+                                            </div>
+
+                                            {/* Quick Mobile Modules */}
+                                            <div style={{ padding: '12px 10px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                                <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', border: '1px solid #dbeafe', textAlign: 'center' }}>
+                                                    <div style={{ fontSize: '13px' }}>💳</div>
+                                                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#1d4ed8', marginTop: '2px' }}>Pay Fees</div>
+                                                </div>
+                                                <div style={{ padding: '8px', borderRadius: '8px', background: '#ecfdf5', border: '1px solid #d1fae5', textAlign: 'center' }}>
+                                                    <div style={{ fontSize: '13px' }}>📅</div>
+                                                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#047857', marginTop: '2px' }}>Calendar</div>
+                                                </div>
+                                                <div style={{ padding: '8px', borderRadius: '8px', background: '#f5f3ff', border: '1px solid #ede9fe', textAlign: 'center' }}>
+                                                    <div style={{ fontSize: '13px' }}>🖼️</div>
+                                                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#6d28d9', marginTop: '2px' }}>Gallery</div>
+                                                </div>
+                                                <div style={{ padding: '8px', borderRadius: '8px', background: '#fff7ed', border: '1px solid #fed7aa', textAlign: 'center' }}>
+                                                    <div style={{ fontSize: '13px' }}>📞</div>
+                                                    <div style={{ fontSize: '10px', fontWeight: 700, color: '#c2410c', marginTop: '2px' }}>Enquiry</div>
+                                                </div>
+                                            </div>
+
+                                            {/* Bottom Mobile Home Indicator */}
+                                            <div style={{ height: '16px', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <div style={{ width: '40px', height: '3px', borderRadius: '999px', background: '#cbd5e1' }}></div>
                                             </div>
                                         </div>
                                     </div>
-                                    <p style={{ textAlign: 'center', fontSize: '12px', color: TEXT_MUTED_LIGHT, marginTop: '14px' }}>Your public website, on every screen</p>
+                                    <p style={{
+                                        textAlign: 'center',
+                                        fontFamily: "'Inter', sans-serif",
+                                        fontSize: '12.5px',
+                                        fontWeight: 600,
+                                        color: '#64748b',
+                                        marginTop: '14px'
+                                    }}>
+                                        Public website, responsive on every screen
+                                    </p>
                                 </div>
                             </Reveal>
                         </div>
