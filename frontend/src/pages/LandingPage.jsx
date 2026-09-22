@@ -624,7 +624,7 @@ const LandingPage = () => {
                             <span style={{ display: 'inline-block', fontSize: '11.5px', fontWeight: 700, color: BLUE_DARK, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '12px' }}>
                                 A Module For Every Need
                             </span>
-                            <h2 className="lp-shimmer-text" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, marginBottom: '12px', letterSpacing: '-0.6px' }}>
+                            <h2 className="lp-hero-heading-shimmer" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, marginBottom: '12px', letterSpacing: '-0.6px' }}>
                                 Explore Every Module
                             </h2>
                             <p style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: '14.5px', color: TEXT_MUTED_LIGHT, maxWidth: '560px', margin: '0 auto', lineHeight: 1.7 }}>
@@ -661,7 +661,7 @@ const LandingPage = () => {
                         {ICON_GROUPS.map((group, gi) => (
                             <div key={group.heading}>
                                 <Reveal delay={gi * 0.05}>
-                                    <h3 className="lp-shimmer-text-light" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,3.8vw,40px)', fontWeight: 700, letterSpacing: '-0.5px', marginBottom: '8px' }}>{group.heading}</h3>
+                                    <h3 className="lp-hero-heading-shimmer" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,3.8vw,40px)', fontWeight: 700, letterSpacing: '-0.5px', marginBottom: '8px' }}>{group.heading}</h3>
                                     <div style={{ width: '56px', height: '4px', borderRadius: '99px', background: `linear-gradient(90deg,${BLUE},${BLUE_LIGHT})`, marginBottom: '1.75rem' }} />
                                 </Reveal>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
@@ -698,7 +698,7 @@ const LandingPage = () => {
                             <span style={{ display: 'inline-block', fontSize: '11.5px', fontWeight: 700, color: BLUE_DARK, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '12px' }}>
                                 See It In Action
                             </span>
-                            <h2 className="lp-shimmer-text" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, marginBottom: '12px', letterSpacing: '-0.6px' }}>
+                            <h2 className="lp-hero-heading-shimmer" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, marginBottom: '12px', letterSpacing: '-0.6px' }}>
                                 A Dashboard That Feels Effortless
                             </h2>
                             <p style={{ fontSize: '14.5px', color: TEXT_MUTED_LIGHT, maxWidth: '560px', margin: '0 auto', lineHeight: 1.7 }}>
@@ -779,7 +779,7 @@ const LandingPage = () => {
                     </svg>
                     <div className="lp-trust-grid" style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative' }}>
                         <Reveal style={{ maxWidth: '560px', marginBottom: '3rem' }}>
-                            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, marginBottom: '14px', letterSpacing: '-0.6px', lineHeight: 1.15 }}>
+                            <h2 className="lp-hero-heading-shimmer" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, marginBottom: '14px', letterSpacing: '-0.6px', lineHeight: 1.15 }}>
                                 Built to Grow With Your School
                             </h2>
                             <p style={{ fontSize: '14.5px', color: TEXT_MUTED_LIGHT, lineHeight: 1.8, marginBottom: '1.75rem' }}>
@@ -816,7 +816,7 @@ const LandingPage = () => {
                             <div style={{ position: 'relative', margin: '0 auto 1rem', width: '110px' }}>
                                 <IsoSchool size={110} tone="blue" />
                             </div>
-                            <h2 className="lp-shimmer-text-light" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(24px,3.4vw,34px)', fontWeight: 700, marginBottom: '10px', position: 'relative' }}>
+                            <h2 className="lp-hero-heading-shimmer" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(24px,3.4vw,34px)', fontWeight: 700, marginBottom: '10px', position: 'relative' }}>
                                 Ready to bring your school online?
                             </h2>
                             <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.82)', marginBottom: '1.75rem', position: 'relative' }}>
