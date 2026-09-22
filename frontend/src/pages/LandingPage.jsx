@@ -5,6 +5,9 @@ import schoolHeroBg from "../assets/school-hero-bg.jpg";
 import previewSlide1 from "../assets/preview-slide-1.jpg";
 import previewSlide2 from "../assets/preview-slide-2.jpg";
 import previewSlide3 from "../assets/preview-slide-3.jpg";
+import previewMobile1 from "../assets/preview-mobile-1.jpg";
+import previewMobile2 from "../assets/preview-mobile-2.jpg";
+import previewMobile3 from "../assets/preview-mobile-3.jpg";
 
 // ── Scroll-triggered fade+slide-up, same IntersectionObserver pattern used on every public page ──
 const useScrollReveal = () => {
@@ -301,6 +304,21 @@ const PREVIEW_DESKTOP_SLIDES = [
         image: previewSlide3,
         title: "Vibrant School Life & Celebrations",
         tag: "Annual Day & Culture"
+    }
+];
+
+const PREVIEW_MOBILE_SLIDES = [
+    {
+        image: previewMobile1,
+        title: "JD International School Mobile - Campus & Architecture"
+    },
+    {
+        image: previewMobile2,
+        title: "JD International School Mobile - NCC Cadets & Sports"
+    },
+    {
+        image: previewMobile3,
+        title: "JD International School Mobile - Annual Carnival Fiesta"
     }
 ];
 
@@ -1271,150 +1289,52 @@ const LandingPage = () => {
                                         {/* Mobile Screen Container */}
                                         <div style={{
                                             position: 'relative',
-                                            height: '345px',
-                                            background: '#ffffff',
+                                            height: '375px',
+                                            background: '#0f172a',
                                             borderRadius: '22px',
                                             overflow: 'hidden',
-                                            border: '1px solid #e2e8f0'
+                                            border: '1px solid rgba(255,255,255,0.08)'
                                         }}>
-                                            {/* Slide 0 (Architecture & Heritage) */}
-                                            <div style={{
-                                                position: 'absolute', inset: 0,
-                                                opacity: previewSlide === 0 ? 1 : 0,
-                                                transform: previewSlide === 0 ? 'translateX(0)' : 'translateX(16px)',
-                                                transition: 'all 0.5s ease',
-                                                pointerEvents: previewSlide === 0 ? 'auto' : 'none',
-                                                display: 'flex', flexDirection: 'column'
-                                            }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', background: '#ffffff', borderBottom: '1px solid #f1f5f9' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                        <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '10px' }}>🏫</span>
-                                                        <span style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a' }}>J D International</span>
-                                                    </div>
-                                                    <span style={{ fontSize: '12px', color: '#64748b' }}>☰</span>
+                                            {PREVIEW_MOBILE_SLIDES.map((slide, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        inset: 0,
+                                                        opacity: previewSlide === idx ? 1 : 0,
+                                                        transform: previewSlide === idx ? 'scale(1)' : 'scale(1.04)',
+                                                        transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                        pointerEvents: previewSlide === idx ? 'auto' : 'none'
+                                                    }}
+                                                >
+                                                    <img
+                                                        src={slide.image}
+                                                        alt={slide.title}
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            objectFit: 'cover',
+                                                            objectPosition: 'top center',
+                                                            display: 'block'
+                                                        }}
+                                                    />
                                                 </div>
-                                                <div style={{ padding: '14px 12px', background: 'linear-gradient(135deg, #0f172a, #1e3a8a)', color: '#ffffff' }}>
-                                                    <div style={{ fontSize: '8.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#93c5fd', marginBottom: '3px' }}>Jaipur Campus</div>
-                                                    <div style={{ fontSize: '13px', fontWeight: 800, lineHeight: 1.25, marginBottom: '6px' }}>School of Unique Excellence</div>
-                                                    <div style={{ display: 'inline-block', padding: '3px 9px', borderRadius: '999px', background: '#2563eb', color: '#ffffff', fontSize: '9.5px', fontWeight: 700 }}>
-                                                        Explore School →
-                                                    </div>
-                                                </div>
-                                                <div style={{ padding: '10px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', flex: 1 }}>
-                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', border: '1px solid #dbeafe', textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '12px' }}>🏛️</div>
-                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#1d4ed8', marginTop: '2px' }}>Campus Tour</div>
-                                                    </div>
-                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#ecfdf5', border: '1px solid #d1fae5', textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '12px' }}>📋</div>
-                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#047857', marginTop: '2px' }}>Admissions</div>
-                                                    </div>
-                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#f5f3ff', border: '1px solid #ede9fe', textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '12px' }}>📚</div>
-                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#6d28d9', marginTop: '2px' }}>Academics</div>
-                                                    </div>
-                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#fff7ed', border: '1px solid #fed7aa', textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '12px' }}>📞</div>
-                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#c2410c', marginTop: '2px' }}>Contact</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Slide 1 (Sports & Cadets) */}
-                                            <div style={{
-                                                position: 'absolute', inset: 0,
-                                                opacity: previewSlide === 1 ? 1 : 0,
-                                                transform: previewSlide === 1 ? 'translateX(0)' : 'translateX(16px)',
-                                                transition: 'all 0.5s ease',
-                                                pointerEvents: previewSlide === 1 ? 'auto' : 'none',
-                                                display: 'flex', flexDirection: 'column'
-                                            }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', background: '#ffffff', borderBottom: '1px solid #f1f5f9' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                        <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '10px' }}>🎖️</span>
-                                                        <span style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a' }}>JDIS Sports</span>
-                                                    </div>
-                                                    <span style={{ fontSize: '12px', color: '#64748b' }}>☰</span>
-                                                </div>
-                                                <div style={{ padding: '14px 12px', background: 'linear-gradient(135deg, #065f46, #059669)', color: '#ffffff' }}>
-                                                    <div style={{ fontSize: '8.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#a7f3d0', marginBottom: '3px' }}>Discipline & Pride</div>
-                                                    <div style={{ fontSize: '13px', fontWeight: 800, lineHeight: 1.25, marginBottom: '6px' }}>NCC Cadets & Athletics</div>
-                                                    <div style={{ display: 'inline-block', padding: '3px 9px', borderRadius: '999px', background: '#ffffff', color: '#065f46', fontSize: '9.5px', fontWeight: 700 }}>
-                                                        Sports Meet 2025 →
-                                                    </div>
-                                                </div>
-                                                <div style={{ padding: '10px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', flex: 1 }}>
-                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#ecfdf5', border: '1px solid #a7f3d0', textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '12px' }}>🏆</div>
-                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#047857', marginTop: '2px' }}>Trophies</div>
-                                                    </div>
-                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', border: '1px solid #bfdbfe', textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '12px' }}>🎖️</div>
-                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#1d4ed8', marginTop: '2px' }}>NCC Unit</div>
-                                                    </div>
-                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#fefce8', border: '1px solid #fde68a', textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '12px' }}>⚽</div>
-                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#b45309', marginTop: '2px' }}>Football</div>
-                                                    </div>
-                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#fff1f0', border: '1px solid #fecdd3', textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '12px' }}>🥋</div>
-                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#e15241', marginTop: '2px' }}>Martial Arts</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Slide 2 (Cultural Fiesta) */}
-                                            <div style={{
-                                                position: 'absolute', inset: 0,
-                                                opacity: previewSlide === 2 ? 1 : 0,
-                                                transform: previewSlide === 2 ? 'translateX(0)' : 'translateX(16px)',
-                                                transition: 'all 0.5s ease',
-                                                pointerEvents: previewSlide === 2 ? 'auto' : 'none',
-                                                display: 'flex', flexDirection: 'column'
-                                            }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', background: '#ffffff', borderBottom: '1px solid #f1f5f9' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                        <span style={{ width: '16px', height: '16px', borderRadius: '4px', background: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '10px' }}>🎭</span>
-                                                        <span style={{ fontSize: '11px', fontWeight: 800, color: '#0f172a' }}>JDIS Culture</span>
-                                                    </div>
-                                                    <span style={{ fontSize: '12px', color: '#64748b' }}>☰</span>
-                                                </div>
-                                                <div style={{ padding: '14px 12px', background: 'linear-gradient(135deg, #c2410c, #ea580c)', color: '#ffffff' }}>
-                                                    <div style={{ fontSize: '8.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#fed7aa', marginBottom: '3px' }}>Pre-Primary Fiesta</div>
-                                                    <div style={{ fontSize: '13px', fontWeight: 800, lineHeight: 1.25, marginBottom: '6px' }}>Annual Carnival Celebrations</div>
-                                                    <div style={{ display: 'inline-block', padding: '3px 9px', borderRadius: '999px', background: '#ffffff', color: '#c2410c', fontSize: '9.5px', fontWeight: 700 }}>
-                                                        View Photo Gallery →
-                                                    </div>
-                                                </div>
-                                                <div style={{ padding: '10px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', flex: 1 }}>
-                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#fff7ed', border: '1px solid #fed7aa', textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '12px' }}>🦋</div>
-                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#c2410c', marginTop: '2px' }}>Carnival</div>
-                                                    </div>
-                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#f5f3ff', border: '1px solid #ddd6fe', textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '12px' }}>🎨</div>
-                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#6d28d9', marginTop: '2px' }}>Art & Craft</div>
-                                                    </div>
-                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#eff6ff', border: '1px solid #bfdbfe', textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '12px' }}>📸</div>
-                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#1d4ed8', marginTop: '2px' }}>Gallery</div>
-                                                    </div>
-                                                    <div style={{ padding: '8px', borderRadius: '8px', background: '#fefce8', border: '1px solid #fde68a', textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '12px' }}>🌟</div>
-                                                        <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#b45309', marginTop: '2px' }}>Awards</div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            ))}
 
                                             {/* Bottom Home Indicator */}
                                             <div style={{
-                                                position: 'absolute', bottom: 0, left: 0, right: 0,
-                                                height: '18px', background: 'rgba(255,255,255,0.95)',
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                zIndex: 10
-                                            }}>
-                                                <div style={{ width: '40px', height: '3.5px', borderRadius: '999px', background: '#94a3b8' }}></div>
-                                            </div>
+                                                position: 'absolute',
+                                                bottom: '6px',
+                                                left: '50%',
+                                                transform: 'translateX(-50%)',
+                                                width: '42px',
+                                                height: '3.5px',
+                                                borderRadius: '999px',
+                                                background: 'rgba(255,255,255,0.85)',
+                                                boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                                                zIndex: 10,
+                                                pointerEvents: 'none'
+                                            }}></div>
                                         </div>
                                     </div>
                                     <div style={{
@@ -1424,13 +1344,18 @@ const LandingPage = () => {
                                         gap: '6px',
                                         marginTop: '14px'
                                     }}>
-                                        {PREVIEW_DESKTOP_SLIDES.map((_, i) => (
-                                            <span
+                                        {PREVIEW_MOBILE_SLIDES.map((_, i) => (
+                                            <button
                                                 key={i}
+                                                onClick={() => setPreviewSlide(i)}
+                                                aria-label={`Switch preview to slide ${i + 1}`}
                                                 style={{
-                                                    width: previewSlide === i ? '16px' : '5px',
-                                                    height: '5px',
+                                                    width: previewSlide === i ? '18px' : '6px',
+                                                    height: '6px',
                                                     borderRadius: '999px',
+                                                    border: 'none',
+                                                    padding: 0,
+                                                    cursor: 'pointer',
                                                     background: previewSlide === i ? '#2563eb' : '#cbd5e1',
                                                     transition: 'all 0.3s ease'
                                                 }}
