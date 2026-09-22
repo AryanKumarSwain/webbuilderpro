@@ -281,10 +281,58 @@ const ICON_GROUPS = [
 ];
 
 const TRUST_CARDS = [
-    { title: 'Room to Grow', desc: 'Scale as you go — from Base to Gold, more modules and storage whenever you need them.', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /> },
-    { title: 'Seriously Secure', desc: 'JWT-secured logins and tenant-isolated data, kept separate for every single school.', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /> },
-    { title: 'Your Own Domain', desc: 'Map a custom domain on Gold — yourschool.com, not a generic subdomain.', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z M3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 000 18M12.5 3a17 17 0 010 18" /> },
-    { title: 'Reliable Storage', desc: 'Cloudinary-backed uploads for photos, videos, and PDFs — built to last.', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h10a4 4 0 001.6-7.67 5 5 0 00-9.5-2.79A4 4 0 003 15z" /> },
+    {
+        title: 'Room to Grow',
+        tag: 'Flexible Scaling',
+        desc: 'Scale smoothly as your student count expands — seamlessly upgrade from Base to Gold with extra modules and quota on demand.',
+        perk: 'Instant tier upgrades',
+        cardBg: 'linear-gradient(160deg, #ffffff 40%, #eff6ff 100%)',
+        borderColor: '#bfdbfe',
+        badgeBg: 'linear-gradient(135deg, #1d4ed8, #2563eb)',
+        badgeShadow: 'rgba(37, 99, 235, 0.28)',
+        tagBg: '#dbeafe',
+        tagColor: '#1d4ed8',
+        icon: <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+    },
+    {
+        title: 'Seriously Secure',
+        tag: 'Tenant Isolation',
+        desc: 'Enterprise-grade protection with JWT authentication, tenant isolation, and automated database backups for complete peace of mind.',
+        perk: 'Zero data cross-leak',
+        cardBg: 'linear-gradient(160deg, #ffffff 40%, #ecfdf5 100%)',
+        borderColor: '#a7f3d0',
+        badgeBg: 'linear-gradient(135deg, #047857, #059669)',
+        badgeShadow: 'rgba(5, 150, 105, 0.28)',
+        tagBg: '#d1fae5',
+        tagColor: '#047857',
+        icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+    },
+    {
+        title: 'Your Own Domain',
+        tag: 'Custom Branding',
+        desc: 'Connect your school\'s own official domain (e.g. yourschool.edu.in) with free automated SSL certificates and lightning DNS routing.',
+        perk: 'Free SSL certificate',
+        cardBg: 'linear-gradient(160deg, #ffffff 40%, #f5f3ff 100%)',
+        borderColor: '#ddd6fe',
+        badgeBg: 'linear-gradient(135deg, #6d28d9, #7c3aed)',
+        badgeShadow: 'rgba(124, 58, 237, 0.28)',
+        tagBg: '#ede9fe',
+        tagColor: '#6d28d9',
+        icon: <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z M3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 000 18M12.5 3a17 17 0 010 18" />
+    },
+    {
+        title: 'Reliable Storage',
+        tag: 'Cloudinary CDN',
+        desc: 'High-speed media delivery powered by Cloudinary CDN — ultra-fast photo galleries, event photos, and academic syllabus PDFs.',
+        perk: 'Global media CDN',
+        cardBg: 'linear-gradient(160deg, #ffffff 40%, #fff7ed 100%)',
+        borderColor: '#fed7aa',
+        badgeBg: 'linear-gradient(135deg, #c2410c, #ea580c)',
+        badgeShadow: 'rgba(234, 88, 12, 0.28)',
+        tagBg: '#ffedd5',
+        tagColor: '#c2410c',
+        icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h10a4 4 0 001.6-7.67 5 5 0 00-9.5-2.79A4 4 0 003 15z" />
+    }
 ];
 
 const DEMO_URL = 'https://jdis.wbpro.in';
@@ -1551,38 +1599,242 @@ const LandingPage = () => {
                 </section>
 
                 {/* ── Trust section — "Built to grow with your school" ── */}
-                <section style={{ padding: 'clamp(3rem,7vw,5rem) clamp(1.25rem,6vw,4rem)', background: LIGHT_BG, position: 'relative', overflow: 'hidden' }}>
-                    <svg width="420" height="420" viewBox="0 0 420 420" style={{ position: 'absolute', right: '-90px', bottom: '-100px', pointerEvents: 'none', opacity: 0.5 }}>
-                        <circle cx="210" cy="210" r="180" stroke={BLUE} strokeWidth="1" fill="none" opacity="0.35" />
-                        <ellipse cx="210" cy="210" rx="180" ry="70" stroke={BLUE} strokeWidth="1" fill="none" opacity="0.3" />
-                        <ellipse cx="210" cy="210" rx="180" ry="120" stroke={BLUE} strokeWidth="1" fill="none" opacity="0.3" />
-                        <ellipse cx="210" cy="210" rx="70" ry="180" stroke={BLUE} strokeWidth="1" fill="none" opacity="0.3" />
-                        <line x1="30" y1="210" x2="390" y2="210" stroke={BLUE} strokeWidth="1" opacity="0.25" />
-                        <line x1="210" y1="30" x2="210" y2="390" stroke={BLUE} strokeWidth="1" opacity="0.25" />
-                    </svg>
-                    <div className="lp-trust-grid" style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative' }}>
-                        <Reveal style={{ maxWidth: '560px', marginBottom: '3rem' }}>
-                            <h2 className="lp-hero-heading-shimmer" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700, marginBottom: '14px', letterSpacing: '-0.6px', lineHeight: 1.15 }}>
-                                Built to Grow With Your School
+                <section style={{
+                    padding: 'clamp(4rem, 7vw, 6rem) clamp(1.25rem, 5vw, 3.5rem)',
+                    background: 'linear-gradient(180deg, #ffffff 0%, #fbfcfe 50%, #ffffff 100%)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    borderTop: '1px solid #edf2f7'
+                }}>
+                    {/* Subtle blueprint dot grid pattern */}
+                    <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        backgroundImage: 'radial-gradient(rgba(100, 116, 139, 0.16) 1.2px, transparent 1.2px)',
+                        backgroundSize: '28px 28px',
+                        opacity: 0.5,
+                        pointerEvents: 'none'
+                    }} />
+
+                    {/* Ambient luminous glow auras */}
+                    <div style={{
+                        position: 'absolute',
+                        width: '500px',
+                        height: '500px',
+                        borderRadius: '50%',
+                        background: 'radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%)',
+                        top: '-80px',
+                        right: '5%',
+                        filter: 'blur(50px)',
+                        pointerEvents: 'none'
+                    }} />
+                    <div style={{
+                        position: 'absolute',
+                        width: '500px',
+                        height: '500px',
+                        borderRadius: '50%',
+                        background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)',
+                        bottom: '-80px',
+                        left: '5%',
+                        filter: 'blur(50px)',
+                        pointerEvents: 'none'
+                    }} />
+
+                    <div style={{ maxWidth: '1220px', margin: '0 auto', position: 'relative' }}>
+                        <Reveal style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto 3.5rem auto' }}>
+                            <div style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '6px 16px',
+                                borderRadius: '999px',
+                                background: '#f8fafc',
+                                border: '1px solid #e2e8f0',
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                                marginBottom: '16px'
+                            }}>
+                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#2563eb', display: 'inline-block' }} />
+                                <span style={{ fontSize: '11px', fontWeight: 800, color: '#1e40af', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                                    Enterprise Cloud Foundation
+                                </span>
+                            </div>
+
+                            <h2 style={{
+                                fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
+                                fontSize: 'clamp(28px, 4vw, 42px)',
+                                fontWeight: 900,
+                                letterSpacing: '-0.8px',
+                                lineHeight: 1.15,
+                                marginBottom: '14px',
+                                color: '#0f172a'
+                            }}>
+                                <span>Built to Grow With </span>
+                                <span style={{
+                                    background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    backgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                    display: 'inline-block'
+                                }}>
+                                    Your School
+                                </span>
                             </h2>
-                            <p style={{ fontSize: '14.5px', color: TEXT_MUTED_LIGHT, lineHeight: 1.8, marginBottom: '1.75rem' }}>
-                                Every plan comes with a fast, secure, reliable platform — so you can focus on your school, not your website.
+
+                            <p style={{
+                                fontFamily: "'Inter', sans-serif",
+                                fontSize: '15.5px',
+                                color: '#64748b',
+                                lineHeight: 1.7,
+                                marginBottom: '1.75rem'
+                            }}>
+                                Every plan comes with a fast, secure, reliable cloud platform — so your administration can focus on education, not server management.
                             </p>
-                            <button onClick={() => navigate('/signup')} className="lp-btn"
-                                style={{ padding: '13px 26px', background: `linear-gradient(135deg,${BLUE},${BLUE_DARK})`, color: '#fff', border: 'none', borderRadius: '11px', fontSize: '13.5px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 8px 20px rgba(65,105,225,0.32)' }}>
-                                Get Started
-                            </button>
+
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                                <button
+                                    onClick={() => navigate('/signup')}
+                                    className="lp-btn"
+                                    style={{
+                                        padding: '13px 28px',
+                                        background: 'linear-gradient(135deg, #1d4ed8, #2563eb)',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        borderRadius: '12px',
+                                        fontSize: '14px',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                        boxShadow: '0 8px 24px -4px rgba(37, 99, 235, 0.35)',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
+                                    }}
+                                >
+                                    <span>Get Started Free</span>
+                                    <span>&rarr;</span>
+                                </button>
+                                <a
+                                    href="#features"
+                                    style={{
+                                        padding: '12px 24px',
+                                        background: '#ffffff',
+                                        color: '#334155',
+                                        border: '1.5px solid #e2e8f0',
+                                        borderRadius: '12px',
+                                        fontSize: '14px',
+                                        fontWeight: 700,
+                                        textDecoration: 'none',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseOver={e => e.currentTarget.style.borderColor = '#cbd5e1'}
+                                    onMouseOut={e => e.currentTarget.style.borderColor = '#e2e8f0'}
+                                >
+                                    <span>Explore Modules</span>
+                                    <span>&darr;</span>
+                                </a>
+                            </div>
                         </Reveal>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1.25rem' }}>
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                            gap: '1.5rem',
+                            position: 'relative'
+                        }}>
                             {TRUST_CARDS.map((c, i) => (
-                                <PopReveal key={c.title} delay={i * 0.07}>
-                                    <div className="lp-trust-card" style={{ background: '#ffffff', border: '1px solid #e8ebf3', borderRadius: '16px', padding: '1.6rem', height: '100%' }}>
-                                        <div className="lp-icon-badge" style={{ width: '42px', height: '42px', borderRadius: '50%', background: BLUE, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
-                                            <svg width="19" height="19" fill="none" stroke="#ffffff" strokeWidth="1.8" viewBox="0 0 24 24">{c.icon}</svg>
+                                <PopReveal key={c.title} delay={i * 0.08}>
+                                    <div
+                                        className="lp-trust-card"
+                                        style={{
+                                            background: c.cardBg,
+                                            border: `1.5px solid ${c.borderColor}`,
+                                            borderRadius: '20px',
+                                            padding: '1.85rem 1.65rem',
+                                            height: '100%',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            boxShadow: '0 4px 20px -3px rgba(15, 23, 42, 0.05)',
+                                            transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+                                            cursor: 'default'
+                                        }}
+                                        onMouseEnter={e => {
+                                            e.currentTarget.style.transform = 'translateY(-6px)';
+                                            e.currentTarget.style.boxShadow = '0 16px 36px -6px rgba(15, 23, 42, 0.12)';
+                                        }}
+                                        onMouseLeave={e => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.boxShadow = '0 4px 20px -3px rgba(15, 23, 42, 0.05)';
+                                        }}
+                                    >
+                                        {/* Card Header: Icon & Tag */}
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+                                            <div style={{
+                                                width: '46px',
+                                                height: '46px',
+                                                borderRadius: '14px',
+                                                background: c.badgeBg,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                boxShadow: `0 8px 18px -2px ${c.badgeShadow}`
+                                            }}>
+                                                <svg width="22" height="22" fill="none" stroke="#ffffff" strokeWidth="2" viewBox="0 0 24 24">
+                                                    {c.icon}
+                                                </svg>
+                                            </div>
+                                            <span style={{
+                                                fontSize: '11px',
+                                                fontWeight: 800,
+                                                padding: '4px 10px',
+                                                borderRadius: '999px',
+                                                background: c.tagBg,
+                                                color: c.tagColor,
+                                                letterSpacing: '0.03em'
+                                            }}>
+                                                {c.tag}
+                                            </span>
                                         </div>
-                                        <p style={{ fontSize: '15px', fontWeight: 700, color: TEXT_DARK, marginBottom: '7px' }}>{c.title}</p>
-                                        <p style={{ fontSize: '12.5px', color: TEXT_MUTED_LIGHT, lineHeight: 1.7 }}>{c.desc}</p>
+
+                                        {/* Card Title & Desc */}
+                                        <h3 style={{
+                                            fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
+                                            fontSize: '18px',
+                                            fontWeight: 800,
+                                            color: '#0f172a',
+                                            marginBottom: '8px',
+                                            letterSpacing: '-0.3px'
+                                        }}>
+                                            {c.title}
+                                        </h3>
+                                        <p style={{
+                                            fontSize: '13.5px',
+                                            color: '#475569',
+                                            lineHeight: 1.7,
+                                            marginBottom: '18px',
+                                            flex: 1
+                                        }}>
+                                            {c.desc}
+                                        </p>
+
+                                        {/* Bottom Perk Pill */}
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '7px',
+                                            paddingTop: '12px',
+                                            borderTop: `1px dashed ${c.borderColor}`,
+                                            fontSize: '12px',
+                                            fontWeight: 700,
+                                            color: c.tagColor
+                                        }}>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                                                <polyline points="20 6 9 17 4 12" />
+                                            </svg>
+                                            <span>{c.perk}</span>
+                                        </div>
                                     </div>
                                 </PopReveal>
                             ))}
