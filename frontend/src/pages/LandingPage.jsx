@@ -2239,7 +2239,7 @@ const LandingPage = () => {
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                                     {/* Email */}
                                     <a
-                                        href="mailto:testmaster@webncode.in"
+                                        href="mailto:webbuilderpro@webncode.in"
                                         style={{
                                             display: 'flex',
                                             alignItems: 'center',
@@ -2258,7 +2258,7 @@ const LandingPage = () => {
                                                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                                             </svg>
                                         </span>
-                                        <span>testmaster@webncode.in</span>
+                                        <span>webbuilderpro@webncode.in</span>
                                     </a>
 
                                     {/* Phone Number */}
