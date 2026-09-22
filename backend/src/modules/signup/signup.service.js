@@ -54,17 +54,42 @@ const issueAndSendOtp = async (schoolId, adminName, email) => {
 // superAdmin.service.js#createSchoolWithAdminService, except tbl_admins.email
 // is set equal to the school's email, same as that flow.
 const createSignupRequestService = async ({ schoolName, adminName, email, phone, password }) => {
-    if (!schoolName || !adminName || !email || !password) {
-        throw new AppError("School name, admin name, email and password are required", 400);
+    if (!schoolName || !adminName || !email || !phone || !password) {
+        throw new AppError("All fields are mandatory", 400);
     }
     if (password.length < 8) {
         throw new AppError("Password must be at least 8 characters", 400);
     }
-    if (phone && !/^\d{10}$/.test(phone)) {
+    if (!/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/.test(password)) {
+        throw new AppError("Password must be alphanumeric with at least 1 special character", 400);
+    }
+    if (!/^\d{10}$/.test(phone)) {
         throw new AppError("Phone number must be exactly 10 digits", 400);
     }
 
-    const [existingSchools] = await pool.query("SELECT id, uuid, status FROM tbl_schools WHERE email = ?", [email]);
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPhone = phone.trim();
+
+    // Check if phone number is already registered with another active school or admin
+    const [existingPhoneSchool] = await pool.query("SELECT id, status, email FROM tbl_schools WHERE phone = ?", [cleanPhone]);
+    if (existingPhoneSchool.length > 0) {
+        const match = existingPhoneSchool[0];
+        if (match.status !== "pending" || match.email.toLowerCase() !== cleanEmail) {
+            throw new AppError("This phone number is already registered", 409);
+        }
+    }
+    const [existingPhoneAdmin] = await pool.query(
+        "SELECT a.id, a.email, s.status FROM tbl_admins a LEFT JOIN tbl_schools s ON a.school_id = s.id WHERE a.phone = ?",
+        [cleanPhone]
+    );
+    if (existingPhoneAdmin.length > 0) {
+        const match = existingPhoneAdmin[0];
+        if (match.status !== "pending" || match.email.toLowerCase() !== cleanEmail) {
+            throw new AppError("This phone number is already registered", 409);
+        }
+    }
+
+    const [existingSchools] = await pool.query("SELECT id, uuid, status FROM tbl_schools WHERE email = ?", [cleanEmail]);
 
     let schoolId, schoolUuid;
 
@@ -82,9 +107,10 @@ const createSignupRequestService = async ({ schoolName, adminName, email, phone,
         schoolId = existing.id;
         schoolUuid = existing.uuid;
         const hashedPassword = await bcrypt.hash(password, 10);
-        await pool.query("UPDATE tbl_admins SET password = ? WHERE school_id = ?", [hashedPassword, schoolId]);
+        await pool.query("UPDATE tbl_schools SET phone = ?, name = ? WHERE id = ?", [cleanPhone, schoolName.trim(), schoolId]);
+        await pool.query("UPDATE tbl_admins SET password = ?, name = ?, phone = ? WHERE school_id = ?", [hashedPassword, adminName.trim(), cleanPhone, schoolId]);
     } else {
-        const [existingAdmin] = await pool.query("SELECT id FROM tbl_admins WHERE email = ?", [email]);
+        const [existingAdmin] = await pool.query("SELECT id FROM tbl_admins WHERE email = ?", [cleanEmail]);
         if (existingAdmin.length > 0) throw new AppError("This email is already registered", 409);
 
         const slugBase = schoolName.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-");
@@ -103,7 +129,7 @@ const createSignupRequestService = async ({ schoolName, adminName, email, phone,
 
         await pool.query(
             `INSERT INTO tbl_schools (uuid, name, slug, email, phone, status) VALUES (?, ?, ?, ?, ?, 'pending')`,
-            [schoolUuid, schoolName, slug, email, phone || null]
+            [schoolUuid, schoolName.trim(), slug, cleanEmail, cleanPhone]
         );
 
         const [newSchool] = await pool.query("SELECT id FROM tbl_schools WHERE uuid = ?", [schoolUuid]);
@@ -111,7 +137,7 @@ const createSignupRequestService = async ({ schoolName, adminName, email, phone,
 
         await pool.query(
             `INSERT INTO tbl_admins (uuid, school_id, name, email, password, phone, status) VALUES (?, ?, ?, ?, ?, ?, 'active')`,
-            [adminUuid, schoolId, adminName, email, hashedPassword, phone || null]
+            [adminUuid, schoolId, adminName.trim(), cleanEmail, hashedPassword, cleanPhone]
         );
     }
 

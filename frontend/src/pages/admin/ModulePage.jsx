@@ -29,6 +29,7 @@ const modulePageMap = {
     'announcements': '/admin/module/announcements',
     'events': '/admin/module/events',
     'circulars': '/admin/module/circulars',
+    'faqs': '/admin/module/faqs',
     'calendar': '/admin/module/calendar',
     'results': '/admin/module/results',
     'admission': '/admin/module/admission',

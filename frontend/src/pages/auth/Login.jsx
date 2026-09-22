@@ -338,6 +338,29 @@ const Login = () => {
 
           <div className="login-mobile-card">
 
+          {/* Back to landing page */}
+          <Link
+            to="/"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              color: TEXT_MUTED,
+              fontSize: "12.5px",
+              fontWeight: 600,
+              textDecoration: "none",
+              marginBottom: "clamp(0.4rem, 1vh, 0.75rem)",
+              transition: "color 0.15s ease",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = BLUE; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = TEXT_MUTED; }}
+          >
+            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to landing page
+          </Link>
+
           {/* Logo — right panel top */}
           <img
             src={logo}
@@ -370,7 +393,7 @@ const Login = () => {
             {/* Email */}
             <div className="login-anim-3">
               <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "7px" }}>
-                Email Address
+                Email
               </label>
               <div className="login-field" style={{ position: "relative" }}>
                 <svg className="login-field-icon" style={{ position: "absolute", left: "13px", top: "50%", transform: "translateY(-50%)", width: "18px", height: "18px", color: "#b7c0d6" }} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -378,7 +401,7 @@ const Login = () => {
                 </svg>
                 <input
                   type="email" name="email" value={formData.email} onChange={handleChange}
-                  placeholder="Enter your email" required className="login-input"
+                  placeholder="Enter email" required className="login-input"
                   style={{ width: "100%", padding: "12px 14px 12px 42px", borderRadius: "12px", border: "1.5px solid #e5e9f5", background: "#ffffff", color: TEXT_DARK, fontSize: "14px", outline: "none", boxSizing: "border-box", transition: "all 0.2s" }}
                 />
               </div>

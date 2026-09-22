@@ -254,11 +254,6 @@ const AdmissionProcedurePublic = () => {
                                         <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Find Our Location</p>
                                         <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 8px 24px rgba(15,23,42,0.08)' }}>
                                             <iframe src={school.map_url} width="100%" height="200" style={{ border: 0, display: 'block' }} loading="lazy" title="School location" />
-                                            <a href={school.map_url} target="_blank" rel="noopener noreferrer" className="ap-map-link"
-                                                style={{ position: 'absolute', top: '10px', left: '10px', background: '#ffffff', color: '#1a73e8', fontSize: '11px', fontWeight: 600, padding: '5px 10px', borderRadius: '4px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '5px', boxShadow: '0 1px 4px rgba(0,0,0,0.25)' }}>
-                                                Open in Maps
-                                                <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                                            </a>
                                         </div>
                                     </div>
                                 )}

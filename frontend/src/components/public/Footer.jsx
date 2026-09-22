@@ -264,11 +264,6 @@ const Footer = ({ school, slug, tc, bgImage }) => {
                             <SectionHeading accent={accent}>Our Location</SectionHeading>
                             <div style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.15)', boxShadow: '0 8px 24px rgba(0,0,0,0.25)' }}>
                                 <iframe src={school.map_url} width="100%" height="320" style={{ border: 0, display: 'block', minWidth: '260px' }} loading="lazy" title="School location" />
-                                <a href={school.map_url} target="_blank" rel="noopener noreferrer"
-                                    style={{ position: 'absolute', top: '10px', left: '10px', background: '#ffffff', color: '#1a73e8', fontSize: '11px', fontWeight: 600, padding: '5px 10px', borderRadius: '4px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '5px', boxShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>
-                                    Open in Maps
-                                    <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                                </a>
                             </div>
                         </div>
                     )}

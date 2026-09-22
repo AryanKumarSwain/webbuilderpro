@@ -8,11 +8,15 @@ const getSchoolProfileService = async (schoolId) => {
     const [schools] = await pool.query(
         `SELECT 
             s.*,
+            p.name as plan_name,
+            p.storage_mb as plan_storage_mb,
+            p.tenure_years as plan_tenure_years,
             a.name as admin_name,
             a.email as admin_email,
             a.phone as admin_phone,
             a.profile_photo as admin_photo
         FROM tbl_schools s
+        LEFT JOIN tbl_plans p ON s.plan_id = p.id
         LEFT JOIN tbl_admins a ON s.id = a.school_id
         WHERE s.id = ?`,
         [schoolId]
@@ -100,7 +104,7 @@ const selectModulesService = async (schoolId, modules) => {
     const validModules = [
         "home", "about", "fee", "courses", "faculty", "infrastructure",
         "sports", "gallery", "achievements", "alumni", "testimonials", "disclosure", "tc",
-        "events", "calendar", "announcements", "circulars", "results", "admissionProcedure", "bookList", "parentsCorner", "admission",
+        "events", "calendar", "announcements", "circulars", "faqs", "results", "admissionProcedure", "bookList", "parentsCorner", "admission",
         "career", "contact", "settings",
     ];
 

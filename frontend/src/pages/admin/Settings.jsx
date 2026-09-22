@@ -36,6 +36,7 @@ const AdminSettings = () => {
     const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState('profile');
     const [hoveredTheme, setHoveredTheme] = useState(null);
+    const [themeCategory, setThemeCategory] = useState('all'); // 'all' | 'gradient' | 'solid'
     const [uploadingLogo, setUploadingLogo] = useState(false);
     const [removingLogo, setRemovingLogo] = useState(false);
     const [logoFile, setLogoFile] = useState(null);
@@ -594,7 +595,8 @@ const AdminSettings = () => {
         }
     };
 
-    const themes = [
+    const gradientThemes = [
+        // ── Classic Gradients ──
         { key: 'default', label: 'Rose Pink', desc: 'Warm & elegant', color: '#8b2252', gradient: 'linear-gradient(135deg,#8b2252,#c9687e)', shadow: 'rgba(139,34,82,0.35)' },
         { key: 'blue', label: 'Ocean Blue', desc: 'Professional & trustworthy', color: '#1e3a5f', gradient: 'linear-gradient(135deg,#1e3a5f,#2563eb)', shadow: 'rgba(37,99,235,0.35)' },
         { key: 'green', label: 'Emerald', desc: 'Fresh & natural', color: '#064e3b', gradient: 'linear-gradient(135deg,#064e3b,#059669)', shadow: 'rgba(5,150,105,0.35)' },
@@ -607,6 +609,7 @@ const AdminSettings = () => {
         { key: 'red', label: 'Crimson Red', desc: 'Bold & passionate', color: '#7f1d1d', gradient: 'linear-gradient(135deg,#7f1d1d,#dc2626)', shadow: 'rgba(220,38,38,0.35)' },
         { key: 'teal', label: 'Deep Teal', desc: 'Fresh & modern', color: '#134e4a', gradient: 'linear-gradient(135deg,#134e4a,#0d9488)', shadow: 'rgba(13,148,136,0.35)' },
         { key: 'navy', label: 'Midnight Navy', desc: 'Sharp & authoritative', color: '#0f1c3f', gradient: 'linear-gradient(135deg,#0f1c3f,#3b5bdb)', shadow: 'rgba(59,91,219,0.35)' },
+        { key: 'burgundy', label: 'Burgundy Wine', desc: 'Deep & distinguished', color: '#4a0e1f', gradient: 'linear-gradient(135deg,#4a0e1f,#be123c)', shadow: 'rgba(190,18,60,0.35)' },
         { key: 'olive', label: 'Olive Forest', desc: 'Earthy & grounded', color: '#1f2e0a', gradient: 'linear-gradient(135deg,#1f2e0a,#65a30d)', shadow: 'rgba(101,163,13,0.35)' },
         { key: 'cyan', label: 'Turquoise Cyan', desc: 'Vibrant & lively', color: '#0e3b45', gradient: 'linear-gradient(135deg,#0e3b45,#0891b2)', shadow: 'rgba(8,145,178,0.35)' },
         { key: 'amber', label: 'Amber Gold', desc: 'Warm & inviting', color: '#78350f', gradient: 'linear-gradient(135deg,#78350f,#f59e0b)', shadow: 'rgba(245,158,11,0.35)' },
@@ -616,7 +619,45 @@ const AdminSettings = () => {
         { key: 'plainCream', label: 'Plain Cream', desc: 'Soft & neutral', color: '#8a7550', gradient: 'linear-gradient(135deg,#8a7550,#f3ecd9)', shadow: 'rgba(138,117,80,0.35)' },
         { key: 'mustard', label: 'Mustard Yellow', desc: 'Cheerful & vibrant', color: '#7a5c00', gradient: 'linear-gradient(135deg,#7a5c00,#eab308)', shadow: 'rgba(234,179,8,0.35)' },
         { key: 'indigo', label: 'Indigo', desc: 'Deep & modern', color: '#312e81', gradient: 'linear-gradient(135deg,#312e81,#6366f1)', shadow: 'rgba(99,102,241,0.35)' },
+
+        // ── Light & Bright Gradients ──
+        { key: 'brightCyan', label: 'Electric Cyan', desc: 'Luminous bright aqua', color: '#0891b2', gradient: 'linear-gradient(135deg,#0891b2,#06b6d4)', shadow: 'rgba(6,182,212,0.35)' },
+        { key: 'brightLime', label: 'Fresh Lime', desc: 'Energetic bright lime', color: '#4d7c0f', gradient: 'linear-gradient(135deg,#4d7c0f,#84cc16)', shadow: 'rgba(132,204,22,0.35)' },
+        { key: 'brightViolet', label: 'Electric Violet', desc: 'Vivid electric violet', color: '#7c3aed', gradient: 'linear-gradient(135deg,#7c3aed,#a855f7)', shadow: 'rgba(168,85,247,0.35)' },
+        { key: 'brightTangerine', label: 'Neon Tangerine', desc: 'Punchy vibrant orange', color: '#ea580c', gradient: 'linear-gradient(135deg,#ea580c,#f97316)', shadow: 'rgba(249,115,22,0.35)' },
+        { key: 'brightMagenta', label: 'Vivid Magenta', desc: 'Bold bright fuchsia', color: '#c026d3', gradient: 'linear-gradient(135deg,#c026d3,#e879f9)', shadow: 'rgba(232,121,249,0.35)' },
+        { key: 'brightSunshine', label: 'Golden Sunshine', desc: 'Bright sunny glow', color: '#ca8a04', gradient: 'linear-gradient(135deg,#ca8a04,#facc15)', shadow: 'rgba(250,204,21,0.35)' },
+        { key: 'brightSky', label: 'Sky Cerulean', desc: 'Clear bright sky', color: '#0284c7', gradient: 'linear-gradient(135deg,#0284c7,#38bdf8)', shadow: 'rgba(56,189,248,0.35)' },
+        { key: 'brightWatermelon', label: 'Neon Coral', desc: 'Bright punchy coral', color: '#e11d48', gradient: 'linear-gradient(135deg,#e11d48,#fb7185)', shadow: 'rgba(251,113,133,0.35)' },
+        { key: 'pastelMint', label: 'Pastel Mint', desc: 'Refreshing soft mint', color: '#059669', gradient: 'linear-gradient(135deg,#059669,#34d399)', shadow: 'rgba(52,211,153,0.35)' },
+        { key: 'pastelLilac', label: 'Soft Lilac', desc: 'Gentle pastel lavender', color: '#6d28d9', gradient: 'linear-gradient(135deg,#6d28d9,#c4b5fd)', shadow: 'rgba(196,181,253,0.35)' },
+        { key: 'pastelPeach', label: 'Soft Peach', desc: 'Warm gentle peach', color: '#c2410c', gradient: 'linear-gradient(135deg,#c2410c,#fdba74)', shadow: 'rgba(253,186,116,0.35)' },
+        { key: 'pastelSky', label: 'Ice Blue', desc: 'Crisp light ice blue', color: '#0369a1', gradient: 'linear-gradient(135deg,#0369a1,#7dd3fc)', shadow: 'rgba(125,211,252,0.35)' },
     ];
+
+    const solidThemes = [
+        // ── Solid Colours (Without Gradient) ──
+        { key: 'solidRoyalBlue', label: 'Royal Blue', desc: 'Solid classic school blue', color: '#1d4ed8', shadow: 'rgba(29,78,216,0.3)' },
+        { key: 'solidNavy', label: 'Classic Navy', desc: 'Solid prestigious navy', color: '#0f2b5c', shadow: 'rgba(15,43,92,0.3)' },
+        { key: 'solidSky', label: 'Sky Blue', desc: 'Solid bright sky blue', color: '#0284c7', shadow: 'rgba(2,132,199,0.3)' },
+        { key: 'solidTeal', label: 'Deep Teal', desc: 'Solid modern academic teal', color: '#0f766e', shadow: 'rgba(15,118,110,0.3)' },
+        { key: 'solidEmerald', label: 'Emerald Green', desc: 'Solid institutional green', color: '#047857', shadow: 'rgba(4,120,87,0.3)' },
+        { key: 'solidForest', label: 'Forest Pine', desc: 'Solid deep woodland pine', color: '#14532d', shadow: 'rgba(20,83,45,0.3)' },
+        { key: 'solidCrimson', label: 'Crimson Red', desc: 'Solid bold traditional red', color: '#b91c1c', shadow: 'rgba(185,28,28,0.3)' },
+        { key: 'solidMaroon', label: 'Deep Maroon', desc: 'Solid convent school maroon', color: '#831843', shadow: 'rgba(131,24,67,0.3)' },
+        { key: 'solidPurple', label: 'Regal Purple', desc: 'Solid distinguished purple', color: '#6b21a8', shadow: 'rgba(107,33,168,0.3)' },
+        { key: 'solidSaffron', label: 'Saffron Orange', desc: 'Solid vibrant Indian saffron', color: '#d97706', shadow: 'rgba(217,119,6,0.3)' },
+        { key: 'solidAmber', label: 'Sun Amber', desc: 'Solid warm golden amber', color: '#b45309', shadow: 'rgba(180,83,9,0.3)' },
+        { key: 'solidCoral', label: 'Coral Pink', desc: 'Solid lively friendly coral', color: '#e11d48', shadow: 'rgba(225,29,72,0.3)' },
+        { key: 'solidCharcoal', label: 'Onyx Black', desc: 'Solid ultra-clean minimalist', color: '#18181b', shadow: 'rgba(24,24,27,0.3)' },
+        { key: 'solidSlate', label: 'Slate Gray', desc: 'Solid calm corporate slate', color: '#334155', shadow: 'rgba(51,65,85,0.3)' },
+        { key: 'solidIndigo', label: 'Collegiate Indigo', desc: 'Solid deep varsity indigo', color: '#3730a3', shadow: 'rgba(55,48,163,0.3)' },
+        { key: 'solidLemon', label: 'Bright Lemon', desc: 'Solid cheerful bright yellow', color: '#ca8a04', shadow: 'rgba(202,138,4,0.3)' },
+        { key: 'solidLime', label: 'Vibrant Lime', desc: 'Solid fresh bright lime', color: '#4d7c0f', shadow: 'rgba(77,124,15,0.3)' },
+        { key: 'solidRose', label: 'Rose Wine', desc: 'Solid rich heritage rose', color: '#9f1239', shadow: 'rgba(159,18,57,0.3)' },
+    ];
+
+    const themes = [...gradientThemes, ...solidThemes];
 
     const inputStyle = {
         width: '100%', padding: '11px 14px', border: '1px solid #e2e8f0',
@@ -1115,33 +1156,156 @@ const AdminSettings = () => {
                             </div>
                         </div>
                         <div style={{ padding: '1.75rem' }}>
-                            <div className="settings-3col settings-theme-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
-                                {themes.map(theme => {
-                                    const isActive = settingsData.theme === theme.key;
-                                    const isHovered = hoveredTheme === theme.key;
+                            {/* Filter Bar */}
+                            <div style={{
+                                display: 'flex', alignItems: 'center', gap: '8px',
+                                marginBottom: '1.5rem', flexWrap: 'wrap',
+                            }}>
+                                <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginRight: '4px' }}>
+                                    Filter:
+                                </span>
+                                {[
+                                    { key: 'all', label: `All Colours (${gradientThemes.length + solidThemes.length})` },
+                                    { key: 'gradient', label: `Gradient Colours (${gradientThemes.length})` },
+                                    { key: 'solid', label: `Solid Colours (${solidThemes.length})` },
+                                ].map(cat => {
+                                    const isCatActive = themeCategory === cat.key;
                                     return (
-                                        <div key={theme.key} className="settings-theme-card" onClick={() => handleThemeSave(theme.key)} onMouseEnter={() => setHoveredTheme(theme.key)} onMouseLeave={() => setHoveredTheme(null)}
-                                            style={{ borderRadius: '8px', border: isActive ? `2px solid ${theme.color}` : '0.5px solid #f1f5f9', overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s ease', transform: isActive ? 'translateY(-4px)' : isHovered ? 'translateY(-2px)' : 'none', boxShadow: isActive ? `0 12px 32px ${theme.shadow}` : isHovered ? `0 8px 20px ${theme.shadow}` : '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                            <div className="settings-theme-swatch" style={{ height: '90px', background: theme.gradient, position: 'relative', overflow: 'hidden' }}>
-                                                <div className="settings-theme-deco" style={{ position: 'absolute', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: '-30px', right: '-20px' }}></div>
-                                                <div className="settings-theme-bars" style={{ position: 'absolute', bottom: '12px', left: '14px', display: 'flex', gap: '5px' }}>
-                                                    <div style={{ width: '32px', height: '5px', borderRadius: '3px', background: 'rgba(255,255,255,0.7)' }}></div>
-                                                    <div style={{ width: '20px', height: '5px', borderRadius: '3px', background: 'rgba(255,255,255,0.35)' }}></div>
-                                                </div>
-                                                {isActive && <div className="settings-theme-check" style={{ position: 'absolute', top: '10px', right: '10px', width: '24px', height: '24px', background: '#ffffff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width="12" height="12" fill="none" stroke={theme.color} strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></div>}
-                                            </div>
-                                            <div className="settings-theme-body" style={{ padding: '12px 14px', background: '#ffffff' }}>
-                                                <div className="settings-theme-label-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
-                                                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: theme.gradient, flexShrink: 0 }}></div>
-                                                    <p className="settings-theme-label" style={{ fontSize: '13px', fontWeight: isActive ? 700 : 500, color: isActive ? theme.color : '#0f172a' }}>{theme.label}</p>
-                                                </div>
-                                                <p className="settings-theme-desc" style={{ fontSize: '11px', color: '#94a3b8', paddingLeft: '18px' }}>{theme.desc}</p>
-                                            </div>
-                                        </div>
+                                        <button
+                                            key={cat.key}
+                                            type="button"
+                                            onClick={() => setThemeCategory(cat.key)}
+                                            style={{
+                                                padding: '7px 15px',
+                                                borderRadius: '999px',
+                                                fontSize: '12px',
+                                                fontWeight: isCatActive ? 700 : 500,
+                                                border: isCatActive ? `1.5px solid ${tc.primary}` : '1px solid #e2e8f0',
+                                                background: isCatActive ? tc.light : '#ffffff',
+                                                color: isCatActive ? tc.primary : '#475569',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.18s ease',
+                                                boxShadow: isCatActive ? `0 2px 8px ${hexToRgba(tc.primary, 0.15)}` : 'none',
+                                            }}
+                                        >
+                                            {cat.label}
+                                        </button>
                                     );
                                 })}
                             </div>
-                            <div style={{ marginTop: '1.25rem', padding: '12px 16px', background: 'linear-gradient(135deg,#fdf0f5,#fff5f8)', borderRadius: '8px', border: '1px solid #f9c4d4', display: 'flex', alignItems: 'center', gap: '8px' }}>
+
+                            {/* ── Section 1: Gradient Colours ── */}
+                            {(themeCategory === 'all' || themeCategory === 'gradient') && (
+                                <div style={{ marginBottom: themeCategory === 'all' ? '2.5rem' : '0' }}>
+                                    <div style={{
+                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                        marginBottom: '14px', paddingBottom: '10px', borderBottom: '1px solid #f1f5f9',
+                                        flexWrap: 'wrap', gap: '8px',
+                                    }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                            <span style={{
+                                                fontSize: '11px', fontWeight: 800, textTransform: 'uppercase',
+                                                letterSpacing: '0.08em', padding: '4px 11px', borderRadius: '6px',
+                                                background: 'linear-gradient(135deg,#1e3a5f,#2563eb)', color: '#ffffff',
+                                            }}>
+                                                Gradient Colours
+                                            </span>
+                                            <span style={{ fontSize: '12px', color: '#64748b' }}>
+                                                Multi-shade dynamic gradients with light & bright accents
+                                            </span>
+                                        </div>
+                                        <span style={{ fontSize: '11px', fontWeight: 600, color: '#94a3b8' }}>
+                                            {gradientThemes.length} Themes
+                                        </span>
+                                    </div>
+
+                                    <div className="settings-3col settings-theme-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
+                                        {gradientThemes.map(theme => {
+                                            const isActive = settingsData.theme === theme.key;
+                                            const isHovered = hoveredTheme === theme.key;
+                                            return (
+                                                <div key={theme.key} className="settings-theme-card" onClick={() => handleThemeSave(theme.key)} onMouseEnter={() => setHoveredTheme(theme.key)} onMouseLeave={() => setHoveredTheme(null)}
+                                                    style={{ borderRadius: '8px', border: isActive ? `2px solid ${theme.color}` : '0.5px solid #f1f5f9', overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s ease', transform: isActive ? 'translateY(-4px)' : isHovered ? 'translateY(-2px)' : 'none', boxShadow: isActive ? `0 12px 32px ${theme.shadow}` : isHovered ? `0 8px 20px ${theme.shadow}` : '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                                    <div className="settings-theme-swatch" style={{ height: '90px', background: theme.gradient, position: 'relative', overflow: 'hidden' }}>
+                                                        <div className="settings-theme-deco" style={{ position: 'absolute', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: '-30px', right: '-20px' }}></div>
+                                                        <div className="settings-theme-bars" style={{ position: 'absolute', bottom: '12px', left: '14px', display: 'flex', gap: '5px' }}>
+                                                            <div style={{ width: '32px', height: '5px', borderRadius: '3px', background: 'rgba(255,255,255,0.7)' }}></div>
+                                                            <div style={{ width: '20px', height: '5px', borderRadius: '3px', background: 'rgba(255,255,255,0.35)' }}></div>
+                                                        </div>
+                                                        {isActive && <div className="settings-theme-check" style={{ position: 'absolute', top: '10px', right: '10px', width: '24px', height: '24px', background: '#ffffff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width="12" height="12" fill="none" stroke={theme.color} strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></div>}
+                                                    </div>
+                                                    <div className="settings-theme-body" style={{ padding: '12px 14px', background: '#ffffff' }}>
+                                                        <div className="settings-theme-label-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                                                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: theme.gradient, flexShrink: 0 }}></div>
+                                                            <p className="settings-theme-label" style={{ fontSize: '13px', fontWeight: isActive ? 700 : 500, color: isActive ? theme.color : '#0f172a' }}>{theme.label}</p>
+                                                        </div>
+                                                        <p className="settings-theme-desc" style={{ fontSize: '11px', color: '#94a3b8', paddingLeft: '18px' }}>{theme.desc}</p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* ── Section 2: Solid Colours (Without Gradient) ── */}
+                            {(themeCategory === 'all' || themeCategory === 'solid') && (
+                                <div>
+                                    <div style={{
+                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                        marginBottom: '14px', paddingBottom: '10px', borderBottom: '1px solid #f1f5f9',
+                                        flexWrap: 'wrap', gap: '8px',
+                                    }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                            <span style={{
+                                                fontSize: '11px', fontWeight: 800, textTransform: 'uppercase',
+                                                letterSpacing: '0.08em', padding: '4px 11px', borderRadius: '6px',
+                                                background: '#0f172a', color: '#ffffff',
+                                            }}>
+                                                Solid Colours
+                                            </span>
+                                            <span style={{ fontSize: '12px', color: '#64748b' }}>
+                                                Pure, flat solid colors without gradients — clean, classic school identities
+                                            </span>
+                                        </div>
+                                        <span style={{ fontSize: '11px', fontWeight: 600, color: '#94a3b8' }}>
+                                            {solidThemes.length} Themes
+                                        </span>
+                                    </div>
+
+                                    <div className="settings-3col settings-theme-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
+                                        {solidThemes.map(theme => {
+                                            const isActive = settingsData.theme === theme.key;
+                                            const isHovered = hoveredTheme === theme.key;
+                                            return (
+                                                <div key={theme.key} className="settings-theme-card" onClick={() => handleThemeSave(theme.key)} onMouseEnter={() => setHoveredTheme(theme.key)} onMouseLeave={() => setHoveredTheme(null)}
+                                                    style={{ borderRadius: '8px', border: isActive ? `2px solid ${theme.color}` : '0.5px solid #f1f5f9', overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s ease', transform: isActive ? 'translateY(-4px)' : isHovered ? 'translateY(-2px)' : 'none', boxShadow: isActive ? `0 12px 32px ${theme.shadow}` : isHovered ? `0 8px 20px ${theme.shadow}` : '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                                    <div className="settings-theme-swatch" style={{ height: '90px', background: theme.color, position: 'relative', overflow: 'hidden' }}>
+                                                        <span className="settings-theme-deco" style={{
+                                                            position: 'absolute', bottom: '10px', left: '12px',
+                                                            fontSize: '9.5px', fontWeight: 800, textTransform: 'uppercase',
+                                                            letterSpacing: '0.08em', padding: '2px 7px', borderRadius: '4px',
+                                                            background: 'rgba(255,255,255,0.22)', color: '#ffffff',
+                                                        }}>
+                                                            Solid
+                                                        </span>
+                                                        {isActive && <div className="settings-theme-check" style={{ position: 'absolute', top: '10px', right: '10px', width: '24px', height: '24px', background: '#ffffff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width="12" height="12" fill="none" stroke={theme.color} strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></div>}
+                                                    </div>
+                                                    <div className="settings-theme-body" style={{ padding: '12px 14px', background: '#ffffff' }}>
+                                                        <div className="settings-theme-label-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                                                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: theme.color, flexShrink: 0 }}></div>
+                                                            <p className="settings-theme-label" style={{ fontSize: '13px', fontWeight: isActive ? 700 : 500, color: isActive ? theme.color : '#0f172a' }}>{theme.label}</p>
+                                                        </div>
+                                                        <p className="settings-theme-desc" style={{ fontSize: '11px', color: '#94a3b8', paddingLeft: '18px' }}>{theme.desc}</p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div style={{ marginTop: '1.5rem', padding: '12px 16px', background: 'linear-gradient(135deg,#fdf0f5,#fff5f8)', borderRadius: '8px', border: '1px solid #f9c4d4', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <span style={{ color: tc.primary }}><InfoIcon /></span>
                                 <p style={{ fontSize: '12px', color: tc.primary, fontWeight: 500 }}>Theme changes reflect on your public website and admin panel immediately.</p>
                             </div>

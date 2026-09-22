@@ -510,8 +510,28 @@ const completeGoogleSignupService = async ({ googleSignupToken, schoolName, phon
     throw new AppError("School name must be at least 2 characters", 400);
   }
 
-  if (phone && !/^\d{10}$/.test(phone)) {
-    throw new AppError("Phone number must be exactly 10 digits", 400);
+  if (phone) {
+    if (!/^\d{10}$/.test(phone)) {
+      throw new AppError("Phone number must be exactly 10 digits", 400);
+    }
+    const cleanPhone = phone.trim();
+    const [existingPhoneSchool] = await pool.query("SELECT id, status, email FROM tbl_schools WHERE phone = ?", [cleanPhone]);
+    if (existingPhoneSchool.length > 0) {
+      const match = existingPhoneSchool[0];
+      if (match.status !== "pending" || match.email.toLowerCase() !== email.toLowerCase()) {
+        throw new AppError("This phone number is already registered", 409);
+      }
+    }
+    const [existingPhoneAdmin] = await pool.query(
+      "SELECT a.id, a.email, s.status FROM tbl_admins a LEFT JOIN tbl_schools s ON a.school_id = s.id WHERE a.phone = ?",
+      [cleanPhone]
+    );
+    if (existingPhoneAdmin.length > 0) {
+      const match = existingPhoneAdmin[0];
+      if (match.status !== "pending" || match.email.toLowerCase() !== email.toLowerCase()) {
+        throw new AppError("This phone number is already registered", 409);
+      }
+    }
   }
 
   // Check if school or admin with this email exists

@@ -58,7 +58,6 @@ const formats = [
   "color",
   "background",
   "list",
-  "bullet",
   "align",
 ];
 
