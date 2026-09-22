@@ -1865,11 +1865,296 @@ const LandingPage = () => {
                     </Reveal>
                 </section>
 
-                {/* ── Footer ── */}
-                <footer style={{ padding: '2rem clamp(1.25rem,6vw,4rem) 2.5rem', borderTop: '1px solid #eef0f6', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-                    <img src={logo} alt="Web Builder Pro" style={{ height: '32px', objectFit: 'contain', opacity: 0.85 }} />
-                    <p style={{ fontSize: '12.5px', color: TEXT_MUTED_LIGHT }}>© 2026 Web Builder Pro. All rights reserved.</p>
-                    <a href="/super-admin/login" style={{ fontSize: '11px', color: '#a8afbd', textDecoration: 'none' }}>Platform Owner? Super Admin Login</a>
+                {/* ── Rich Dark Footer (Web Builder Pro) ── */}
+                <footer style={{
+                    background: '#0a0f1d',
+                    color: '#94a3b8',
+                    padding: 'clamp(3.5rem, 6vw, 5rem) clamp(1.25rem, 6vw, 4rem) 2rem',
+                    borderTop: '1px solid #1e293b',
+                    position: 'relative'
+                }}>
+                    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                        {/* 4-Column Grid */}
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                            gap: 'clamp(2rem, 4vw, 3.5rem)',
+                            marginBottom: '3.5rem'
+                        }}>
+                            {/* Column 1: Brand & Bio */}
+                            <div style={{ maxWidth: '340px' }}>
+                                <div style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    background: '#ffffff',
+                                    padding: '8px 16px',
+                                    borderRadius: '12px',
+                                    marginBottom: '18px',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                                }}>
+                                    <img src={logo} alt="Web Builder Pro" style={{ height: '30px', objectFit: 'contain' }} />
+                                </div>
+                                <p style={{
+                                    fontSize: '13.5px',
+                                    lineHeight: 1.75,
+                                    color: '#94a3b8',
+                                    marginBottom: '20px'
+                                }}>
+                                    Web Builder Pro is a cloud-based school website builder and institutional management platform that helps schools launch beautiful portals, manage admissions, notices, results, and fee systems effortlessly.
+                                </p>
+                                {/* Social Media Icons */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    {[
+                                        {
+                                            label: 'Twitter / X',
+                                            href: 'https://twitter.com',
+                                            icon: <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                        },
+                                        {
+                                            label: 'LinkedIn',
+                                            href: 'https://linkedin.com',
+                                            icon: <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.75a1.63 1.63 0 1 0 0 3.26 1.63 1.63 0 0 0 0-3.26z"/>
+                                        },
+                                        {
+                                            label: 'Facebook',
+                                            href: 'https://facebook.com',
+                                            icon: <path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02z"/>
+                                        },
+                                        {
+                                            label: 'Instagram',
+                                            href: 'https://instagram.com',
+                                            icon: (
+                                                <>
+                                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                                                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                                                </>
+                                            ),
+                                            stroke: true
+                                        }
+                                    ].map((s, idx) => (
+                                        <a
+                                            key={idx}
+                                            href={s.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label={s.label}
+                                            style={{
+                                                width: '36px',
+                                                height: '36px',
+                                                borderRadius: '10px',
+                                                background: '#0f172a',
+                                                border: '1px solid #1e293b',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                color: '#94a3b8',
+                                                transition: 'all 0.2s ease',
+                                                textDecoration: 'none'
+                                            }}
+                                            onMouseEnter={e => {
+                                                e.currentTarget.style.color = '#38bdf8';
+                                                e.currentTarget.style.borderColor = '#38bdf8';
+                                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                            }}
+                                            onMouseLeave={e => {
+                                                e.currentTarget.style.color = '#94a3b8';
+                                                e.currentTarget.style.borderColor = '#1e293b';
+                                                e.currentTarget.style.transform = 'translateY(0)';
+                                            }}
+                                        >
+                                            <svg
+                                                width="16"
+                                                height="16"
+                                                fill={s.stroke ? "none" : "currentColor"}
+                                                stroke={s.stroke ? "currentColor" : "none"}
+                                                strokeWidth={s.stroke ? "2" : "0"}
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                {s.icon}
+                                            </svg>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Column 2: Features */}
+                            <div>
+                                <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#f8fafc', marginBottom: '18px', letterSpacing: '-0.2px' }}>
+                                    Features
+                                </h4>
+                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '11px' }}>
+                                    {[
+                                        { label: 'Student Management', href: '#features' },
+                                        { label: 'Teacher Management', href: '#features' },
+                                        { label: 'Admission Enquiries', href: '#features' },
+                                        { label: 'Results & Examinations', href: '#features' },
+                                        { label: 'Parent & Student Portal', href: '#features' },
+                                        { label: 'Dynamic Photo Gallery', href: '#features' }
+                                    ].map((item, idx) => (
+                                        <li key={idx}>
+                                            <a
+                                                href={item.href}
+                                                style={{
+                                                    fontSize: '13.5px',
+                                                    color: '#94a3b8',
+                                                    textDecoration: 'none',
+                                                    transition: 'color 0.18s ease'
+                                                }}
+                                                onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
+                                                onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                                            >
+                                                {item.label}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Column 3: Support */}
+                            <div>
+                                <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#f8fafc', marginBottom: '18px', letterSpacing: '-0.2px' }}>
+                                    Support
+                                </h4>
+                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '11px' }}>
+                                    {[
+                                        { label: 'Help Center', href: '#preview' },
+                                        { label: 'Documentation', href: '#preview' },
+                                        { label: 'Contact Support', href: 'tel:+918947919195' },
+                                        { label: 'Privacy Policy', href: '#' },
+                                        { label: 'Terms & Conditions', href: '#' },
+                                        { label: 'Platform Owner? Super Admin', href: '/super-admin/login' }
+                                    ].map((item, idx) => (
+                                        <li key={idx}>
+                                            <a
+                                                href={item.href}
+                                                style={{
+                                                    fontSize: '13.5px',
+                                                    color: '#94a3b8',
+                                                    textDecoration: 'none',
+                                                    transition: 'color 0.18s ease'
+                                                }}
+                                                onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
+                                                onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                                            >
+                                                {item.label}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Column 4: Contact */}
+                            <div>
+                                <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#f8fafc', marginBottom: '18px', letterSpacing: '-0.2px' }}>
+                                    Contact
+                                </h4>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                    {/* Email */}
+                                    <a
+                                        href="mailto:testmaster@webncode.in"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '10px',
+                                            fontSize: '13.5px',
+                                            color: '#94a3b8',
+                                            textDecoration: 'none',
+                                            transition: 'color 0.18s ease'
+                                        }}
+                                        onMouseEnter={e => e.currentTarget.style.color = '#38bdf8'}
+                                        onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                                    >
+                                        <span style={{ color: '#38bdf8', display: 'flex', alignItems: 'center' }}>
+                                            <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                                <rect x="3" y="4" width="18" height="16" rx="2"/>
+                                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                                            </svg>
+                                        </span>
+                                        <span>testmaster@webncode.in</span>
+                                    </a>
+
+                                    {/* Phone Number */}
+                                    <a
+                                        href="tel:+918947919195"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '10px',
+                                            fontSize: '13.5px',
+                                            color: '#94a3b8',
+                                            textDecoration: 'none',
+                                            transition: 'color 0.18s ease'
+                                        }}
+                                        onMouseEnter={e => e.currentTarget.style.color = '#34d399'}
+                                        onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                                    >
+                                        <span style={{ color: '#34d399', display: 'flex', alignItems: 'center' }}>
+                                            <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                            </svg>
+                                        </span>
+                                        <span style={{ fontWeight: 600 }}>+91 8947919195</span>
+                                    </a>
+
+                                    {/* Location */}
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        fontSize: '13.5px',
+                                        color: '#94a3b8'
+                                    }}>
+                                        <span style={{ color: '#f472b6', display: 'flex', alignItems: 'center' }}>
+                                            <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                                                <circle cx="12" cy="10" r="3"/>
+                                            </svg>
+                                        </span>
+                                        <span>Jaipur, Rajasthan</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Bottom Copyright & Legal Links Bar */}
+                        <div style={{
+                            borderTop: '1px solid #1e293b',
+                            paddingTop: '24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            flexWrap: 'wrap',
+                            gap: '14px',
+                            fontSize: '12.5px',
+                            color: '#64748b'
+                        }}>
+                            <div>
+                                &copy; 2026 Web Builder Pro. All rights reserved.
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                <a
+                                    href="#"
+                                    style={{ color: '#64748b', textDecoration: 'none', transition: 'color 0.18s ease' }}
+                                    onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
+                                    onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+                                >
+                                    Privacy policy
+                                </a>
+                                <a
+                                    href="#"
+                                    style={{ color: '#64748b', textDecoration: 'none', transition: 'color 0.18s ease' }}
+                                    onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
+                                    onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+                                >
+                                    Terms of service
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </footer>
 
             </div>
