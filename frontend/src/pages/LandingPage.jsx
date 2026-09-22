@@ -213,24 +213,27 @@ const ICON_GROUPS = [
             {
                 title: 'Custom Public Website',
                 gradient: ['#1e3a8a', '#2563eb'],
-                glow: 'rgba(30, 58, 138, 0.22)',
-                lightBg: '#eff6ff',
+                glow: 'rgba(37, 99, 235, 0.28)',
+                cardBg: 'linear-gradient(160deg, #ffffff 40%, #eff6ff 100%)',
+                borderColor: '#bfdbfe',
                 desc: 'A professional public site for your school, ready in minutes — no coding required.',
                 icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             },
             {
                 title: 'Rich Content Modules',
-                gradient: ['#3730a3', '#6366f1'],
-                glow: 'rgba(55, 48, 163, 0.22)',
-                lightBg: '#f5f3ff',
+                gradient: ['#5b21b6', '#7c3aed'],
+                glow: 'rgba(124, 58, 237, 0.28)',
+                cardBg: 'linear-gradient(160deg, #ffffff 40%, #f5f3ff 100%)',
+                borderColor: '#ddd6fe',
                 desc: 'Fee tables, galleries, events, and more — manage everything from one place.',
                 icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             },
             {
                 title: 'Smart Enquiry Forms',
                 gradient: ['#c2410c', '#e15241'],
-                glow: 'rgba(225, 82, 65, 0.25)',
-                lightBg: '#fff7ed',
+                glow: 'rgba(225, 82, 65, 0.28)',
+                cardBg: 'linear-gradient(160deg, #ffffff 40%, #fff1f0 100%)',
+                borderColor: '#fecdd3',
                 desc: 'Admission and career forms that land straight in your inbox — no missed leads.',
                 icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             },
@@ -242,25 +245,28 @@ const ICON_GROUPS = [
         cards: [
             {
                 title: 'One Admin Dashboard',
-                gradient: ['#0f766e', '#10b981'],
-                glow: 'rgba(15, 118, 110, 0.22)',
-                lightBg: '#f0fdf4',
+                gradient: ['#065f46', '#059669'],
+                glow: 'rgba(5, 150, 105, 0.28)',
+                cardBg: 'linear-gradient(160deg, #ffffff 40%, #ecfdf5 100%)',
+                borderColor: '#a7f3d0',
                 desc: 'Every module, one clean dashboard your staff will actually enjoy using.',
                 icon: <path strokeLinecap="round" strokeLinejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
             },
             {
                 title: 'Announcements & Calendar',
-                gradient: ['#d97706', '#f59e0b'],
-                glow: 'rgba(217, 119, 6, 0.22)',
-                lightBg: '#fefce8',
+                gradient: ['#b45309', '#d97706'],
+                glow: 'rgba(217, 119, 6, 0.28)',
+                cardBg: 'linear-gradient(160deg, #ffffff 40%, #fffbeb 100%)',
+                borderColor: '#fde68a',
                 desc: 'Keep parents and students updated on holidays, exams, and events — automatically.',
                 icon: <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
             },
             {
                 title: 'Secure by Design',
-                gradient: ['#0f172a', '#334155'],
-                glow: 'rgba(15, 23, 42, 0.22)',
-                lightBg: '#f8fafc',
+                gradient: ['#0f766e', '#0d9488'],
+                glow: 'rgba(13, 148, 136, 0.28)',
+                cardBg: 'linear-gradient(160deg, #ffffff 40%, #f0fdfa 100%)',
+                borderColor: '#99f6e4',
                 desc: 'JWT-secured logins and tenant-isolated data, so every school\'s data stays its own.',
                 icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             },
@@ -916,8 +922,8 @@ const LandingPage = () => {
                                             <div
                                                 className="lp-feature-card"
                                                 style={{
-                                                    background: '#ffffff',
-                                                    border: '1.5px solid #e8ecf4',
+                                                    background: c.cardBg,
+                                                    border: `1.5px solid ${c.borderColor}`,
                                                     borderRadius: '18px',
                                                     padding: '1.4rem 1.5rem',
                                                     height: '100%',
@@ -927,11 +933,11 @@ const LandingPage = () => {
                                                     position: 'relative'
                                                 }}
                                                 onMouseEnter={e => {
-                                                    e.currentTarget.style.borderColor = c.gradient[0];
-                                                    e.currentTarget.style.boxShadow = `0 14px 28px -6px ${c.glow}, 0 0 0 1px ${c.gradient[0]}20`;
+                                                    e.currentTarget.style.borderColor = c.gradient[1] || c.gradient[0];
+                                                    e.currentTarget.style.boxShadow = `0 16px 32px -6px ${c.glow}, 0 0 0 1px ${c.borderColor}`;
                                                 }}
                                                 onMouseLeave={e => {
-                                                    e.currentTarget.style.borderColor = '#e8ecf4';
+                                                    e.currentTarget.style.borderColor = c.borderColor;
                                                     e.currentTarget.style.boxShadow = '0 4px 18px rgba(15, 23, 42, 0.03)';
                                                 }}
                                             >
@@ -982,12 +988,12 @@ const LandingPage = () => {
                                                     gap: '6px',
                                                     marginTop: '16px',
                                                     paddingTop: '10px',
-                                                    borderTop: '1px solid #f1f5f9',
+                                                    borderTop: `1px solid ${c.borderColor}`,
                                                     fontSize: '11.5px',
                                                     fontWeight: 600,
                                                     color: '#64748b'
                                                 }}>
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={c.gradient[0]} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={c.gradient[1] || c.gradient[0]} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
                                                         <polyline points="20 6 9 17 4 12" />
                                                     </svg>
                                                     <span>Included with platform</span>
