@@ -2097,7 +2097,7 @@ const LandingPage = () => {
                                     color: '#94a3b8',
                                     marginBottom: '20px'
                                 }}>
-                                    Web Builder Pro is a cloud-based school website builder and institutional management platform that helps schools launch beautiful portals, manage admissions, notices, results, and fee systems effortlessly.
+                                    Web Builder Pro is an all-in-one school website builder that helps educational institutions launch modern, mobile-responsive websites in minutes with 21+ purpose-built modules for admissions, fees, notices, galleries, and CBSE disclosures.
                                 </p>
                                 {/* Social Media Icons */}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -2177,19 +2177,20 @@ const LandingPage = () => {
                                 </div>
                             </div>
 
-                            {/* Column 2: Features */}
+                            {/* Column 2: Features (Strictly from Web Builder Pro platform) */}
                             <div>
                                 <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#f8fafc', marginBottom: '18px', letterSpacing: '-0.2px' }}>
                                     Features
                                 </h4>
                                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '11px' }}>
                                     {[
-                                        { label: 'Student Management', href: '#features' },
-                                        { label: 'Teacher Management', href: '#features' },
-                                        { label: 'Admission Enquiries', href: '#features' },
-                                        { label: 'Results & Examinations', href: '#features' },
-                                        { label: 'Parent & Student Portal', href: '#features' },
-                                        { label: 'Dynamic Photo Gallery', href: '#features' }
+                                        { label: 'Custom Public Website', href: '#features' },
+                                        { label: '21+ School Modules', href: '#modules' },
+                                        { label: 'Smart Enquiry Forms', href: '#features' },
+                                        { label: 'One Admin Dashboard', href: '#features' },
+                                        { label: 'Announcements & Calendar', href: '#features' },
+                                        { label: 'Dynamic Photo Gallery', href: '#modules' },
+                                        { label: 'CBSE Public Disclosure', href: '#modules' }
                                     ].map((item, idx) => (
                                         <li key={idx}>
                                             <a
@@ -2210,23 +2211,26 @@ const LandingPage = () => {
                                 </ul>
                             </div>
 
-                            {/* Column 3: Support */}
+                            {/* Column 3: Platform & Support */}
                             <div>
                                 <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#f8fafc', marginBottom: '18px', letterSpacing: '-0.2px' }}>
-                                    Support
+                                    Platform
                                 </h4>
                                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '11px' }}>
                                     {[
-                                        { label: 'Help Center', href: '#preview' },
-                                        { label: 'Documentation', href: '#preview' },
+                                        { label: 'Platform Live Demo', href: DEMO_URL, external: true },
+                                        { label: 'Interactive Preview', href: '#preview' },
+                                        { label: 'Fee Structure Tables', href: '#modules' },
                                         { label: 'Contact Support', href: 'tel:+918947919195' },
                                         { label: 'Privacy Policy', href: '#' },
                                         { label: 'Terms & Conditions', href: '#' },
-                                        { label: 'Platform Owner? Super Admin', href: '/super-admin/login' }
+                                        { label: 'Super Admin Login', href: '/super-admin/login' }
                                     ].map((item, idx) => (
                                         <li key={idx}>
                                             <a
                                                 href={item.href}
+                                                target={item.external ? "_blank" : undefined}
+                                                rel={item.external ? "noopener noreferrer" : undefined}
                                                 style={{
                                                     fontSize: '13.5px',
                                                     color: '#94a3b8',
