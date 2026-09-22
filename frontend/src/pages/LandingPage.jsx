@@ -208,18 +208,64 @@ const MODULES_ROW_BOTTOM = MODULE_DATA.slice(11);
 const ICON_GROUPS = [
     {
         heading: 'For Your Website',
+        badge: 'Public Presence',
+        tagline: 'Delight parents and students with a fast, modern school website',
         cards: [
-            { title: 'Custom Public Website', accent: BLUE, desc: 'A professional public site for your school, ready in minutes — no coding required.', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /> },
-            { title: 'Rich Content Modules', accent: '#6C8EEF', desc: 'Fee tables, galleries, events, and more — manage everything from one place.', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /> },
-            { title: 'Smart Enquiry Forms', accent: BLUE_DARK, desc: 'Admission and career forms that land straight in your inbox — no missed leads.', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /> },
+            {
+                title: 'Custom Public Website',
+                gradient: ['#06b6d4', '#2563eb'],
+                glow: 'rgba(6, 182, 212, 0.28)',
+                lightBg: '#ecfeff',
+                desc: 'A professional public site for your school, ready in minutes — no coding required.',
+                icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            },
+            {
+                title: 'Rich Content Modules',
+                gradient: ['#8b5cf6', '#6366f1'],
+                glow: 'rgba(139, 92, 246, 0.28)',
+                lightBg: '#f5f3ff',
+                desc: 'Fee tables, galleries, events, and more — manage everything from one place.',
+                icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            },
+            {
+                title: 'Smart Enquiry Forms',
+                gradient: ['#f43f5e', '#db2777'],
+                glow: 'rgba(244, 63, 94, 0.28)',
+                lightBg: '#fff1f2',
+                desc: 'Admission and career forms that land straight in your inbox — no missed leads.',
+                icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            },
         ],
     },
     {
         heading: 'For Your Operations',
+        badge: 'Admin & Security',
+        tagline: 'Automate daily school workflows with one clean, intuitive interface',
         cards: [
-            { title: 'One Admin Dashboard', accent: BLUE, desc: 'Every module, one clean dashboard your staff will actually enjoy using.', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" /> },
-            { title: 'Announcements & Calendar', accent: '#6C8EEF', desc: 'Keep parents and students updated on holidays, exams, and events — automatically.', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /> },
-            { title: 'Secure by Design', accent: BLUE_DARK, desc: 'JWT-secured logins and tenant-isolated data, so every school\'s data stays its own.', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /> },
+            {
+                title: 'One Admin Dashboard',
+                gradient: ['#10b981', '#0d9488'],
+                glow: 'rgba(16, 185, 129, 0.28)',
+                lightBg: '#ecfdf5',
+                desc: 'Every module, one clean dashboard your staff will actually enjoy using.',
+                icon: <path strokeLinecap="round" strokeLinejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+            },
+            {
+                title: 'Announcements & Calendar',
+                gradient: ['#f59e0b', '#ea580c'],
+                glow: 'rgba(245, 158, 11, 0.28)',
+                lightBg: '#fffbeb',
+                desc: 'Keep parents and students updated on holidays, exams, and events — automatically.',
+                icon: <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+            },
+            {
+                title: 'Secure by Design',
+                gradient: ['#3b82f6', '#0f1f4b'],
+                glow: 'rgba(59, 130, 246, 0.28)',
+                lightBg: '#eff6ff',
+                desc: 'JWT-secured logins and tenant-isolated data, so every school\'s data stays its own.',
+                icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            },
         ],
     },
 ];
@@ -344,24 +390,19 @@ const LandingPage = () => {
                 .lp-icon-badge { transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
                 .lp-trust-card:hover .lp-icon-badge { transform: scale(1.12) rotate(-6deg); }
 
-                /* ── 3D module / feature cards — a resting isometric tilt that flattens and
-                     lifts on hover, with a matching 3D icon tile (beveled, perspective-rotated). ── */
-                .lp-3d-card {
-                    transform: perspective(1000px) rotateX(3deg);
-                    transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), box-shadow 0.45s ease, background 0.3s ease, border-color 0.3s ease;
-                    transform-style: preserve-3d;
+                /* ── Modern feature cards — clean lift, smooth glow, crisp light theme ── */
+                .lp-feature-card {
+                    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s ease, border-color 0.32s ease;
                 }
-                .lp-3d-card:hover {
-                    transform: perspective(1000px) rotateX(0deg) translateY(-10px);
-                    box-shadow: 0 34px 60px rgba(0,0,0,0.4);
-                    border-color: rgba(255,255,255,0.22) !important;
-                    background: rgba(255,255,255,0.06) !important;
+                .lp-feature-card:hover {
+                    transform: translateY(-7px);
                 }
-                .lp-3d-tile {
-                    transform: perspective(700px) rotateX(16deg) rotateY(-18deg);
-                    transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+                .lp-feature-tile {
+                    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s ease;
                 }
-                .lp-3d-card:hover .lp-3d-tile { transform: perspective(700px) rotateX(0deg) rotateY(0deg) scale(1.08); }
+                .lp-feature-card:hover .lp-feature-tile {
+                    transform: scale(1.08);
+                }
 
                 .lp-tilt-frame { transition: transform 0.25s ease-out; transform-style: preserve-3d; }
                 .lp-hero-mock-tilt { transition: transform 0.25s ease-out; transform-style: preserve-3d; }
@@ -815,35 +856,128 @@ const LandingPage = () => {
                     </Reveal>
                 </section>
 
-                {/* ── Feature icon-cards — two grouped rows on dark bg, same 3D tile treatment
-                     as the module cards above so the two dark sections read as one system. ── */}
-                <section id="features" style={{ padding: 'clamp(2.5rem,6vw,4rem) clamp(1.25rem,6vw,4rem) clamp(4rem,7vw,5.5rem)', background: '#333333', position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '24px 24px', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'absolute', width: '360px', height: '360px', borderRadius: '50%', background: `radial-gradient(circle, ${BLUE}18 0%, transparent 70%)`, top: '-120px', right: '-60px', pointerEvents: 'none' }}></div>
-                    <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '3.5rem', position: 'relative' }}>
+                {/* ── Feature icon-cards — two grouped rows on clean modern light bg ── */}
+                <section id="features" style={{
+                    padding: 'clamp(4.5rem,7vw,6.5rem) clamp(1.25rem,6vw,4rem)',
+                    background: '#f8fafd',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    borderTop: '1px solid #eef2f7'
+                }}>
+                    {/* Subtle dot matrix pattern */}
+                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(37, 99, 235, 0.08) 1.2px, transparent 1.2px)', backgroundSize: '26px 26px', pointerEvents: 'none' }}></div>
+                    
+                    {/* Soft theme-matching ambient glows */}
+                    <div style={{ position: 'absolute', width: '520px', height: '520px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%)', top: '-120px', right: '-80px', pointerEvents: 'none' }}></div>
+                    <div style={{ position: 'absolute', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.10) 0%, transparent 70%)', bottom: '-100px', left: '-80px', pointerEvents: 'none' }}></div>
+
+                    <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '4.5rem', position: 'relative' }}>
                         {ICON_GROUPS.map((group, gi) => (
                             <div key={group.heading}>
                                 <Reveal delay={gi * 0.05}>
-                                    <h3 className="lp-hero-heading-shimmer" style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(28px,3.8vw,40px)', fontWeight: 700, letterSpacing: '-0.5px', marginBottom: '8px' }}>{group.heading}</h3>
-                                    <div style={{ width: '56px', height: '4px', borderRadius: '99px', background: `linear-gradient(90deg,${BLUE},${BLUE_LIGHT})`, marginBottom: '1.75rem' }} />
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginBottom: '2.25rem' }}>
+                                        <div style={{
+                                            display: 'inline-flex', alignItems: 'center', gap: '8px',
+                                            padding: '5px 14px', borderRadius: '999px',
+                                            background: 'rgba(37, 99, 235, 0.07)', border: '1px solid rgba(37, 99, 235, 0.18)',
+                                            marginBottom: '12px'
+                                        }}>
+                                            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#2563eb', display: 'inline-block' }}></span>
+                                            <span style={{ fontSize: '11px', fontWeight: 800, color: '#1d4ed8', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                                                {group.badge}
+                                            </span>
+                                        </div>
+                                        <h3 style={{
+                                            fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
+                                            fontSize: 'clamp(28px, 3.8vw, 40px)',
+                                            fontWeight: 900,
+                                            letterSpacing: '-1px',
+                                            marginBottom: '8px',
+                                            lineHeight: 1.18
+                                        }}>
+                                            <span className="lp-hero-rtl-shimmer">{group.heading.split(' ')[0]} {group.heading.split(' ')[1]} </span>
+                                            <span className="lp-hero-ltr-shimmer">{group.heading.split(' ').slice(2).join(' ')}</span>
+                                        </h3>
+                                        <p style={{
+                                            fontFamily: "'Inter', sans-serif",
+                                            fontSize: '15px',
+                                            color: '#64748b',
+                                            margin: 0
+                                        }}>{group.tagline}</p>
+                                    </div>
                                 </Reveal>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.75rem' }}>
                                     {group.cards.map((c, i) => (
                                         <PopReveal key={c.title} delay={i * 0.07}>
-                                            <div className="lp-3d-card" style={{ background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: '18px', padding: '1.75rem', height: '100%', boxShadow: '0 10px 24px rgba(0,0,0,0.2)' }}>
-                                                <div className="lp-3d-tile" style={{
-                                                    width: '52px', height: '52px', borderRadius: '15px', marginBottom: '14px',
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                    background: `linear-gradient(145deg, ${c.accent}, ${BLUE_DARK})`,
-                                                    boxShadow: `inset 0 2px 2px rgba(255,255,255,0.35), inset 0 -3px 6px rgba(0,0,0,0.28), 0 12px 22px ${c.accent}50`,
-                                                }}>
-                                                    <svg width="22" height="22" fill="none" stroke="#ffffff" strokeWidth="1.8" viewBox="0 0 24 24">{c.icon}</svg>
+                                            <div
+                                                className="lp-feature-card"
+                                                style={{
+                                                    background: '#ffffff',
+                                                    border: '1.5px solid #e5e9f2',
+                                                    borderRadius: '22px',
+                                                    padding: '2.25rem 2rem',
+                                                    height: '100%',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    boxShadow: '0 8px 24px rgba(15, 23, 42, 0.04)',
+                                                    position: 'relative'
+                                                }}
+                                                onMouseEnter={e => {
+                                                    e.currentTarget.style.borderColor = c.gradient[0];
+                                                    e.currentTarget.style.boxShadow = `0 22px 45px -8px ${c.glow}, 0 0 0 1px ${c.gradient[0]}`;
+                                                }}
+                                                onMouseLeave={e => {
+                                                    e.currentTarget.style.borderColor = '#e5e9f2';
+                                                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(15, 23, 42, 0.04)';
+                                                }}
+                                            >
+                                                <div
+                                                    className="lp-feature-tile"
+                                                    style={{
+                                                        width: '54px', height: '54px', borderRadius: '15px', marginBottom: '1.5rem',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        background: `linear-gradient(135deg, ${c.gradient[0]}, ${c.gradient[1]})`,
+                                                        boxShadow: `0 10px 22px ${c.glow}, inset 0 1.5px 1.5px rgba(255,255,255,0.4)`,
+                                                        flexShrink: 0
+                                                    }}
+                                                >
+                                                    <svg width="24" height="24" fill="none" stroke="#ffffff" strokeWidth="2" viewBox="0 0 24 24">{c.icon}</svg>
                                                 </div>
+                                                <h4 style={{
+                                                    fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
+                                                    fontSize: '18.5px',
+                                                    fontWeight: 800,
+                                                    color: '#0f1f4b',
+                                                    letterSpacing: '-0.4px',
+                                                    marginBottom: '10px'
+                                                }}>{c.title}</h4>
                                                 <p style={{
-                                                    fontSize: '16px', fontWeight: 700, marginBottom: '7px',
-                                                    background: `linear-gradient(90deg, #ffffff, ${c.accent})`, WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                                                }}>{c.title}</p>
-                                                <p style={{ fontSize: '12.5px', color: 'rgba(255,255,255,0.58)', lineHeight: 1.7 }}>{c.desc}</p>
+                                                    fontFamily: "'Inter', sans-serif",
+                                                    fontSize: '14px',
+                                                    color: '#64748b',
+                                                    lineHeight: 1.7,
+                                                    margin: 0,
+                                                    flex: 1
+                                                }}>{c.desc}</p>
+                                                <div style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px',
+                                                    marginTop: '1.5rem',
+                                                    padding: '5px 12px',
+                                                    borderRadius: '8px',
+                                                    background: c.lightBg,
+                                                    color: c.gradient[0],
+                                                    fontSize: '12px',
+                                                    fontWeight: 700,
+                                                    width: 'fit-content'
+                                                }}>
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                                                        <polyline points="20 6 9 17 4 12" />
+                                                    </svg>
+                                                    <span>Included</span>
+                                                </div>
                                             </div>
                                         </PopReveal>
                                     ))}
