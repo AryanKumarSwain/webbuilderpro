@@ -95,7 +95,7 @@ const ModuleChip = ({ m }) => {
             onMouseLeave={() => setHovered(false)}
             style={{
                 flexShrink: 0,
-                width: '315px',
+                width: '280px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '14px',
@@ -131,33 +131,20 @@ const ModuleChip = ({ m }) => {
             </div>
 
             <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
-                    <p style={{
-                        fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
-                        fontSize: '13.8px',
-                        fontWeight: 700,
-                        color: hovered ? m.gradient[1] : '#0f1f4b',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        transition: 'color 0.2s ease',
-                    }}>{m.title}</p>
-                    <span style={{
-                        fontSize: '9.5px',
-                        fontWeight: 700,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.06em',
-                        color: m.gradient[0],
-                        background: m.lightBg,
-                        padding: '2px 6px',
-                        borderRadius: '6px',
-                        border: `1px solid ${m.gradient[0]}30`,
-                        flexShrink: 0,
-                    }}>{m.tag}</span>
-                </div>
+                <p style={{
+                    fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    color: hovered ? m.gradient[1] : '#0f1f4b',
+                    marginBottom: '3px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    transition: 'color 0.2s ease',
+                }}>{m.title}</p>
                 <p style={{
                     fontFamily: "'Inter', sans-serif",
-                    fontSize: '11.8px',
+                    fontSize: '12px',
                     color: '#64748b',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
