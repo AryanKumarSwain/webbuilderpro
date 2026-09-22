@@ -213,6 +213,7 @@ const ICON_GROUPS = [
         cards: [
             {
                 title: 'Custom Public Website',
+                chip: 'Zero Code',
                 gradient: ['#06b6d4', '#2563eb'],
                 glow: 'rgba(6, 182, 212, 0.28)',
                 lightBg: '#ecfeff',
@@ -221,6 +222,7 @@ const ICON_GROUPS = [
             },
             {
                 title: 'Rich Content Modules',
+                chip: 'Modular',
                 gradient: ['#8b5cf6', '#6366f1'],
                 glow: 'rgba(139, 92, 246, 0.28)',
                 lightBg: '#f5f3ff',
@@ -229,6 +231,7 @@ const ICON_GROUPS = [
             },
             {
                 title: 'Smart Enquiry Forms',
+                chip: 'Instant Leads',
                 gradient: ['#f43f5e', '#db2777'],
                 glow: 'rgba(244, 63, 94, 0.28)',
                 lightBg: '#fff1f2',
@@ -244,6 +247,7 @@ const ICON_GROUPS = [
         cards: [
             {
                 title: 'One Admin Dashboard',
+                chip: 'Centralized',
                 gradient: ['#10b981', '#0d9488'],
                 glow: 'rgba(16, 185, 129, 0.28)',
                 lightBg: '#ecfdf5',
@@ -252,6 +256,7 @@ const ICON_GROUPS = [
             },
             {
                 title: 'Announcements & Calendar',
+                chip: 'Automated',
                 gradient: ['#f59e0b', '#ea580c'],
                 glow: 'rgba(245, 158, 11, 0.28)',
                 lightBg: '#fffbeb',
@@ -260,6 +265,7 @@ const ICON_GROUPS = [
             },
             {
                 title: 'Secure by Design',
+                chip: 'Enterprise',
                 gradient: ['#3b82f6', '#0f1f4b'],
                 glow: 'rgba(59, 130, 246, 0.28)',
                 lightBg: '#eff6ff',
@@ -390,18 +396,18 @@ const LandingPage = () => {
                 .lp-icon-badge { transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
                 .lp-trust-card:hover .lp-icon-badge { transform: scale(1.12) rotate(-6deg); }
 
-                /* ── Modern feature cards — clean lift, smooth glow, crisp light theme ── */
+                /* ── Modern feature cards — compact lift, smooth glow, crisp light theme ── */
                 .lp-feature-card {
-                    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s ease, border-color 0.32s ease;
+                    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
                 }
                 .lp-feature-card:hover {
-                    transform: translateY(-7px);
+                    transform: translateY(-4px);
                 }
                 .lp-feature-tile {
-                    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s ease;
+                    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
                 }
                 .lp-feature-card:hover .lp-feature-tile {
-                    transform: scale(1.08);
+                    transform: scale(1.06);
                 }
 
                 .lp-tilt-frame { transition: transform 0.25s ease-out; transform-style: preserve-3d; }
@@ -856,9 +862,9 @@ const LandingPage = () => {
                     </Reveal>
                 </section>
 
-                {/* ── Feature icon-cards — two grouped rows on clean modern light bg ── */}
+                {/* ── Feature icon-cards — compact, high-density, sleek SaaS layout ── */}
                 <section id="features" style={{
-                    padding: 'clamp(4.5rem,7vw,6.5rem) clamp(1.25rem,6vw,4rem)',
+                    padding: 'clamp(3rem, 5vw, 4.5rem) clamp(1.25rem, 5vw, 3.5rem)',
                     background: '#f8fafd',
                     position: 'relative',
                     overflow: 'hidden',
@@ -868,115 +874,160 @@ const LandingPage = () => {
                     <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(37, 99, 235, 0.08) 1.2px, transparent 1.2px)', backgroundSize: '26px 26px', pointerEvents: 'none' }}></div>
                     
                     {/* Soft theme-matching ambient glows */}
-                    <div style={{ position: 'absolute', width: '520px', height: '520px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%)', top: '-120px', right: '-80px', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'absolute', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.10) 0%, transparent 70%)', bottom: '-100px', left: '-80px', pointerEvents: 'none' }}></div>
+                    <div style={{ position: 'absolute', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.10) 0%, transparent 70%)', top: '-120px', right: '-80px', pointerEvents: 'none' }}></div>
+                    <div style={{ position: 'absolute', width: '480px', height: '480px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)', bottom: '-100px', left: '-80px', pointerEvents: 'none' }}></div>
 
-                    <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '4.5rem', position: 'relative' }}>
+                    <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2.75rem', position: 'relative' }}>
                         {ICON_GROUPS.map((group, gi) => (
                             <div key={group.heading}>
-                                <Reveal delay={gi * 0.05}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginBottom: '2.25rem' }}>
-                                        <div style={{
-                                            display: 'inline-flex', alignItems: 'center', gap: '8px',
-                                            padding: '5px 14px', borderRadius: '999px',
-                                            background: 'rgba(37, 99, 235, 0.07)', border: '1px solid rgba(37, 99, 235, 0.18)',
-                                            marginBottom: '12px'
-                                        }}>
-                                            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#2563eb', display: 'inline-block' }}></span>
-                                            <span style={{ fontSize: '11px', fontWeight: 800, color: '#1d4ed8', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                                <Reveal delay={gi * 0.04}>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        flexWrap: 'wrap',
+                                        gap: '12px',
+                                        marginBottom: '1.25rem',
+                                        paddingBottom: '12px',
+                                        borderBottom: '1.5px solid #edf2f7'
+                                    }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                                            <span style={{
+                                                width: '8px',
+                                                height: '8px',
+                                                borderRadius: '50%',
+                                                background: gi === 0 ? '#2563eb' : '#059669',
+                                                boxShadow: gi === 0 ? '0 0 10px rgba(37, 99, 235, 0.6)' : '0 0 10px rgba(5, 150, 105, 0.6)',
+                                                display: 'inline-block'
+                                            }} />
+                                            <h3 style={{
+                                                fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
+                                                fontSize: 'clamp(21px, 2.4vw, 26px)',
+                                                fontWeight: 800,
+                                                letterSpacing: '-0.5px',
+                                                margin: 0,
+                                                lineHeight: 1.2
+                                            }}>
+                                                <span className="lp-hero-rtl-shimmer">{group.heading.split(' ')[0]} {group.heading.split(' ')[1]} </span>
+                                                <span className="lp-hero-ltr-shimmer">{group.heading.split(' ').slice(2).join(' ')}</span>
+                                            </h3>
+                                            <span style={{
+                                                fontSize: '11px',
+                                                fontWeight: 700,
+                                                color: gi === 0 ? '#1d4ed8' : '#047857',
+                                                background: gi === 0 ? '#eff6ff' : '#ecfdf5',
+                                                border: `1px solid ${gi === 0 ? '#dbeafe' : '#a7f3d0'}`,
+                                                padding: '2px 9px',
+                                                borderRadius: '999px',
+                                                letterSpacing: '0.04em',
+                                                textTransform: 'uppercase'
+                                            }}>
                                                 {group.badge}
                                             </span>
                                         </div>
-                                        <h3 style={{
-                                            fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
-                                            fontSize: 'clamp(28px, 3.8vw, 40px)',
-                                            fontWeight: 900,
-                                            letterSpacing: '-1px',
-                                            marginBottom: '8px',
-                                            lineHeight: 1.18
-                                        }}>
-                                            <span className="lp-hero-rtl-shimmer">{group.heading.split(' ')[0]} {group.heading.split(' ')[1]} </span>
-                                            <span className="lp-hero-ltr-shimmer">{group.heading.split(' ').slice(2).join(' ')}</span>
-                                        </h3>
                                         <p style={{
                                             fontFamily: "'Inter', sans-serif",
-                                            fontSize: '15px',
+                                            fontSize: '13.5px',
                                             color: '#64748b',
                                             margin: 0
                                         }}>{group.tagline}</p>
                                     </div>
                                 </Reveal>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.75rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
                                     {group.cards.map((c, i) => (
-                                        <PopReveal key={c.title} delay={i * 0.07}>
+                                        <PopReveal key={c.title} delay={i * 0.05}>
                                             <div
                                                 className="lp-feature-card"
                                                 style={{
                                                     background: '#ffffff',
-                                                    border: '1.5px solid #e5e9f2',
-                                                    borderRadius: '22px',
-                                                    padding: '2.25rem 2rem',
+                                                    border: '1.5px solid #e9edf5',
+                                                    borderRadius: '18px',
+                                                    padding: '1.35rem 1.45rem',
                                                     height: '100%',
                                                     display: 'flex',
                                                     flexDirection: 'column',
-                                                    boxShadow: '0 8px 24px rgba(15, 23, 42, 0.04)',
+                                                    boxShadow: '0 4px 16px rgba(15, 23, 42, 0.03)',
                                                     position: 'relative'
                                                 }}
                                                 onMouseEnter={e => {
                                                     e.currentTarget.style.borderColor = c.gradient[0];
-                                                    e.currentTarget.style.boxShadow = `0 22px 45px -8px ${c.glow}, 0 0 0 1px ${c.gradient[0]}`;
+                                                    e.currentTarget.style.boxShadow = `0 14px 28px -6px ${c.glow}, 0 0 0 1px ${c.gradient[0]}25`;
                                                 }}
                                                 onMouseLeave={e => {
-                                                    e.currentTarget.style.borderColor = '#e5e9f2';
-                                                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(15, 23, 42, 0.04)';
+                                                    e.currentTarget.style.borderColor = '#e9edf5';
+                                                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(15, 23, 42, 0.03)';
                                                 }}
                                             >
-                                                <div
-                                                    className="lp-feature-tile"
-                                                    style={{
-                                                        width: '54px', height: '54px', borderRadius: '15px', marginBottom: '1.5rem',
-                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                        background: `linear-gradient(135deg, ${c.gradient[0]}, ${c.gradient[1]})`,
-                                                        boxShadow: `0 10px 22px ${c.glow}, inset 0 1.5px 1.5px rgba(255,255,255,0.4)`,
-                                                        flexShrink: 0
-                                                    }}
-                                                >
-                                                    <svg width="24" height="24" fill="none" stroke="#ffffff" strokeWidth="2" viewBox="0 0 24 24">{c.icon}</svg>
+                                                {/* Top Row: Squircle Gradient Tile + Pill Tag */}
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                                                    <div
+                                                        className="lp-feature-tile"
+                                                        style={{
+                                                            width: '42px',
+                                                            height: '42px',
+                                                            borderRadius: '12px',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            background: `linear-gradient(135deg, ${c.gradient[0]}, ${c.gradient[1]})`,
+                                                            boxShadow: `0 6px 14px ${c.glow}, inset 0 1px 1px rgba(255,255,255,0.45)`,
+                                                            flexShrink: 0
+                                                        }}
+                                                    >
+                                                        <svg width="20" height="20" fill="none" stroke="#ffffff" strokeWidth="2.1" viewBox="0 0 24 24">{c.icon}</svg>
+                                                    </div>
+                                                    <span style={{
+                                                        fontSize: '11px',
+                                                        fontWeight: 700,
+                                                        padding: '3px 10px',
+                                                        borderRadius: '999px',
+                                                        background: c.lightBg,
+                                                        color: c.gradient[0],
+                                                        border: `1px solid ${c.gradient[0]}25`,
+                                                        letterSpacing: '0.02em'
+                                                    }}>
+                                                        {c.chip}
+                                                    </span>
                                                 </div>
+
+                                                {/* Title */}
                                                 <h4 style={{
                                                     fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
-                                                    fontSize: '18.5px',
+                                                    fontSize: '16.5px',
                                                     fontWeight: 800,
                                                     color: '#0f1f4b',
-                                                    letterSpacing: '-0.4px',
-                                                    marginBottom: '10px'
+                                                    letterSpacing: '-0.3px',
+                                                    marginBottom: '6px',
+                                                    lineHeight: 1.3
                                                 }}>{c.title}</h4>
+
+                                                {/* Description */}
                                                 <p style={{
                                                     fontFamily: "'Inter', sans-serif",
-                                                    fontSize: '14px',
+                                                    fontSize: '13px',
                                                     color: '#64748b',
-                                                    lineHeight: 1.7,
+                                                    lineHeight: 1.6,
                                                     margin: 0,
                                                     flex: 1
                                                 }}>{c.desc}</p>
+
+                                                {/* Micro-footer with tiny checkmark */}
                                                 <div style={{
-                                                    display: 'inline-flex',
+                                                    display: 'flex',
                                                     alignItems: 'center',
                                                     gap: '6px',
-                                                    marginTop: '1.5rem',
-                                                    padding: '5px 12px',
-                                                    borderRadius: '8px',
-                                                    background: c.lightBg,
-                                                    color: c.gradient[0],
-                                                    fontSize: '12px',
-                                                    fontWeight: 700,
-                                                    width: 'fit-content'
+                                                    marginTop: '14px',
+                                                    paddingTop: '10px',
+                                                    borderTop: '1px solid #f1f5f9',
+                                                    fontSize: '11.5px',
+                                                    fontWeight: 600,
+                                                    color: '#94a3b8'
                                                 }}>
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={c.gradient[0]} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
                                                         <polyline points="20 6 9 17 4 12" />
                                                     </svg>
-                                                    <span>Included</span>
+                                                    <span>Included with platform</span>
                                                 </div>
                                             </div>
                                         </PopReveal>
