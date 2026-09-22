@@ -208,33 +208,29 @@ const MODULES_ROW_BOTTOM = MODULE_DATA.slice(11);
 const ICON_GROUPS = [
     {
         heading: 'For Your Website',
-        badge: 'Public Presence',
         tagline: 'Delight parents and students with a fast, modern school website',
         cards: [
             {
                 title: 'Custom Public Website',
-                chip: 'Zero Code',
-                gradient: ['#06b6d4', '#2563eb'],
-                glow: 'rgba(6, 182, 212, 0.28)',
-                lightBg: '#ecfeff',
+                gradient: ['#1e3a8a', '#2563eb'],
+                glow: 'rgba(30, 58, 138, 0.22)',
+                lightBg: '#eff6ff',
                 desc: 'A professional public site for your school, ready in minutes — no coding required.',
                 icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             },
             {
                 title: 'Rich Content Modules',
-                chip: 'Modular',
-                gradient: ['#8b5cf6', '#6366f1'],
-                glow: 'rgba(139, 92, 246, 0.28)',
+                gradient: ['#3730a3', '#6366f1'],
+                glow: 'rgba(55, 48, 163, 0.22)',
                 lightBg: '#f5f3ff',
                 desc: 'Fee tables, galleries, events, and more — manage everything from one place.',
                 icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             },
             {
                 title: 'Smart Enquiry Forms',
-                chip: 'Instant Leads',
-                gradient: ['#f43f5e', '#db2777'],
-                glow: 'rgba(244, 63, 94, 0.28)',
-                lightBg: '#fff1f2',
+                gradient: ['#c2410c', '#e15241'],
+                glow: 'rgba(225, 82, 65, 0.25)',
+                lightBg: '#fff7ed',
                 desc: 'Admission and career forms that land straight in your inbox — no missed leads.',
                 icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             },
@@ -242,33 +238,29 @@ const ICON_GROUPS = [
     },
     {
         heading: 'For Your Operations',
-        badge: 'Admin & Security',
         tagline: 'Automate daily school workflows with one clean, intuitive interface',
         cards: [
             {
                 title: 'One Admin Dashboard',
-                chip: 'Centralized',
-                gradient: ['#10b981', '#0d9488'],
-                glow: 'rgba(16, 185, 129, 0.28)',
-                lightBg: '#ecfdf5',
+                gradient: ['#0f766e', '#10b981'],
+                glow: 'rgba(15, 118, 110, 0.22)',
+                lightBg: '#f0fdf4',
                 desc: 'Every module, one clean dashboard your staff will actually enjoy using.',
                 icon: <path strokeLinecap="round" strokeLinejoin="round" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
             },
             {
                 title: 'Announcements & Calendar',
-                chip: 'Automated',
-                gradient: ['#f59e0b', '#ea580c'],
-                glow: 'rgba(245, 158, 11, 0.28)',
-                lightBg: '#fffbeb',
+                gradient: ['#d97706', '#f59e0b'],
+                glow: 'rgba(217, 119, 6, 0.22)',
+                lightBg: '#fefce8',
                 desc: 'Keep parents and students updated on holidays, exams, and events — automatically.',
                 icon: <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
             },
             {
                 title: 'Secure by Design',
-                chip: 'Enterprise',
-                gradient: ['#3b82f6', '#0f1f4b'],
-                glow: 'rgba(59, 130, 246, 0.28)',
-                lightBg: '#eff6ff',
+                gradient: ['#0f172a', '#334155'],
+                glow: 'rgba(15, 23, 42, 0.22)',
+                lightBg: '#f8fafc',
                 desc: 'JWT-secured logins and tenant-isolated data, so every school\'s data stays its own.',
                 icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             },
@@ -862,68 +854,52 @@ const LandingPage = () => {
                     </Reveal>
                 </section>
 
-                {/* ── Feature icon-cards — compact, high-density, sleek SaaS layout ── */}
+                {/* ── Feature icon-cards — warm off-white canvas, crisp typography, clean cards ── */}
                 <section id="features" style={{
-                    padding: 'clamp(3rem, 5vw, 4.5rem) clamp(1.25rem, 5vw, 3.5rem)',
-                    background: '#f8fafd',
+                    padding: 'clamp(2.75rem, 4.5vw, 4rem) clamp(1.25rem, 5vw, 3.5rem)',
+                    background: 'linear-gradient(180deg, #fbfcfe 0%, #fdfbf7 50%, #fbfcfe 100%)',
                     position: 'relative',
                     overflow: 'hidden',
                     borderTop: '1px solid #eef2f7'
                 }}>
-                    {/* Subtle dot matrix pattern */}
-                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(37, 99, 235, 0.08) 1.2px, transparent 1.2px)', backgroundSize: '26px 26px', pointerEvents: 'none' }}></div>
-                    
-                    {/* Soft theme-matching ambient glows */}
-                    <div style={{ position: 'absolute', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.10) 0%, transparent 70%)', top: '-120px', right: '-80px', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'absolute', width: '480px', height: '480px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)', bottom: '-100px', left: '-80px', pointerEvents: 'none' }}></div>
+                    {/* Soft warm & sky ambient glows matching theme */}
+                    <div style={{ position: 'absolute', width: '550px', height: '550px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(224, 242, 254, 0.65) 0%, transparent 70%)', top: '-120px', left: '-100px', pointerEvents: 'none' }}></div>
+                    <div style={{ position: 'absolute', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(254, 237, 213, 0.55) 0%, transparent 70%)', bottom: '-80px', right: '-80px', pointerEvents: 'none' }}></div>
 
-                    <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2.75rem', position: 'relative' }}>
+                    <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2.5rem', position: 'relative' }}>
                         {ICON_GROUPS.map((group, gi) => (
                             <div key={group.heading}>
                                 <Reveal delay={gi * 0.04}>
                                     <div style={{
                                         display: 'flex',
-                                        alignItems: 'center',
+                                        alignItems: 'baseline',
                                         justifyContent: 'space-between',
                                         flexWrap: 'wrap',
                                         gap: '12px',
                                         marginBottom: '1.25rem',
-                                        paddingBottom: '12px',
+                                        paddingBottom: '10px',
                                         borderBottom: '1.5px solid #edf2f7'
                                     }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <span style={{
                                                 width: '8px',
                                                 height: '8px',
                                                 borderRadius: '50%',
-                                                background: gi === 0 ? '#2563eb' : '#059669',
-                                                boxShadow: gi === 0 ? '0 0 10px rgba(37, 99, 235, 0.6)' : '0 0 10px rgba(5, 150, 105, 0.6)',
+                                                background: gi === 0 ? '#1e3a8a' : '#0f766e',
+                                                boxShadow: gi === 0 ? '0 0 10px rgba(30, 58, 138, 0.4)' : '0 0 10px rgba(15, 118, 110, 0.4)',
                                                 display: 'inline-block'
                                             }} />
                                             <h3 style={{
                                                 fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif",
                                                 fontSize: 'clamp(21px, 2.4vw, 26px)',
-                                                fontWeight: 800,
+                                                fontWeight: 900,
                                                 letterSpacing: '-0.5px',
                                                 margin: 0,
                                                 lineHeight: 1.2
                                             }}>
-                                                <span className="lp-hero-rtl-shimmer">{group.heading.split(' ')[0]} {group.heading.split(' ')[1]} </span>
-                                                <span className="lp-hero-ltr-shimmer">{group.heading.split(' ').slice(2).join(' ')}</span>
+                                                <span style={{ color: '#0f172a' }}>{group.heading.split(' ')[0]} {group.heading.split(' ')[1]} </span>
+                                                <span style={{ color: '#1e3a8a' }}>{group.heading.split(' ').slice(2).join(' ')}</span>
                                             </h3>
-                                            <span style={{
-                                                fontSize: '11px',
-                                                fontWeight: 700,
-                                                color: gi === 0 ? '#1d4ed8' : '#047857',
-                                                background: gi === 0 ? '#eff6ff' : '#ecfdf5',
-                                                border: `1px solid ${gi === 0 ? '#dbeafe' : '#a7f3d0'}`,
-                                                padding: '2px 9px',
-                                                borderRadius: '999px',
-                                                letterSpacing: '0.04em',
-                                                textTransform: 'uppercase'
-                                            }}>
-                                                {group.badge}
-                                            </span>
                                         </div>
                                         <p style={{
                                             fontFamily: "'Inter', sans-serif",
@@ -941,73 +917,60 @@ const LandingPage = () => {
                                                 className="lp-feature-card"
                                                 style={{
                                                     background: '#ffffff',
-                                                    border: '1.5px solid #e9edf5',
+                                                    border: '1.5px solid #e8ecf4',
                                                     borderRadius: '18px',
-                                                    padding: '1.35rem 1.45rem',
+                                                    padding: '1.4rem 1.5rem',
                                                     height: '100%',
                                                     display: 'flex',
                                                     flexDirection: 'column',
-                                                    boxShadow: '0 4px 16px rgba(15, 23, 42, 0.03)',
+                                                    boxShadow: '0 4px 18px rgba(15, 23, 42, 0.03)',
                                                     position: 'relative'
                                                 }}
                                                 onMouseEnter={e => {
                                                     e.currentTarget.style.borderColor = c.gradient[0];
-                                                    e.currentTarget.style.boxShadow = `0 14px 28px -6px ${c.glow}, 0 0 0 1px ${c.gradient[0]}25`;
+                                                    e.currentTarget.style.boxShadow = `0 14px 28px -6px ${c.glow}, 0 0 0 1px ${c.gradient[0]}20`;
                                                 }}
                                                 onMouseLeave={e => {
-                                                    e.currentTarget.style.borderColor = '#e9edf5';
-                                                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(15, 23, 42, 0.03)';
+                                                    e.currentTarget.style.borderColor = '#e8ecf4';
+                                                    e.currentTarget.style.boxShadow = '0 4px 18px rgba(15, 23, 42, 0.03)';
                                                 }}
                                             >
-                                                {/* Top Row: Squircle Gradient Tile + Pill Tag */}
-                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                                                    <div
-                                                        className="lp-feature-tile"
-                                                        style={{
-                                                            width: '42px',
-                                                            height: '42px',
-                                                            borderRadius: '12px',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            background: `linear-gradient(135deg, ${c.gradient[0]}, ${c.gradient[1]})`,
-                                                            boxShadow: `0 6px 14px ${c.glow}, inset 0 1px 1px rgba(255,255,255,0.45)`,
-                                                            flexShrink: 0
-                                                        }}
-                                                    >
-                                                        <svg width="20" height="20" fill="none" stroke="#ffffff" strokeWidth="2.1" viewBox="0 0 24 24">{c.icon}</svg>
-                                                    </div>
-                                                    <span style={{
-                                                        fontSize: '11px',
-                                                        fontWeight: 700,
-                                                        padding: '3px 10px',
-                                                        borderRadius: '999px',
-                                                        background: c.lightBg,
-                                                        color: c.gradient[0],
-                                                        border: `1px solid ${c.gradient[0]}25`,
-                                                        letterSpacing: '0.02em'
-                                                    }}>
-                                                        {c.chip}
-                                                    </span>
+                                                {/* Squircle Gradient Icon Tile */}
+                                                <div
+                                                    className="lp-feature-tile"
+                                                    style={{
+                                                        width: '44px',
+                                                        height: '44px',
+                                                        borderRadius: '12px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        background: `linear-gradient(135deg, ${c.gradient[0]}, ${c.gradient[1]})`,
+                                                        boxShadow: `0 6px 14px ${c.glow}, inset 0 1px 1px rgba(255,255,255,0.4)`,
+                                                        marginBottom: '14px',
+                                                        flexShrink: 0
+                                                    }}
+                                                >
+                                                    <svg width="21" height="21" fill="none" stroke="#ffffff" strokeWidth="2.1" viewBox="0 0 24 24">{c.icon}</svg>
                                                 </div>
 
                                                 {/* Title */}
                                                 <h4 style={{
                                                     fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
-                                                    fontSize: '16.5px',
+                                                    fontSize: '17px',
                                                     fontWeight: 800,
-                                                    color: '#0f1f4b',
+                                                    color: '#0f172a',
                                                     letterSpacing: '-0.3px',
-                                                    marginBottom: '6px',
+                                                    marginBottom: '8px',
                                                     lineHeight: 1.3
                                                 }}>{c.title}</h4>
 
                                                 {/* Description */}
                                                 <p style={{
                                                     fontFamily: "'Inter', sans-serif",
-                                                    fontSize: '13px',
-                                                    color: '#64748b',
-                                                    lineHeight: 1.6,
+                                                    fontSize: '13.5px',
+                                                    color: '#475569',
+                                                    lineHeight: 1.65,
                                                     margin: 0,
                                                     flex: 1
                                                 }}>{c.desc}</p>
@@ -1017,12 +980,12 @@ const LandingPage = () => {
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     gap: '6px',
-                                                    marginTop: '14px',
+                                                    marginTop: '16px',
                                                     paddingTop: '10px',
                                                     borderTop: '1px solid #f1f5f9',
                                                     fontSize: '11.5px',
                                                     fontWeight: 600,
-                                                    color: '#94a3b8'
+                                                    color: '#64748b'
                                                 }}>
                                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={c.gradient[0]} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
                                                         <polyline points="20 6 9 17 4 12" />
