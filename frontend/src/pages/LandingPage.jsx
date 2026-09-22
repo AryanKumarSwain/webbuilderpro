@@ -531,14 +531,9 @@ const LandingPage = () => {
                                 height: 'clamp(48px, 6vw, 88px)',
                             }}
                         >
-                            {/* Subtle layered soft wave accent for depth */}
+                            {/* Crisp single white wave smoothly dividing hero from modules */}
                             <path
-                                d="M0,58 C320,82 620,32 980,42 C1200,48 1340,62 1440,54 L1440,90 L0,90 Z"
-                                fill="rgba(255, 255, 255, 0.45)"
-                            />
-                            {/* Main crisp white wave matching the modules section */}
-                            <path
-                                d="M0,46 C280,68 560,18 920,24 C1160,28 1320,44 1440,36 L1440,90 L0,90 Z"
+                                d="M0,45 C320,72 640,16 1020,26 C1220,32 1350,46 1440,38 L1440,90 L0,90 Z"
                                 fill="#ffffff"
                             />
                         </svg>
@@ -740,13 +735,22 @@ const LandingPage = () => {
                 {/* ── Module Showcase — every module in the platform, rendered as a two-row marquee
                      of colourful, modern cards with vibrant palettes, category pills, and smooth glows. ── */}
                 <section id="modules" style={{ padding: 'clamp(4rem,7vw,6rem) 0', background: '#ffffff', position: 'relative', overflow: 'hidden' }}>
-                    {/* Subtle dot matrix pattern */}
-                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(99, 102, 241, 0.12) 1.2px, transparent 1.2px)', backgroundSize: '24px 24px', pointerEvents: 'none' }}></div>
-                    
-                    {/* Soft theme-matching ambient glows with vivid hints */}
-                    <div style={{ position: 'absolute', width: '520px', height: '520px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(167, 139, 250, 0.22) 0%, transparent 70%)', top: '-180px', left: '-100px', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'absolute', width: '540px', height: '540px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, transparent 70%)', top: '20%', right: '-120px', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'absolute', width: '480px', height: '480px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(251, 146, 60, 0.18) 0%, transparent 70%)', bottom: '-160px', left: '30%', pointerEvents: 'none' }}></div>
+                    {/* Ambient background glows & dot matrix — smoothly masked at the top to eliminate any hard horizontal cutoff line */}
+                    <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        pointerEvents: 'none',
+                        WebkitMaskImage: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.4) 60px, black 160px)',
+                        maskImage: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.4) 60px, black 160px)',
+                    }}>
+                        {/* Dot matrix pattern */}
+                        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(99, 102, 241, 0.13) 1.2px, transparent 1.2px)', backgroundSize: '24px 24px' }}></div>
+                        
+                        {/* Soft theme-matching ambient glows with rich vivid hues */}
+                        <div style={{ position: 'absolute', width: '520px', height: '520px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(167, 139, 250, 0.25) 0%, transparent 70%)', top: '10px', left: '-80px' }}></div>
+                        <div style={{ position: 'absolute', width: '540px', height: '540px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(56, 189, 248, 0.20) 0%, transparent 70%)', top: '25%', right: '-100px' }}></div>
+                        <div style={{ position: 'absolute', width: '480px', height: '480px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(251, 146, 60, 0.20) 0%, transparent 70%)', bottom: '-100px', left: '25%' }}></div>
+                    </div>
 
                     <div style={{ maxWidth: '1200px', margin: '0 auto clamp(2.5rem,5vw,3.5rem)', padding: '0 clamp(1.25rem,6vw,4rem)', position: 'relative', textAlign: 'center' }}>
                         <Reveal style={{ textAlign: 'center' }}>
