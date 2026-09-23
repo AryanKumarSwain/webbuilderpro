@@ -597,7 +597,7 @@ const LandingPage = () => {
 
                 {/* ── Nav — Clean modern white FeeFlow-style navbar for Web Builder Pro ── */}
                 <nav style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, height: '74px',
+                    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, height: '80px',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '0 clamp(1.25rem, 5vw, 3.5rem)',
                     background: 'rgba(255, 255, 255, 0.98)',
@@ -608,7 +608,7 @@ const LandingPage = () => {
                 }}>
                     {/* Brand / Logo */}
                     <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                        <img src={logo} alt="Web Builder Pro" style={{ height: 'clamp(56px, 6vw, 62px)', width: 'auto', objectFit: 'contain' }} />
+                        <img src={logo} alt="Web Builder Pro" style={{ height: 'clamp(65px, 7.5vw, 75px)', width: 'auto', objectFit: 'contain' }} />
                     </div>
 
                     {/* Center Nav Links */}
@@ -656,7 +656,7 @@ const LandingPage = () => {
                      ambient glows, bold dark typography with wavy accent, dual pill CTAs ── */}
                 <section style={{
                     position: 'relative',
-                    padding: 'calc(74px + clamp(2.5rem,6vw,4.2rem)) clamp(1.25rem,6vw,4rem) clamp(4.5rem,7vw,6.5rem)',
+                    padding: 'calc(80px + clamp(2.5rem,6vw,4.2rem)) clamp(1.25rem,6vw,4rem) clamp(4.5rem,7vw,6.5rem)',
                     overflow: 'hidden',
                     background: '#f0f4f8'
                 }}>
@@ -2124,7 +2124,7 @@ const LandingPage = () => {
                             src={logo}
                             alt="Web Builder Pro"
                             style={{
-                                height: 'clamp(32px, 4vw, 42px)',
+                                height: 'clamp(52px, 6.5vw, 68px)',
                                 width: 'auto',
                                 objectFit: 'contain'
                             }}
@@ -2153,14 +2153,14 @@ const LandingPage = () => {
                                 <div style={{
                                     display: 'inline-flex',
                                     alignItems: 'center',
-                                    gap: '8px',
+                                    justifyContent: 'center',
                                     background: '#ffffff',
-                                    padding: '8px 16px',
+                                    padding: '6px 16px',
                                     borderRadius: '12px',
                                     marginBottom: '18px',
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                                    boxShadow: '0 4px 14px rgba(0,0,0,0.3)'
                                 }}>
-                                    <img src={logo} alt="Web Builder Pro" style={{ height: '30px', objectFit: 'contain' }} />
+                                    <img src={logo} alt="Web Builder Pro" style={{ height: '72px', width: 'auto', objectFit: 'contain', display: 'block' }} />
                                 </div>
                                 <p style={{
                                     fontSize: '13.5px',
