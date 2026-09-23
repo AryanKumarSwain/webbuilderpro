@@ -591,6 +591,78 @@ const LandingPage = () => {
                     .lp-cta-btn-group { flex-direction: column !important; width: 100% !important; align-items: stretch !important; }
                     .lp-cta-btn-group button { width: 100% !important; max-width: 100% !important; justify-content: center !important; }
                 }
+
+                /* ── Compact & Mobile-Responsive Footer ── */
+                @media (max-width: 860px) {
+                    .lp-footer-grid {
+                        grid-template-columns: 1fr 1fr !important;
+                        gap: 1.5rem 1.25rem !important;
+                    }
+                    .lp-footer-brand-col {
+                        grid-column: 1 / -1 !important;
+                        max-width: 100% !important;
+                        margin-bottom: 0.25rem !important;
+                    }
+                    .lp-footer-contact-col {
+                        grid-column: 1 / -1 !important;
+                    }
+                    .lp-footer-contact-list {
+                        flex-direction: row !important;
+                        flex-wrap: wrap !important;
+                        gap: 10px 24px !important;
+                    }
+                }
+                @media (max-width: 520px) {
+                    .lp-footer {
+                        padding: 1.5rem 1rem 1rem !important;
+                    }
+                    .lp-footer-grid {
+                        grid-template-columns: 1fr 1fr !important;
+                        gap: 1.25rem 0.75rem !important;
+                        margin-bottom: 1.25rem !important;
+                    }
+                    .lp-footer-brand-col {
+                        grid-column: 1 / -1 !important;
+                    }
+                    .lp-footer-brand-logo {
+                        height: 44px !important;
+                    }
+                    .lp-footer-brand-bio {
+                        font-size: 11.5px !important;
+                        line-height: 1.45 !important;
+                        margin-bottom: 10px !important;
+                    }
+                    .lp-footer-col h4 {
+                        font-size: 12.5px !important;
+                        margin-bottom: 8px !important;
+                    }
+                    .lp-footer-col ul {
+                        gap: 5px !important;
+                    }
+                    .lp-footer-col a {
+                        font-size: 11.5px !important;
+                    }
+                    .lp-footer-contact-col {
+                        grid-column: 1 / -1 !important;
+                    }
+                    .lp-footer-contact-list {
+                        flex-direction: column !important;
+                        gap: 7px !important;
+                    }
+                    .lp-footer-contact-list a, .lp-footer-contact-list div {
+                        font-size: 11.5px !important;
+                    }
+                    .lp-footer-bottom {
+                        flex-direction: column !important;
+                        text-align: center !important;
+                        gap: 8px !important;
+                        padding-top: 12px !important;
+                        font-size: 11px !important;
+                    }
+                    .lp-footer-bottom > div {
+                        justify-content: center !important;
+                    }
+                }
             `}</style>
 
             <div style={{ fontFamily: "'Inter', system-ui, sans-serif", color: TEXT_DARK, background: '#ffffff', minHeight: '100vh', overflowX: 'hidden' }}>
@@ -2112,66 +2184,48 @@ const LandingPage = () => {
                             </div>
                         </div>
                     </Reveal>
-
-                    {/* Centered logo preview directly beneath card as in user screenshot */}
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginTop: 'clamp(2.5rem, 5vw, 3.75rem)'
-                    }}>
-                        <img
-                            src={logo}
-                            alt="Web Builder Pro"
-                            style={{
-                                height: 'clamp(52px, 6.5vw, 68px)',
-                                width: 'auto',
-                                objectFit: 'contain'
-                            }}
-                        />
-                    </div>
                 </section>
 
                 {/* ── Rich Dark Footer (Web Builder Pro) ── */}
-                <footer style={{
+                <footer className="lp-footer" style={{
                     background: '#0a0f1d',
                     color: '#94a3b8',
-                    padding: 'clamp(3.5rem, 6vw, 5rem) clamp(1.25rem, 6vw, 4rem) 2rem',
+                    padding: '1.75rem clamp(1rem, 4vw, 3rem) 1.25rem',
                     borderTop: '1px solid #1e293b',
                     position: 'relative'
                 }}>
                     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
                         {/* 4-Column Grid */}
-                        <div style={{
+                        <div className="lp-footer-grid" style={{
                             display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                            gap: 'clamp(2rem, 4vw, 3.5rem)',
-                            marginBottom: '3.5rem'
+                            gridTemplateColumns: '1.3fr 0.9fr 0.9fr 1fr',
+                            gap: 'clamp(1.25rem, 2.5vw, 2rem)',
+                            marginBottom: '1.5rem'
                         }}>
                             {/* Column 1: Brand & Bio */}
-                            <div style={{ maxWidth: '340px' }}>
+                            <div className="lp-footer-brand-col" style={{ maxWidth: '340px' }}>
                                 <div style={{
                                     display: 'inline-flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     background: '#ffffff',
-                                    padding: '6px 16px',
-                                    borderRadius: '12px',
-                                    marginBottom: '18px',
-                                    boxShadow: '0 4px 14px rgba(0,0,0,0.3)'
+                                    padding: '2px 8px',
+                                    borderRadius: '8px',
+                                    marginBottom: '10px',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.25)'
                                 }}>
-                                    <img src={logo} alt="Web Builder Pro" style={{ height: '72px', width: 'auto', objectFit: 'contain', display: 'block' }} />
+                                    <img className="lp-footer-brand-logo" src={logo} alt="Web Builder Pro" style={{ height: '50px', width: 'auto', objectFit: 'contain', display: 'block' }} />
                                 </div>
-                                <p style={{
-                                    fontSize: '13.5px',
-                                    lineHeight: 1.75,
+                                <p className="lp-footer-brand-bio" style={{
+                                    fontSize: '12.5px',
+                                    lineHeight: 1.5,
                                     color: '#94a3b8',
-                                    marginBottom: '20px'
+                                    marginBottom: '12px'
                                 }}>
                                     Web Builder Pro is an all-in-one school website builder that helps educational institutions launch modern, mobile-responsive websites in minutes with 25+ purpose-built school modules for admissions, fees, notices, galleries, and CBSE disclosures.
                                 </p>
                                 {/* Social Media Icons */}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     {[
                                         {
                                             label: 'Twitter / X',
@@ -2208,9 +2262,9 @@ const LandingPage = () => {
                                             rel="noopener noreferrer"
                                             aria-label={s.label}
                                             style={{
-                                                width: '36px',
-                                                height: '36px',
-                                                borderRadius: '10px',
+                                                width: '28px',
+                                                height: '28px',
+                                                borderRadius: '6px',
                                                 background: '#0f172a',
                                                 border: '1px solid #1e293b',
                                                 display: 'flex',
@@ -2232,8 +2286,8 @@ const LandingPage = () => {
                                             }}
                                         >
                                             <svg
-                                                width="16"
-                                                height="16"
+                                                width="13"
+                                                height="13"
                                                 fill={s.stroke ? "none" : "currentColor"}
                                                 stroke={s.stroke ? "currentColor" : "none"}
                                                 strokeWidth={s.stroke ? "2" : "0"}
@@ -2249,11 +2303,11 @@ const LandingPage = () => {
                             </div>
 
                             {/* Column 2: Features (Strictly from Web Builder Pro platform) */}
-                            <div>
-                                <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#f8fafc', marginBottom: '18px', letterSpacing: '-0.2px' }}>
+                            <div className="lp-footer-col">
+                                <h4 style={{ fontSize: '13px', fontWeight: 800, color: '#f8fafc', marginBottom: '10px', letterSpacing: '-0.2px' }}>
                                     Features
                                 </h4>
-                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '11px' }}>
+                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                     {[
                                         { label: 'Custom Public Website', href: '#features' },
                                         { label: '25+ School Modules', href: '#modules' },
@@ -2267,7 +2321,7 @@ const LandingPage = () => {
                                             <a
                                                 href={item.href}
                                                 style={{
-                                                    fontSize: '13.5px',
+                                                    fontSize: '12.5px',
                                                     color: '#94a3b8',
                                                     textDecoration: 'none',
                                                     transition: 'color 0.18s ease'
@@ -2283,11 +2337,11 @@ const LandingPage = () => {
                             </div>
 
                             {/* Column 3: Platform & Support */}
-                            <div>
-                                <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#f8fafc', marginBottom: '18px', letterSpacing: '-0.2px' }}>
+                            <div className="lp-footer-col">
+                                <h4 style={{ fontSize: '13px', fontWeight: 800, color: '#f8fafc', marginBottom: '10px', letterSpacing: '-0.2px' }}>
                                     Platform
                                 </h4>
-                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '11px' }}>
+                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                     {[
                                         { label: 'Platform Live Demo', href: DEMO_URL, external: true },
                                         { label: 'Interactive Preview', href: '#preview' },
@@ -2303,7 +2357,7 @@ const LandingPage = () => {
                                                 target={item.external ? "_blank" : undefined}
                                                 rel={item.external ? "noopener noreferrer" : undefined}
                                                 style={{
-                                                    fontSize: '13.5px',
+                                                    fontSize: '12.5px',
                                                     color: '#94a3b8',
                                                     textDecoration: 'none',
                                                     transition: 'color 0.18s ease'
@@ -2319,19 +2373,19 @@ const LandingPage = () => {
                             </div>
 
                             {/* Column 4: Contact */}
-                            <div>
-                                <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#f8fafc', marginBottom: '18px', letterSpacing: '-0.2px' }}>
+                            <div className="lp-footer-col lp-footer-contact-col">
+                                <h4 style={{ fontSize: '13px', fontWeight: 800, color: '#f8fafc', marginBottom: '10px', letterSpacing: '-0.2px' }}>
                                     Contact
                                 </h4>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                <div className="lp-footer-contact-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                     {/* Email */}
                                     <a
                                         href="mailto:webbuilderpro@webncode.in"
                                         style={{
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '10px',
-                                            fontSize: '13.5px',
+                                            gap: '7px',
+                                            fontSize: '12.5px',
                                             color: '#94a3b8',
                                             textDecoration: 'none',
                                             transition: 'color 0.18s ease'
@@ -2340,7 +2394,7 @@ const LandingPage = () => {
                                         onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
                                     >
                                         <span style={{ color: '#38bdf8', display: 'flex', alignItems: 'center' }}>
-                                            <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                                                 <rect x="3" y="4" width="18" height="16" rx="2"/>
                                                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                                             </svg>
@@ -2354,8 +2408,8 @@ const LandingPage = () => {
                                         style={{
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '10px',
-                                            fontSize: '13.5px',
+                                            gap: '7px',
+                                            fontSize: '12.5px',
                                             color: '#94a3b8',
                                             textDecoration: 'none',
                                             transition: 'color 0.18s ease'
@@ -2364,7 +2418,7 @@ const LandingPage = () => {
                                         onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
                                     >
                                         <span style={{ color: '#34d399', display: 'flex', alignItems: 'center' }}>
-                                            <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                                                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                                             </svg>
                                         </span>
@@ -2375,12 +2429,12 @@ const LandingPage = () => {
                                     <div style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '10px',
-                                        fontSize: '13.5px',
+                                        gap: '7px',
+                                        fontSize: '12.5px',
                                         color: '#94a3b8'
                                     }}>
                                         <span style={{ color: '#f472b6', display: 'flex', alignItems: 'center' }}>
-                                            <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                                                 <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
                                                 <circle cx="12" cy="10" r="3"/>
                                             </svg>
@@ -2392,21 +2446,21 @@ const LandingPage = () => {
                         </div>
 
                         {/* Bottom Copyright & Legal Links Bar */}
-                        <div style={{
+                        <div className="lp-footer-bottom" style={{
                             borderTop: '1px solid #1e293b',
-                            paddingTop: '24px',
+                            paddingTop: '12px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
                             flexWrap: 'wrap',
-                            gap: '14px',
-                            fontSize: '12.5px',
+                            gap: '10px',
+                            fontSize: '11.5px',
                             color: '#64748b'
                         }}>
                             <div>
                                 &copy; 2026 Web Builder Pro. All rights reserved.
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                                 <a
                                     href="#"
                                     style={{ color: '#64748b', textDecoration: 'none', transition: 'color 0.18s ease' }}
