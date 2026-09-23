@@ -533,28 +533,29 @@ const LandingPage = () => {
                 }
 
                 /* ── Animated fluid running wave divider between hero and modules ── */
-                @keyframes lpWaveMove {
+                @keyframes lpWaveMoveLeft {
                     0% { transform: translate3d(-90px, 0, 0); }
                     100% { transform: translate3d(85px, 0, 0); }
                 }
-                .lp-wave-parallax > use {
-                    animation: lpWaveMove 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+                @keyframes lpWaveMoveRight {
+                    0% { transform: translate3d(85px, 0, 0); }
+                    100% { transform: translate3d(-90px, 0, 0); }
                 }
                 .lp-wave-parallax > use:nth-child(1) {
+                    animation: lpWaveMoveLeft 18s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
                     animation-delay: -2s;
-                    animation-duration: 9s;
                 }
                 .lp-wave-parallax > use:nth-child(2) {
+                    animation: lpWaveMoveRight 13s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
                     animation-delay: -3s;
-                    animation-duration: 13s;
                 }
                 .lp-wave-parallax > use:nth-child(3) {
+                    animation: lpWaveMoveLeft 9s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
                     animation-delay: -4s;
-                    animation-duration: 17s;
                 }
                 .lp-wave-parallax > use:nth-child(4) {
+                    animation: lpWaveMoveRight 6s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
                     animation-delay: -5s;
-                    animation-duration: 23s;
                 }
 
                 @media (max-width: 980px) {
@@ -698,7 +699,8 @@ const LandingPage = () => {
                         overflow: 'hidden',
                         lineHeight: 0,
                         pointerEvents: 'none',
-                        zIndex: 2
+                        zIndex: 2,
+                        filter: 'drop-shadow(0 -6px 18px rgba(37, 99, 235, 0.12))'
                     }}>
                         <svg
                             viewBox="0 24 150 28"
@@ -708,7 +710,7 @@ const LandingPage = () => {
                                 position: 'relative',
                                 display: 'block',
                                 width: '100%',
-                                height: 'clamp(52px, 6.5vw, 92px)',
+                                height: 'clamp(60px, 7.5vw, 110px)',
                                 marginBottom: '-1px'
                             }}
                         >
@@ -717,11 +719,27 @@ const LandingPage = () => {
                                     id="lp-gentle-wave"
                                     d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"
                                 />
+                                {/* Brand-matching fluid wave gradients */}
+                                <linearGradient id="lp-wave-grad-1" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor="#fb923c" stopOpacity="0.50" />
+                                    <stop offset="50%" stopColor="#f97316" stopOpacity="0.58" />
+                                    <stop offset="100%" stopColor="#fed7aa" stopOpacity="0.52" />
+                                </linearGradient>
+                                <linearGradient id="lp-wave-grad-2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor="#0284c7" stopOpacity="0.55" />
+                                    <stop offset="50%" stopColor="#38bdf8" stopOpacity="0.65" />
+                                    <stop offset="100%" stopColor="#60a5fa" stopOpacity="0.55" />
+                                </linearGradient>
+                                <linearGradient id="lp-wave-grad-3" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor="#93c5fd" stopOpacity="0.80" />
+                                    <stop offset="50%" stopColor="#bfdbfe" stopOpacity="0.90" />
+                                    <stop offset="100%" stopColor="#bae6fd" stopOpacity="0.85" />
+                                </linearGradient>
                             </defs>
                             <g className="lp-wave-parallax">
-                                <use href="#lp-gentle-wave" xlinkHref="#lp-gentle-wave" x="48" y="0" fill="rgba(255, 255, 255, 0.3)" />
-                                <use href="#lp-gentle-wave" xlinkHref="#lp-gentle-wave" x="48" y="2" fill="rgba(255, 255, 255, 0.55)" />
-                                <use href="#lp-gentle-wave" xlinkHref="#lp-gentle-wave" x="48" y="4" fill="rgba(255, 255, 255, 0.75)" />
+                                <use href="#lp-gentle-wave" xlinkHref="#lp-gentle-wave" x="48" y="0" fill="url(#lp-wave-grad-1)" />
+                                <use href="#lp-gentle-wave" xlinkHref="#lp-gentle-wave" x="48" y="2" fill="url(#lp-wave-grad-2)" />
+                                <use href="#lp-gentle-wave" xlinkHref="#lp-gentle-wave" x="48" y="4" fill="url(#lp-wave-grad-3)" />
                                 <use href="#lp-gentle-wave" xlinkHref="#lp-gentle-wave" x="48" y="6" fill="#ffffff" />
                             </g>
                         </svg>
