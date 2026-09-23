@@ -206,10 +206,15 @@ const MODULE_DATA = [
     { key: 'circulars', title: 'Circulars', desc: 'Official notices & PDFs', tag: 'Notices', gradient: ['#0284c7', '#0369a1'], glow: 'rgba(2, 132, 199, 0.32)', lightBg: '#f0f9ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /> },
     { key: 'admission', title: 'Admission Enquiry', desc: 'Capture every lead', tag: 'Enquiry', gradient: ['#fb7185', '#e11d48'], glow: 'rgba(251, 113, 133, 0.32)', lightBg: '#fff1f2', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /> },
     { key: 'career', title: 'Career Enquiry', desc: 'Teacher job applications', tag: 'Hiring', gradient: ['#7c3aed', '#5b21b6'], glow: 'rgba(124, 58, 237, 0.32)', lightBg: '#f5f3ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /> },
+    { key: 'parentsCorner', title: 'Parents Corner', desc: 'Parent guidelines & portal', tag: 'Community', gradient: ['#0ea5e9', '#0284c7'], glow: 'rgba(14, 165, 233, 0.32)', lightBg: '#f0f9ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /> },
+    { key: 'faqs', title: 'FAQ & Help', desc: 'Instant answers for parents', tag: 'Support', gradient: ['#8b5cf6', '#6d28d9'], glow: 'rgba(139, 92, 246, 0.32)', lightBg: '#f5f3ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> },
+    { key: 'results', title: 'Board Results', desc: 'Class 10 & 12 toppers', tag: 'Academic', gradient: ['#10b981', '#059669'], glow: 'rgba(16, 185, 129, 0.32)', lightBg: '#ecfdf5', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /> },
+    { key: 'contact', title: 'Contact & Campus', desc: 'Direct map & directions', tag: 'Connect', gradient: ['#0d9488', '#0f766e'], glow: 'rgba(13, 148, 136, 0.32)', lightBg: '#f0fdfa', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z" /> },
+    { key: 'settings', title: 'School Settings', desc: 'Branding, colors & themes', tag: 'Branding', gradient: ['#6366f1', '#4338ca'], glow: 'rgba(99, 102, 241, 0.32)', lightBg: '#eef2ff', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" /> },
 ];
 
-const MODULES_ROW_TOP = MODULE_DATA.slice(0, 11);
-const MODULES_ROW_BOTTOM = MODULE_DATA.slice(11);
+const MODULES_ROW_TOP = MODULE_DATA.slice(0, 13);
+const MODULES_ROW_BOTTOM = MODULE_DATA.slice(13);
 
 const ICON_GROUPS = [
     {
@@ -527,6 +532,31 @@ const LandingPage = () => {
                     transition: transform 0.25s ease, opacity 0.25s ease;
                 }
 
+                /* ── Animated fluid running wave divider between hero and modules ── */
+                @keyframes lpWaveMove {
+                    0% { transform: translate3d(-90px, 0, 0); }
+                    100% { transform: translate3d(85px, 0, 0); }
+                }
+                .lp-wave-parallax > use {
+                    animation: lpWaveMove 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+                }
+                .lp-wave-parallax > use:nth-child(1) {
+                    animation-delay: -2s;
+                    animation-duration: 9s;
+                }
+                .lp-wave-parallax > use:nth-child(2) {
+                    animation-delay: -3s;
+                    animation-duration: 13s;
+                }
+                .lp-wave-parallax > use:nth-child(3) {
+                    animation-delay: -4s;
+                    animation-duration: 17s;
+                }
+                .lp-wave-parallax > use:nth-child(4) {
+                    animation-delay: -5s;
+                    animation-duration: 23s;
+                }
+
                 @media (max-width: 980px) {
                     .lp-hero-grid { grid-template-columns: 1fr !important; text-align: center; }
                     .lp-hero-visual { margin: 2.5rem auto 0 !important; max-width: 420px; }
@@ -658,7 +688,7 @@ const LandingPage = () => {
                         pointerEvents: 'none', zIndex: 1
                     }}></div>
 
-                    {/* Bottom wave divider seamlessly transitioning into #ffffff modules section */}
+                    {/* Bottom animated running wave divider seamlessly transitioning into #ffffff modules section */}
                     <div style={{
                         position: 'absolute',
                         bottom: -1,
@@ -671,22 +701,29 @@ const LandingPage = () => {
                         zIndex: 2
                     }}>
                         <svg
-                            viewBox="0 0 1440 90"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 24 150 28"
                             preserveAspectRatio="none"
+                            shapeRendering="auto"
                             style={{
                                 position: 'relative',
                                 display: 'block',
                                 width: '100%',
-                                height: 'clamp(48px, 6vw, 88px)',
+                                height: 'clamp(52px, 6.5vw, 92px)',
+                                marginBottom: '-1px'
                             }}
                         >
-                            {/* Crisp single white wave smoothly dividing hero from modules */}
-                            <path
-                                d="M0,45 C320,72 640,16 1020,26 C1220,32 1350,46 1440,38 L1440,90 L0,90 Z"
-                                fill="#ffffff"
-                            />
+                            <defs>
+                                <path
+                                    id="lp-gentle-wave"
+                                    d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"
+                                />
+                            </defs>
+                            <g className="lp-wave-parallax">
+                                <use href="#lp-gentle-wave" xlinkHref="#lp-gentle-wave" x="48" y="0" fill="rgba(255, 255, 255, 0.3)" />
+                                <use href="#lp-gentle-wave" xlinkHref="#lp-gentle-wave" x="48" y="2" fill="rgba(255, 255, 255, 0.55)" />
+                                <use href="#lp-gentle-wave" xlinkHref="#lp-gentle-wave" x="48" y="4" fill="rgba(255, 255, 255, 0.75)" />
+                                <use href="#lp-gentle-wave" xlinkHref="#lp-gentle-wave" x="48" y="6" fill="#ffffff" />
+                            </g>
                         </svg>
                     </div>
 
@@ -941,7 +978,7 @@ const LandingPage = () => {
                                 lineHeight: 1.7,
                                 fontWeight: 400
                             }}>
-                                Publish once, manage everything — 21+ purpose-built modules live and ready in the platform today.
+                                Publish once, manage everything — 25+ purpose-built school modules live and ready in the platform today.
                             </p>
                         </Reveal>
                     </div>
@@ -2081,7 +2118,7 @@ const LandingPage = () => {
                                     color: '#94a3b8',
                                     marginBottom: '20px'
                                 }}>
-                                    Web Builder Pro is an all-in-one school website builder that helps educational institutions launch modern, mobile-responsive websites in minutes with 21+ purpose-built modules for admissions, fees, notices, galleries, and CBSE disclosures.
+                                    Web Builder Pro is an all-in-one school website builder that helps educational institutions launch modern, mobile-responsive websites in minutes with 25+ purpose-built school modules for admissions, fees, notices, galleries, and CBSE disclosures.
                                 </p>
                                 {/* Social Media Icons */}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -2169,7 +2206,7 @@ const LandingPage = () => {
                                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '11px' }}>
                                     {[
                                         { label: 'Custom Public Website', href: '#features' },
-                                        { label: '21+ School Modules', href: '#modules' },
+                                        { label: '25+ School Modules', href: '#modules' },
                                         { label: 'Smart Enquiry Forms', href: '#features' },
                                         { label: 'One Admin Dashboard', href: '#features' },
                                         { label: 'Announcements & Calendar', href: '#features' },

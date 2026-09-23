@@ -37,7 +37,7 @@ const SLIDES = [
 ];
 
 const STATS = [
-  { value: '21+', label: 'Modules' },
+  { value: '25+', label: 'Modules' },
   { value: '100%', label: 'Secure' },
   { value: '24/7', label: 'Access' },
 ];
