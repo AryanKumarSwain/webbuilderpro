@@ -558,6 +558,19 @@ const LandingPage = () => {
                     animation-delay: -5s;
                 }
 
+                /* ── Slow shifting color cycle for wavy underline under "Stands Apart." ── */
+                @keyframes lpWaveColorShift {
+                    0%   { stroke: #e15241; }
+                    20%  { stroke: #f97316; }
+                    40%  { stroke: #f59e0b; }
+                    60%  { stroke: #2563eb; }
+                    80%  { stroke: #7c3aed; }
+                    100% { stroke: #e15241; }
+                }
+                .lp-wavy-underline-path {
+                    animation: lpWaveColorShift 10s ease-in-out infinite;
+                }
+
                 @media (max-width: 980px) {
                     .lp-hero-grid { grid-template-columns: 1fr !important; text-align: center; }
                     .lp-hero-visual { margin: 2.5rem auto 0 !important; max-width: 420px; }
@@ -769,20 +782,39 @@ const LandingPage = () => {
                                                 bottom: '-2px',
                                                 width: '100%',
                                                 height: '16px',
-                                                overflow: 'visible'
+                                                overflow: 'hidden',
+                                                pointerEvents: 'none'
                                             }}
                                             viewBox="0 0 300 16"
                                             fill="none"
                                             preserveAspectRatio="none"
                                         >
-                                            <path
-                                                d="M 2 8 Q 18 1, 37 8 T 75 8 T 113 8 T 151 8 T 189 8 T 227 8 T 265 8 T 298 8"
-                                                stroke="#e15241"
-                                                strokeWidth="4.5"
-                                                strokeLinecap="round"
-                                                fill="none"
-                                                vectorEffect="non-scaling-stroke"
-                                            />
+                                            <g>
+                                                <path
+                                                    className="lp-wavy-underline-path"
+                                                    d="M -76 8 Q -57 1, -38 8 T 0 8 T 38 8 T 76 8 T 114 8 T 152 8 T 190 8 T 228 8 T 266 8 T 304 8 T 342 8 T 380 8 T 418 8 T 456 8"
+                                                    stroke="#e15241"
+                                                    strokeWidth="4.5"
+                                                    strokeLinecap="round"
+                                                    fill="none"
+                                                    vectorEffect="non-scaling-stroke"
+                                                >
+                                                    <animate
+                                                        attributeName="stroke"
+                                                        values="#e15241;#f97316;#f59e0b;#2563eb;#7c3aed;#e15241"
+                                                        dur="10s"
+                                                        repeatCount="indefinite"
+                                                    />
+                                                </path>
+                                                <animateTransform
+                                                    attributeName="transform"
+                                                    type="translate"
+                                                    from="-76 0"
+                                                    to="0 0"
+                                                    dur="5.5s"
+                                                    repeatCount="indefinite"
+                                                />
+                                            </g>
                                         </svg>
                                     </span>
                                 </h1>
