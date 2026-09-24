@@ -335,7 +335,7 @@ const Login = () => {
             padding: 2rem 1.6rem 1.6rem;
           }
 
-          .login-right-logo { width: auto !important; height: 44px !important; margin: 0 auto 0.6rem !important; display: block !important; }
+          .login-right-logo { width: auto !important; height: 62px !important; margin: 0 auto 0.6rem !important; display: block !important; }
           .login-mobile-heading { text-align: center !important; }
           .login-mobile-sub { text-align: center !important; }
           .login-mobile-footer { text-align: center !important; }
@@ -653,16 +653,17 @@ const Login = () => {
           </div>
 
           {/* Logo — right panel */}
-          <div style={{ marginBottom: "clamp(0.35rem, 0.9vh, 0.65rem)" }}>
+          <div style={{ marginBottom: "clamp(0.4rem, 1.1vh, 0.8rem)", display: "flex", justifyContent: "center" }}>
             <img
               src={logo}
               alt="Web Builder Pro"
               className="login-right-logo login-anim-1"
               style={{
-                height: "42px",
+                height: "68px",
                 width: "auto",
                 objectFit: "contain",
-                display: "block"
+                display: "block",
+                margin: "0 auto"
               }}
             />
           </div>
