@@ -1733,7 +1733,7 @@ const AdminSettings = () => {
                                         {footerAboutText && (
                                             <p style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.62)', lineHeight: 1.6, marginBottom: '8px', maxWidth: '280px' }}>{footerAboutText}</p>
                                         )}
-                                        <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.45)' }}>© {new Date().getFullYear()} · Powered by Web Builder Pro</p>
+                                        <p style={{ fontSize: '10.5px', color: 'rgba(255,255,255,0.45)' }}>© {new Date().getFullYear()} · Powered by <a href="https://wbpro.in" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Web Builder Pro</a></p>
                                     </div>
                                 </div>
                                 {footerBgUrl || footerBgPreview ? (

@@ -273,7 +273,7 @@ const Footer = ({ school, slug, tc, bgImage }) => {
                 <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '2.5rem', paddingTop: '1.5rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
                     <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>© {new Date().getFullYear()} {school.name}. All Rights Reserved.</p>
                     <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
-                        Powered by <a href="/" target="_blank" rel="noopener noreferrer" style={{ color: accent, fontWeight: 600, textDecoration: 'none' }}>Web Builder Pro</a>
+                        Powered by <a href="https://wbpro.in" target="_blank" rel="noopener noreferrer" style={{ color: accent, fontWeight: 600, textDecoration: 'none' }}>Web Builder Pro</a>
                     </p>
                 </div>
 
