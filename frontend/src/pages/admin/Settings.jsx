@@ -37,6 +37,7 @@ const AdminSettings = () => {
     const [activeTab, setActiveTab] = useState('profile');
     const [hoveredTheme, setHoveredTheme] = useState(null);
     const [themeCategory, setThemeCategory] = useState('all'); // 'all' | 'gradient' | 'solid'
+    const [baseCategory, setBaseCategory] = useState('all');
     const [uploadingLogo, setUploadingLogo] = useState(false);
     const [removingLogo, setRemovingLogo] = useState(false);
     const [logoFile, setLogoFile] = useState(null);
@@ -48,7 +49,7 @@ const AdminSettings = () => {
     const [accountData, setAccountData] = useState({ name: '', email: '' });
     const [savingAccount, setSavingAccount] = useState(false);
     const [settingsData, setSettingsData] = useState({
-        theme: 'default', base_theme: 'white', logo_url: '', nav_font: 'inter'
+        theme: '', base_theme: 'white', logo_url: '', nav_font: 'inter'
     });
     const [bannerData, setBannerData] = useState({
         welcome_banner_enabled: false, welcome_banner_url: '', welcome_banner_link: ''
@@ -136,7 +137,7 @@ const AdminSettings = () => {
                 email: school.admin_email || '',
             });
             setSettingsData({
-                theme: school.theme || 'default',
+                theme: school.theme === 'default' ? 'rosePink' : (school.theme || ''),
                 base_theme: school.base_theme || 'white',
                 logo_url: school.logo_url || '',
                 nav_font: school.nav_font || 'inter',
@@ -597,7 +598,7 @@ const AdminSettings = () => {
 
     const gradientThemes = [
         // ── Classic Gradients ──
-        { key: 'default', label: 'Rose Pink', desc: 'Warm & elegant', color: '#8b2252', gradient: 'linear-gradient(135deg,#8b2252,#c9687e)', shadow: 'rgba(139,34,82,0.35)' },
+        { key: 'rosePink', label: 'Rose Pink', desc: 'Warm & elegant', color: '#8b2252', gradient: 'linear-gradient(135deg,#8b2252,#c9687e)', shadow: 'rgba(139,34,82,0.35)' },
         { key: 'blue', label: 'Ocean Blue', desc: 'Professional & trustworthy', color: '#1e3a5f', gradient: 'linear-gradient(135deg,#1e3a5f,#2563eb)', shadow: 'rgba(37,99,235,0.35)' },
         { key: 'green', label: 'Emerald', desc: 'Fresh & natural', color: '#064e3b', gradient: 'linear-gradient(135deg,#064e3b,#059669)', shadow: 'rgba(5,150,105,0.35)' },
         { key: 'purple', label: 'Royal Purple', desc: 'Premium & creative', color: '#4a1d96', gradient: 'linear-gradient(135deg,#4a1d96,#7c3aed)', shadow: 'rgba(124,58,237,0.35)' },
@@ -635,8 +636,30 @@ const AdminSettings = () => {
         { key: 'pastelSky', label: 'Ice Blue', desc: 'Crisp light ice blue', color: '#0369a1', gradient: 'linear-gradient(135deg,#0369a1,#7dd3fc)', shadow: 'rgba(125,211,252,0.35)' },
     ];
 
-    const solidThemes = [
-        // ── Solid Colours (Without Gradient) ──
+    const lightSolidThemes = [
+        // ── Light & Pastel Solid Colours (Without Gradient) ──
+        { key: 'solidPowderBlue', label: 'Powder Blue', desc: 'Light airy sky blue', color: '#38bdf8', shadow: 'rgba(56,189,248,0.35)', isLight: true },
+        { key: 'solidBabyBlue', label: 'Baby Blue', desc: 'Soft gentle pastel blue', color: '#60a5fa', shadow: 'rgba(96,165,250,0.35)', isLight: true },
+        { key: 'solidPastelMint', label: 'Pastel Mint', desc: 'Light refreshing botanical mint', color: '#34d399', shadow: 'rgba(52,211,153,0.35)', isLight: true },
+        { key: 'solidSeafoam', label: 'Seafoam Aqua', desc: 'Light coastal aquamarine', color: '#2dd4bf', shadow: 'rgba(45,212,191,0.35)', isLight: true },
+        { key: 'solidSage', label: 'Soft Sage', desc: 'Gentle earthy sage green', color: '#84a98c', shadow: 'rgba(132,169,140,0.35)', isLight: true },
+        { key: 'solidPastelPeach', label: 'Pastel Peach', desc: 'Warm gentle peach glow', color: '#fb923c', shadow: 'rgba(251,146,60,0.35)', isLight: true },
+        { key: 'solidApricot', label: 'Apricot Cream', desc: 'Soft warm golden apricot', color: '#f8a567', shadow: 'rgba(248,165,103,0.35)', isLight: true },
+        { key: 'solidPastelPink', label: 'Pastel Pink', desc: 'Sweet gentle pastel pink', color: '#f472b6', shadow: 'rgba(244,114,182,0.35)', isLight: true },
+        { key: 'solidBlush', label: 'Blush Rose', desc: 'Light petal blush rose', color: '#fb7185', shadow: 'rgba(251,113,133,0.35)', isLight: true },
+        { key: 'solidLavender', label: 'Soft Lavender', desc: 'Gentle calming lavender', color: '#a78bfa', shadow: 'rgba(167,139,250,0.35)', isLight: true },
+        { key: 'solidPastelLilac', label: 'Pastel Lilac', desc: 'Light floral lilac blossom', color: '#c084fc', shadow: 'rgba(192,132,252,0.35)', isLight: true },
+        { key: 'solidPeriwinkle', label: 'Soft Periwinkle', desc: 'Light dreamy blue-violet', color: '#818cf8', shadow: 'rgba(129,140,248,0.35)', isLight: true },
+        { key: 'solidButtercup', label: 'Buttercup Yellow', desc: 'Cheerful light sunny yellow', color: '#facc15', shadow: 'rgba(250,204,21,0.35)', isLight: true },
+        { key: 'solidVanilla', label: 'Vanilla Cream', desc: 'Soft warm golden cream', color: '#eab308', shadow: 'rgba(234,179,8,0.35)', isLight: true },
+        { key: 'solidPistachio', label: 'Light Pistachio', desc: 'Bright energetic soft green', color: '#a3e635', shadow: 'rgba(163,230,53,0.35)', isLight: true },
+        { key: 'solidIceCyan', label: 'Ice Cyan', desc: 'Crisp refreshing light cyan', color: '#22d3ee', shadow: 'rgba(34,211,238,0.35)', isLight: true },
+        { key: 'solidSand', label: 'Soft Sand', desc: 'Warm light earthy neutral', color: '#c7ad8c', shadow: 'rgba(199,173,140,0.35)', isLight: true },
+        { key: 'solidCloud', label: 'Cloud Silver', desc: 'Light architectural silver slate', color: '#94a3b8', shadow: 'rgba(148,163,184,0.35)', isLight: true },
+    ];
+
+    const classicSolidThemes = [
+        // ── Classic Solid Colours (Without Gradient) ──
         { key: 'solidRoyalBlue', label: 'Royal Blue', desc: 'Solid classic school blue', color: '#1d4ed8', shadow: 'rgba(29,78,216,0.3)' },
         { key: 'solidNavy', label: 'Classic Navy', desc: 'Solid prestigious navy', color: '#0f2b5c', shadow: 'rgba(15,43,92,0.3)' },
         { key: 'solidSky', label: 'Sky Blue', desc: 'Solid bright sky blue', color: '#0284c7', shadow: 'rgba(2,132,199,0.3)' },
@@ -657,6 +680,7 @@ const AdminSettings = () => {
         { key: 'solidRose', label: 'Rose Wine', desc: 'Solid rich heritage rose', color: '#9f1239', shadow: 'rgba(159,18,57,0.3)' },
     ];
 
+    const solidThemes = [...lightSolidThemes, ...classicSolidThemes];
     const themes = [...gradientThemes, ...solidThemes];
 
     const inputStyle = {
@@ -713,6 +737,8 @@ const AdminSettings = () => {
                 .settings-input:focus { border-color: ${tc.primary} !important; box-shadow: 0 0 0 3px ${hexToRgba(tc.primary, 0.08)} !important; }
                 .settings-hero-item { animation: heroIn 0.55s cubic-bezier(0.16,1,0.3,1) both; }
                 .settings-hero-orb { animation: drift1 9s ease-in-out infinite; }
+                .settings-basecolor-card { transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important; }
+                .settings-basecolor-card:hover { transform: translateY(-4px) !important; box-shadow: 0 10px 24px rgba(0,0,0,0.08) !important; }
                 @media (max-width: 900px) {
                     .settings-3col { grid-template-columns: repeat(2, 1fr) !important; }
                 }
@@ -1166,8 +1192,9 @@ const AdminSettings = () => {
                                 </span>
                                 {[
                                     { key: 'all', label: `All Colours (${gradientThemes.length + solidThemes.length})` },
+                                    { key: 'lightSolid', label: `Light Solids (${lightSolidThemes.length})` },
+                                    { key: 'solid', label: `Classic Solids (${classicSolidThemes.length})` },
                                     { key: 'gradient', label: `Gradient Colours (${gradientThemes.length})` },
-                                    { key: 'solid', label: `Solid Colours (${solidThemes.length})` },
                                 ].map(cat => {
                                     const isCatActive = themeCategory === cat.key;
                                     return (
@@ -1221,7 +1248,7 @@ const AdminSettings = () => {
 
                                     <div className="settings-3col settings-theme-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
                                         {gradientThemes.map(theme => {
-                                            const isActive = settingsData.theme === theme.key;
+                                            const isActive = settingsData.theme === theme.key || (theme.key === 'rosePink' && settingsData.theme === 'default');
                                             const isHovered = hoveredTheme === theme.key;
                                             return (
                                                 <div key={theme.key} className="settings-theme-card" onClick={() => handleThemeSave(theme.key)} onMouseEnter={() => setHoveredTheme(theme.key)} onMouseLeave={() => setHoveredTheme(null)}
@@ -1248,7 +1275,64 @@ const AdminSettings = () => {
                                 </div>
                             )}
 
-                            {/* ── Section 2: Solid Colours (Without Gradient) ── */}
+                            {/* ── Section 2: Light Solid Colours (Without Gradient) ── */}
+                            {(themeCategory === 'all' || themeCategory === 'lightSolid') && (
+                                <div style={{ marginBottom: themeCategory === 'all' ? '2.5rem' : '0' }}>
+                                    <div style={{
+                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                        marginBottom: '14px', paddingBottom: '10px', borderBottom: '1px solid #f1f5f9',
+                                        flexWrap: 'wrap', gap: '8px',
+                                    }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                            <span style={{
+                                                fontSize: '11px', fontWeight: 800, textTransform: 'uppercase',
+                                                letterSpacing: '0.08em', padding: '4px 11px', borderRadius: '6px',
+                                                background: 'linear-gradient(135deg,#38bdf8,#818cf8)', color: '#ffffff',
+                                            }}>
+                                                Light Solid Colours
+                                            </span>
+                                            <span style={{ fontSize: '12px', color: '#64748b' }}>
+                                                Fresh, soft, pastel, and airy flat tones without gradients — clean and modern
+                                            </span>
+                                        </div>
+                                        <span style={{ fontSize: '11px', fontWeight: 600, color: '#94a3b8' }}>
+                                            {lightSolidThemes.length} Themes
+                                        </span>
+                                    </div>
+
+                                    <div className="settings-3col settings-theme-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
+                                        {lightSolidThemes.map(theme => {
+                                            const isActive = settingsData.theme === theme.key;
+                                            const isHovered = hoveredTheme === theme.key;
+                                            return (
+                                                <div key={theme.key} className="settings-theme-card" onClick={() => handleThemeSave(theme.key)} onMouseEnter={() => setHoveredTheme(theme.key)} onMouseLeave={() => setHoveredTheme(null)}
+                                                    style={{ borderRadius: '8px', border: isActive ? `2px solid ${theme.color}` : '0.5px solid #f1f5f9', overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s ease', transform: isActive ? 'translateY(-4px)' : isHovered ? 'translateY(-2px)' : 'none', boxShadow: isActive ? `0 12px 32px ${theme.shadow}` : isHovered ? `0 8px 20px ${theme.shadow}` : '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                                    <div className="settings-theme-swatch" style={{ height: '90px', background: theme.color, position: 'relative', overflow: 'hidden' }}>
+                                                        <span className="settings-theme-deco" style={{
+                                                            position: 'absolute', bottom: '10px', left: '12px',
+                                                            fontSize: '9.5px', fontWeight: 800, textTransform: 'uppercase',
+                                                            letterSpacing: '0.08em', padding: '2px 7px', borderRadius: '4px',
+                                                            background: 'rgba(0,0,0,0.12)', color: '#0f172a',
+                                                        }}>
+                                                            Light Solid
+                                                        </span>
+                                                        {isActive && <div className="settings-theme-check" style={{ position: 'absolute', top: '10px', right: '10px', width: '24px', height: '24px', background: '#ffffff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.18)' }}><svg width="12" height="12" fill="none" stroke={theme.color} strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></div>}
+                                                    </div>
+                                                    <div className="settings-theme-body" style={{ padding: '12px 14px', background: '#ffffff' }}>
+                                                        <div className="settings-theme-label-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                                                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: theme.color, flexShrink: 0 }}></div>
+                                                            <p className="settings-theme-label" style={{ fontSize: '13px', fontWeight: isActive ? 700 : 500, color: isActive ? theme.color : '#0f172a' }}>{theme.label}</p>
+                                                        </div>
+                                                        <p className="settings-theme-desc" style={{ fontSize: '11px', color: '#94a3b8', paddingLeft: '18px' }}>{theme.desc}</p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* ── Section 3: Classic Solid Colours (Without Gradient) ── */}
                             {(themeCategory === 'all' || themeCategory === 'solid') && (
                                 <div>
                                     <div style={{
@@ -1262,19 +1346,19 @@ const AdminSettings = () => {
                                                 letterSpacing: '0.08em', padding: '4px 11px', borderRadius: '6px',
                                                 background: '#0f172a', color: '#ffffff',
                                             }}>
-                                                Solid Colours
+                                                Classic Solid Colours
                                             </span>
                                             <span style={{ fontSize: '12px', color: '#64748b' }}>
-                                                Pure, flat solid colors without gradients — clean, classic school identities
+                                                Pure, flat solid colors without gradients — bold, classic school identities
                                             </span>
                                         </div>
                                         <span style={{ fontSize: '11px', fontWeight: 600, color: '#94a3b8' }}>
-                                            {solidThemes.length} Themes
+                                            {classicSolidThemes.length} Themes
                                         </span>
                                     </div>
 
                                     <div className="settings-3col settings-theme-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
-                                        {solidThemes.map(theme => {
+                                        {classicSolidThemes.map(theme => {
                                             const isActive = settingsData.theme === theme.key;
                                             const isHovered = hoveredTheme === theme.key;
                                             return (
@@ -1318,32 +1402,85 @@ const AdminSettings = () => {
                      the two can be mixed and matched (e.g. Ocean Blue accent + Cream base). ── */}
                 {activeTab === 'baseColor' && (
                     <div className="settings-section" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                        <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#9c8a63,#e6d7b0)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(156,138,99,0.3)' }}>
-                                <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+                        <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#9c8a63,#e6d7b0)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(156,138,99,0.3)' }}>
+                                    <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+                                </div>
+                                <div>
+                                    <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>Choose Base Color</p>
+                                    <p style={{ fontSize: '11px', color: '#94a3b8' }}>The main background of your public website — cards and sections pick up a matching shade</p>
+                                </div>
                             </div>
-                            <div>
-                                <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>Choose Base Color</p>
-                                <p style={{ fontSize: '11px', color: '#94a3b8' }}>The main background of your public website — cards and sections pick up a matching shade</p>
-                            </div>
+                            <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', background: '#e2e8f0', padding: '4px 10px', borderRadius: '6px' }}>
+                                {BASE_COLOR_OPTIONS.length} Shades Available
+                            </span>
                         </div>
                         <div style={{ padding: '1.75rem' }}>
-                            <div className="settings-basecolor-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '14px' }}>
-                                {BASE_COLOR_OPTIONS.map(base => {
-                                    const isActive = settingsData.base_theme === base.key;
+                            {/* Filter Bar */}
+                            <div style={{
+                                display: 'flex', alignItems: 'center', gap: '8px',
+                                marginBottom: '1.5rem', flexWrap: 'wrap',
+                            }}>
+                                <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginRight: '4px' }}>
+                                    Filter:
+                                </span>
+                                {[
+                                    { key: 'all', label: `All Shades (${BASE_COLOR_OPTIONS.length})` },
+                                    { key: 'neutral', label: `Modern Neutrals (${BASE_COLOR_OPTIONS.filter(b => b.category === 'neutral').length})` },
+                                    { key: 'warm', label: `Warm & Cream (${BASE_COLOR_OPTIONS.filter(b => b.category === 'warm').length})` },
+                                    { key: 'cool', label: `Cool & Blues (${BASE_COLOR_OPTIONS.filter(b => b.category === 'cool').length})` },
+                                    { key: 'green', label: `Botanical & Greens (${BASE_COLOR_OPTIONS.filter(b => b.category === 'green').length})` },
+                                    { key: 'pink', label: `Pastels & Pinks (${BASE_COLOR_OPTIONS.filter(b => b.category === 'pink').length})` },
+                                ].map(cat => {
+                                    const isCatActive = baseCategory === cat.key;
                                     return (
-                                        <div key={base.key} className="settings-basecolor-card" onClick={() => handleBaseThemeSave(base.key)}
-                                            style={{ borderRadius: '8px', border: isActive ? `2px solid ${tc.primary}` : '0.5px solid #f1f5f9', overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s ease', transform: isActive ? 'translateY(-4px)' : 'none', boxShadow: isActive ? `0 12px 32px ${hexToRgba(tc.primary, 0.18)}` : '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                            <div className="settings-basecolor-swatch" style={{ height: '64px', background: base.surface, position: 'relative', borderBottom: '1px solid #f1f5f9' }}>
-                                                <div className="settings-basecolor-chip" style={{ position: 'absolute', bottom: '10px', left: '10px', right: '10px', height: '22px', borderRadius: '5px', background: base.card, border: '1px solid rgba(0,0,0,0.04)' }}></div>
-                                                {isActive && <div className="settings-basecolor-check" style={{ position: 'absolute', top: '8px', right: '8px', width: '20px', height: '20px', background: tc.primary, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width="11" height="11" fill="none" stroke="#fff" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></div>}
-                                            </div>
-                                            <div className="settings-basecolor-body" style={{ padding: '10px 12px', background: '#ffffff' }}>
-                                                <p className="settings-basecolor-label" style={{ fontSize: '13px', fontWeight: isActive ? 700 : 500, color: isActive ? tc.primary : '#0f172a' }}>{base.label}</p>
-                                            </div>
-                                        </div>
+                                        <button
+                                            key={cat.key}
+                                            type="button"
+                                            onClick={() => setBaseCategory(cat.key)}
+                                            style={{
+                                                padding: '7px 15px',
+                                                borderRadius: '999px',
+                                                fontSize: '12px',
+                                                fontWeight: isCatActive ? 700 : 500,
+                                                border: isCatActive ? `1.5px solid ${tc.primary}` : '1px solid #e2e8f0',
+                                                background: isCatActive ? tc.light : '#ffffff',
+                                                color: isCatActive ? tc.primary : '#475569',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.18s ease',
+                                                boxShadow: isCatActive ? `0 2px 8px ${hexToRgba(tc.primary, 0.15)}` : 'none',
+                                            }}
+                                        >
+                                            {cat.label}
+                                        </button>
                                     );
                                 })}
+                            </div>
+
+                            <div className="settings-basecolor-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '14px' }}>
+                                {BASE_COLOR_OPTIONS
+                                    .filter(base => baseCategory === 'all' || base.category === baseCategory)
+                                    .map(base => {
+                                        const isActive = settingsData.base_theme === base.key;
+                                        return (
+                                            <div key={base.key} className="settings-basecolor-card" onClick={() => handleBaseThemeSave(base.key)}
+                                                style={{ borderRadius: '8px', border: isActive ? `2px solid ${tc.primary}` : '0.5px solid #f1f5f9', overflow: 'hidden', cursor: 'pointer', transition: 'all 0.2s ease', transform: isActive ? 'translateY(-4px)' : 'none', boxShadow: isActive ? `0 12px 32px ${hexToRgba(tc.primary, 0.18)}` : '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                                <div className="settings-basecolor-swatch" style={{ height: '64px', background: base.surface, position: 'relative', borderBottom: '1px solid #f1f5f9' }}>
+                                                    <div className="settings-basecolor-chip" style={{ position: 'absolute', bottom: '10px', left: '10px', right: '10px', height: '22px', borderRadius: '5px', background: base.card, border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}></div>
+                                                    {isActive && <div className="settings-basecolor-check" style={{ position: 'absolute', top: '8px', right: '8px', width: '20px', height: '20px', background: tc.primary, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width="11" height="11" fill="none" stroke="#fff" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></div>}
+                                                </div>
+                                                <div className="settings-basecolor-body" style={{ padding: '10px 12px', background: '#ffffff' }}>
+                                                    <p className="settings-basecolor-label" style={{ fontSize: '13px', fontWeight: isActive ? 700 : 500, color: isActive ? tc.primary : '#0f172a' }}>{base.label}</p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                            </div>
+
+                            <div style={{ marginTop: '1.5rem', padding: '12px 16px', background: 'linear-gradient(135deg,#fdf0f5,#fff5f8)', borderRadius: '8px', border: '1px solid #f9c4d4', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span style={{ color: tc.primary }}><InfoIcon /></span>
+                                <p style={{ fontSize: '12px', color: tc.primary, fontWeight: 500 }}>Base color sets your public website canvas and card background shades. Combine any base color with your chosen accent theme for a personalized look.</p>
                             </div>
                         </div>
                     </div>
@@ -1895,17 +2032,71 @@ const AdminSettings = () => {
                             </div>
                         </div>
 
-                        {/* DNS instructions — same CNAME/A-record pattern as Vercel's "Add Domain" flow */}
+                        {/* DNS instructions — VPS Direct A Record */}
                         <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
                             <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)' }}>
                                 <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>How to connect your domain</p>
-                                <p style={{ fontSize: '11px', color: '#94a3b8' }}>Add one of these records at your domain registrar's DNS settings</p>
+                                <p style={{ fontSize: '11px', color: '#94a3b8' }}>Point your DNS records to your VPS server IP at your domain registrar (GoDaddy, Namecheap, Cloudflare, Hostinger, etc.)</p>
                             </div>
                             <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                {/* Quick Server IP Copy Card */}
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    background: '#f8fafc',
+                                    border: '1px solid #e2e8f0',
+                                    borderRadius: '10px',
+                                    padding: '12px 16px',
+                                    flexWrap: 'wrap',
+                                    gap: '10px',
+                                }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px rgba(16,185,129,0.5)' }}></span>
+                                        <div>
+                                            <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>VPS Server IP</div>
+                                            <div style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', fontFamily: 'monospace' }}>165.99.222.209</div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText('165.99.222.209');
+                                            toast.success('Server IP 165.99.222.209 copied to clipboard!');
+                                        }}
+                                        style={{
+                                            background: '#ffffff',
+                                            border: '1px solid #cbd5e1',
+                                            color: '#0f172a',
+                                            fontSize: '12px',
+                                            fontWeight: 600,
+                                            padding: '6px 14px',
+                                            borderRadius: '8px',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                                            transition: 'all 0.15s ease',
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.borderColor = '#94a3b8';
+                                            e.currentTarget.style.background = '#f1f5f9';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.borderColor = '#cbd5e1';
+                                            e.currentTarget.style.background = '#ffffff';
+                                        }}
+                                    >
+                                        <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                        Copy Server IP
+                                    </button>
+                                </div>
+
                                 <div>
-                                    <p style={{ fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>For a subdomain (e.g. www.yourschool.com)</p>
+                                    <p style={{ fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>Option 1: For a root domain (e.g. yourschool.com)</p>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                                        {[['Type', 'CNAME'], ['Host', 'www'], ['Value', 'cname.vercel-dns.com']].map(([k, v]) => (
+                                        {[['Type', 'A'], ['Host', '@'], ['Value', '165.99.222.209']].map(([k, v]) => (
                                             <div key={k} style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '8px', padding: '10px 12px' }}>
                                                 <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{k}</div>
                                                 <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginTop: '2px', fontFamily: 'monospace' }}>{v}</div>
@@ -1913,10 +2104,11 @@ const AdminSettings = () => {
                                         ))}
                                     </div>
                                 </div>
+
                                 <div>
-                                    <p style={{ fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>For a root domain (e.g. yourschool.com)</p>
+                                    <p style={{ fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>Option 2: For a subdomain or www (e.g. www.yourschool.com)</p>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                                        {[['Type', 'A'], ['Host', '@'], ['Value', '76.76.21.21']].map(([k, v]) => (
+                                        {[['Type', 'A'], ['Host', 'www'], ['Value', '165.99.222.209']].map(([k, v]) => (
                                             <div key={k} style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '8px', padding: '10px 12px' }}>
                                                 <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{k}</div>
                                                 <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginTop: '2px', fontFamily: 'monospace' }}>{v}</div>
@@ -1924,9 +2116,10 @@ const AdminSettings = () => {
                                         ))}
                                     </div>
                                 </div>
-                                <p style={{ fontSize: '11px', color: '#94a3b8' }}>
-                                    DNS changes can take up to 48 hours to fully propagate. Once your record is live, our team will verify it and activate your custom domain.
-                                </p>
+
+                                <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '11px 14px', fontSize: '12px', color: '#1e40af', lineHeight: 1.55 }}>
+                                    <strong>DNS Propagation:</strong> After adding the A record in your domain registrar's DNS panel, DNS propagation typically takes 10 to 30 minutes (up to 24–48 hours). Once saved above, your school website will automatically load under your custom domain.
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -2,6 +2,7 @@ const { pool } = require("../../config/db");
 const AppError = require("../../utils/error.utils");
 const { reconcileSchoolAssetMedia, reconcileHeroVideoMedia } = require("../../utils/storage.utils");
 const { isPlanActive } = require("../../config/plan.config");
+const { getRandomThemeKey } = require("../../utils/theme.utils");
 
 // ── Get School Profile ───────────────────────────────
 const getSchoolProfileService = async (schoolId) => {
@@ -26,7 +27,14 @@ const getSchoolProfileService = async (schoolId) => {
         throw new AppError("School not found", 404);
     }
 
-    return schools[0];
+    const school = schools[0];
+    if (!school.theme || school.theme === 'default') {
+        const randomTheme = getRandomThemeKey();
+        await pool.query('UPDATE tbl_schools SET theme = ? WHERE id = ?', [randomTheme, school.id]);
+        school.theme = randomTheme;
+    }
+
+    return school;
 };
 
 // ── Update School Profile ────────────────────────────
@@ -243,6 +251,12 @@ const getPublicSchoolService = async (slug) => {
     school.affiliation_badges = typeof school.affiliation_badges === 'string'
         ? JSON.parse(school.affiliation_badges)
         : (school.affiliation_badges || []);
+
+    if (!school.theme || school.theme === 'default') {
+        const randomTheme = getRandomThemeKey();
+        await pool.query('UPDATE tbl_schools SET theme = ? WHERE id = ?', [randomTheme, school.id]);
+        school.theme = randomTheme;
+    }
 
     return school;
 };

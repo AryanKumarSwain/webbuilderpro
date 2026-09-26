@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 const AppError = require("../../utils/error.utils");
 const { sendMail } = require("../../config/mailer");
+const { getRandomThemeKey } = require("../../utils/theme.utils");
 
 // ── Create School ────────────────────────────────────
 const createSchoolService = async (schoolData, superAdminId) => {
@@ -18,9 +19,10 @@ const createSchoolService = async (schoolData, superAdminId) => {
     if (slugCheck.length > 0) throw new AppError("A school with this name already exists", 409);
 
     const uuid = uuidv4();
+    const randomTheme = getRandomThemeKey();
     await pool.query(
-        `INSERT INTO tbl_schools (uuid, name, slug, email, phone, address, city, state, pincode, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [uuid, name, slug, email, phone || null, address || null, city || null, state || null, pincode || null, superAdminId]
+        `INSERT INTO tbl_schools (uuid, name, slug, email, phone, address, city, state, pincode, created_by, theme) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [uuid, name, slug, email, phone || null, address || null, city || null, state || null, pincode || null, superAdminId, randomTheme]
     );
 
     const [newSchool] = await pool.query("SELECT * FROM tbl_schools WHERE uuid = ?", [uuid]);
@@ -172,10 +174,11 @@ const createSchoolWithAdminService = async (data, superAdminId, logoUrl = null) 
     const schoolUuid = uuidv4();
     const adminUuid = uuidv4();
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    const randomTheme = getRandomThemeKey();
 
     await pool.query(
-        `INSERT INTO tbl_schools (uuid, name, slug, email, phone, address, city, state, pincode, logo_url, status, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?)`,
-        [schoolUuid, name, slug, email, phone || null, address || null, city || null, state || null, pincode || null, logoUrl || null, superAdminId]
+        `INSERT INTO tbl_schools (uuid, name, slug, email, phone, address, city, state, pincode, logo_url, status, created_by, theme) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)`,
+        [schoolUuid, name, slug, email, phone || null, address || null, city || null, state || null, pincode || null, logoUrl || null, superAdminId, randomTheme]
     );
 
     const [newSchool] = await pool.query("SELECT id FROM tbl_schools WHERE uuid = ?", [schoolUuid]);

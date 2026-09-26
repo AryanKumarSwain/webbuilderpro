@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { pool } = require('../src/config/db.js');
+const { getRandomThemeKey } = require('../src/utils/theme.utils.js');
 
 async function addColumnIfMissing(tableName, columnName, definition) {
   const [rows] = await pool.query(
@@ -190,6 +191,17 @@ async function main() {
   // 4. Ensure google_id columns for Google OAuth
   await addColumnIfMissing('tbl_admins', 'google_id', '`google_id` VARCHAR(100) NULL UNIQUE');
   await addColumnIfMissing('tbl_super_admins', 'google_id', '`google_id` VARCHAR(100) NULL UNIQUE');
+
+  // 5. Backfill schools with default/null theme to random theme
+  const [defaultSchools] = await pool.query(
+    "SELECT id FROM tbl_schools WHERE theme = 'default' OR theme IS NULL OR theme = ''"
+  );
+  for (const s of defaultSchools) {
+    await pool.query('UPDATE tbl_schools SET theme = ? WHERE id = ?', [getRandomThemeKey(), s.id]);
+  }
+  if (defaultSchools.length > 0) {
+    console.log(`Assigned random themes to ${defaultSchools.length} schools.`);
+  }
 
   console.log('✅ All tables and columns synchronized successfully!');
   await pool.end();

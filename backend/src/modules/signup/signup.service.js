@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 const AppError = require("../../utils/error.utils");
 const { sendMail } = require("../../config/mailer");
 const { issueSession } = require("../auth/auth.service");
+const { getRandomThemeKey } = require("../../utils/theme.utils");
 
 const OTP_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
 const OTP_MAX_ATTEMPTS = 5;
@@ -127,9 +128,10 @@ const createSignupRequestService = async ({ schoolName, adminName, email, phone,
         const adminUuid = uuidv4();
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        const randomTheme = getRandomThemeKey();
         await pool.query(
-            `INSERT INTO tbl_schools (uuid, name, slug, email, phone, status) VALUES (?, ?, ?, ?, ?, 'pending')`,
-            [schoolUuid, schoolName.trim(), slug, cleanEmail, cleanPhone]
+            `INSERT INTO tbl_schools (uuid, name, slug, email, phone, status, theme) VALUES (?, ?, ?, ?, ?, 'pending', ?)`,
+            [schoolUuid, schoolName.trim(), slug, cleanEmail, cleanPhone, randomTheme]
         );
 
         const [newSchool] = await pool.query("SELECT id FROM tbl_schools WHERE uuid = ?", [schoolUuid]);

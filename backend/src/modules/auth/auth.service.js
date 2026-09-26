@@ -9,6 +9,7 @@ const {
 } = require("../../utils/jwt.utils");
 const AppError = require("../../utils/error.utils");
 const { sendMail } = require("../../config/mailer");
+const { getRandomThemeKey } = require("../../utils/theme.utils");
 
 // ── Issue Session ─────────────────────────────────────
 // Generates access+refresh tokens for a user and persists the refresh token.
@@ -569,9 +570,10 @@ const completeGoogleSignupService = async ({ googleSignupToken, schoolName, phon
     }
 
     schoolUuid = uuidv4();
+    const randomTheme = getRandomThemeKey();
     await pool.query(
-      `INSERT INTO tbl_schools (uuid, name, slug, email, phone, status) VALUES (?, ?, ?, ?, ?, 'active')`,
-      [schoolUuid, schoolName.trim(), slug, email, phone || null]
+      `INSERT INTO tbl_schools (uuid, name, slug, email, phone, status, theme) VALUES (?, ?, ?, ?, ?, 'active', ?)`,
+      [schoolUuid, schoolName.trim(), slug, email, phone || null, randomTheme]
     );
 
     const [newSchool] = await pool.query("SELECT id FROM tbl_schools WHERE uuid = ?", [schoolUuid]);
