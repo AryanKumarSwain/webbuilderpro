@@ -381,6 +381,28 @@ const LandingPage = () => {
     const [tilt, setTilt] = useState({ x: 0, y: 0 });
     const [heroTilt, setHeroTilt] = useState({ x: 0, y: 0 });
     const [previewSlide, setPreviewSlide] = useState(0);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    // Prevent background scrolling when mobile menu drawer is open
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [mobileMenuOpen]);
+
+    // Close on Escape key press
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') setMobileMenuOpen(false);
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, []);
 
     // Auto-advance preview slides synchronously every 4 seconds
     useEffect(() => {
@@ -571,7 +593,73 @@ const LandingPage = () => {
                     animation: lpWaveColorShift 10s ease-in-out infinite;
                 }
 
+                .lp-navbar {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    z-index: 50;
+                    height: 80px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 0 clamp(1.25rem, 5vw, 3.5rem);
+                    background: rgba(255, 255, 255, 0.98);
+                    backdrop-filter: blur(16px);
+                    -webkit-backdrop-filter: blur(16px);
+                    border-bottom: 1px solid #e2e8f0;
+                    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+                    transition: height 0.25s ease, padding 0.25s ease;
+                }
+                .lp-nav-logo {
+                    height: clamp(60px, 7vw, 75px);
+                    width: auto;
+                    object-fit: contain;
+                    transition: height 0.25s ease;
+                }
+                .lp-hamburger-btn {
+                    display: none;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 10px;
+                    background: #f8fafc;
+                    border: 1.5px solid #e2e8f0;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    color: #0f172a;
+                    padding: 0;
+                    flex-shrink: 0;
+                    transition: all 0.18s ease;
+                }
+                .lp-hamburger-btn:hover {
+                    background: #f1f5f9;
+                    border-color: #cbd5e1;
+                }
+                .lp-mobile-trial-btn {
+                    display: none;
+                }
+                .lp-desktop-actions {
+                    display: flex;
+                    align-items: center;
+                    gap: 14px;
+                }
+
                 @media (max-width: 980px) {
+                    .lp-navbar {
+                        height: 62px !important;
+                        padding: 0 1rem !important;
+                    }
+                    .lp-nav-logo {
+                        height: 40px !important;
+                    }
+                    .lp-nav-links { display: none !important; }
+                    .lp-desktop-actions { display: none !important; }
+                    .lp-hamburger-btn { display: flex !important; }
+                    .lp-mobile-trial-btn { display: inline-flex !important; }
+                    .lp-hero-section {
+                        padding-top: calc(62px + clamp(1.5rem, 5vw, 2.5rem)) !important;
+                    }
                     .lp-hero-grid { grid-template-columns: 1fr !important; text-align: center; }
                     .lp-hero-visual { margin: 2.5rem auto 0 !important; max-width: 420px; }
                     .lp-hero-ctas { justify-content: center !important; }
@@ -579,7 +667,6 @@ const LandingPage = () => {
                     .lp-preview-grid { grid-template-columns: 1fr !important; }
                     .lp-trust-grid { grid-template-columns: 1fr !important; text-align: center; }
                     .lp-trust-grid > div:first-child { align-items: center !important; }
-                    .lp-nav-links { display: none !important; }
                 }
 
                 @keyframes lpFloatIso {
@@ -668,22 +755,13 @@ const LandingPage = () => {
             <div style={{ fontFamily: "'Inter', system-ui, sans-serif", color: TEXT_DARK, background: '#ffffff', minHeight: '100vh', overflowX: 'hidden' }}>
 
                 {/* ── Nav — Clean modern white FeeFlow-style navbar for Web Builder Pro ── */}
-                <nav style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, height: '80px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '0 clamp(1.25rem, 5vw, 3.5rem)',
-                    background: 'rgba(255, 255, 255, 0.98)',
-                    backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-                    borderBottom: '1px solid #e2e8f0',
-                    boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)',
-                    transition: 'all 0.25s ease',
-                }}>
+                <nav className="lp-navbar">
                     {/* Brand / Logo */}
                     <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                        <img src={logo} alt="Web Builder Pro" style={{ height: 'clamp(65px, 7.5vw, 75px)', width: 'auto', objectFit: 'contain' }} />
+                        <img className="lp-nav-logo" src={logo} alt="Web Builder Pro" />
                     </div>
 
-                    {/* Center Nav Links */}
+                    {/* Center Nav Links (Desktop) */}
                     <div className="lp-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
                         <a href="#features" style={{ fontSize: '14px', fontWeight: 600, color: '#334155', textDecoration: 'none', transition: 'color 0.18s ease' }} onMouseOver={e => e.currentTarget.style.color = BLUE} onMouseOut={e => e.currentTarget.style.color = '#334155'}>
                             Features
@@ -699,8 +777,8 @@ const LandingPage = () => {
                         </a>
                     </div>
 
-                    {/* Right Actions (Sign In + Coral Primary CTA) */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    {/* Right Actions (Desktop) */}
+                    <div className="lp-desktop-actions">
                         <button onClick={() => navigate('/login')} style={{ fontSize: '14px', fontWeight: 600, color: '#334155', background: 'none', border: 'none', cursor: 'pointer', padding: '8px 10px', transition: 'color 0.18s ease' }} onMouseOver={e => e.currentTarget.style.color = '#0f172a'} onMouseOut={e => e.currentTarget.style.color = '#334155'}>
                             Sign In
                         </button>
@@ -722,11 +800,366 @@ const LandingPage = () => {
                             Start Free Trial →
                         </button>
                     </div>
+
+                    {/* Mobile Right Cluster (Compact Trial CTA + Hamburger Toggle) */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <button
+                            type="button"
+                            onClick={() => navigate('/signup')}
+                            className="lp-mobile-trial-btn"
+                            style={{
+                                padding: '7px 13px',
+                                background: '#e15241',
+                                color: '#ffffff',
+                                border: 'none',
+                                borderRadius: '999px',
+                                fontSize: '12px',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                alignItems: 'center',
+                                gap: '4px',
+                                whiteSpace: 'nowrap',
+                                boxShadow: '0 3px 10px rgba(225, 82, 65, 0.3)',
+                            }}
+                        >
+                            Free Trial
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setMobileMenuOpen(true)}
+                            className="lp-hamburger-btn"
+                            aria-label="Open mobile navigation menu"
+                        >
+                            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" viewBox="0 0 24 24">
+                                <line x1="4" y1="6" x2="20" y2="6" />
+                                <line x1="4" y1="12" x2="20" y2="12" />
+                                <line x1="4" y1="18" x2="20" y2="18" />
+                            </svg>
+                        </button>
+                    </div>
                 </nav>
+
+                {/* ── Mobile Sidebar Drawer & Backdrop Overlay ── */}
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        zIndex: 99999,
+                        pointerEvents: mobileMenuOpen ? 'auto' : 'none',
+                        visibility: mobileMenuOpen ? 'visible' : 'hidden',
+                        transition: 'visibility 0.3s ease',
+                    }}
+                >
+                    {/* Dark blur backdrop */}
+                    <div
+                        onClick={() => setMobileMenuOpen(false)}
+                        style={{
+                            position: 'absolute',
+                            inset: 0,
+                            background: 'rgba(15, 23, 42, 0.55)',
+                            backdropFilter: 'blur(8px)',
+                            WebkitBackdropFilter: 'blur(8px)',
+                            opacity: mobileMenuOpen ? 1 : 0,
+                            transition: 'opacity 0.3s ease',
+                        }}
+                    />
+
+                    {/* Off-canvas sliding drawer from right */}
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            width: 'min(360px, 86vw)',
+                            background: '#ffffff',
+                            boxShadow: '-10px 0 40px rgba(15, 23, 42, 0.2)',
+                            transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(100%)',
+                            transition: 'transform 0.32s cubic-bezier(0.16, 1, 0.3, 1)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            overflowY: 'auto',
+                            zIndex: 1,
+                        }}
+                    >
+                        {/* Drawer Header */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '1.1rem 1.25rem',
+                            borderBottom: '1px solid #f1f5f9',
+                            background: '#ffffff',
+                            position: 'sticky',
+                            top: 0,
+                            zIndex: 2,
+                        }}>
+                            <img src={logo} alt="Web Builder Pro" style={{ height: '38px', width: 'auto', objectFit: 'contain' }} />
+                            <button
+                                type="button"
+                                onClick={() => setMobileMenuOpen(false)}
+                                aria-label="Close menu"
+                                style={{
+                                    width: '36px',
+                                    height: '36px',
+                                    borderRadius: '50%',
+                                    background: '#f1f5f9',
+                                    border: '1px solid #e2e8f0',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    color: '#64748b',
+                                    transition: 'all 0.2s ease',
+                                }}
+                                onMouseOver={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#ef4444'; }}
+                                onMouseOut={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#64748b'; }}
+                            >
+                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Drawer Navigation Links */}
+                        <div style={{ padding: '1.25rem 1rem', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                            <p style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94a3b8', padding: '0 8px', margin: '0 0 4px' }}>
+                                Navigation Menu
+                            </p>
+
+                            {/* Features */}
+                            <a
+                                href="#features"
+                                onClick={() => setMobileMenuOpen(false)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    padding: '12px 14px',
+                                    borderRadius: '12px',
+                                    textDecoration: 'none',
+                                    color: '#1e293b',
+                                    fontWeight: 600,
+                                    fontSize: '14px',
+                                    background: '#f8fafc',
+                                    border: '1px solid #f1f5f9',
+                                    transition: 'all 0.18s ease',
+                                }}
+                            >
+                                <div style={{ width: '34px', height: '34px', borderRadius: '9px', background: 'rgba(65, 105, 225, 0.1)', color: BLUE, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ color: '#0f172a', fontWeight: 700, fontSize: '13.5px' }}>Features</div>
+                                    <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 400 }}>Everything your school website needs</div>
+                                </div>
+                                <svg width="15" height="15" fill="none" stroke="#94a3b8" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+
+                            {/* Platform Demo */}
+                            <a
+                                href={DEMO_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => setMobileMenuOpen(false)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    padding: '12px 14px',
+                                    borderRadius: '12px',
+                                    textDecoration: 'none',
+                                    color: '#1e293b',
+                                    fontWeight: 600,
+                                    fontSize: '14px',
+                                    background: 'rgba(225, 82, 65, 0.05)',
+                                    border: '1px solid rgba(225, 82, 65, 0.18)',
+                                    transition: 'all 0.18s ease',
+                                }}
+                            >
+                                <div style={{ width: '34px', height: '34px', borderRadius: '9px', background: 'linear-gradient(135deg, #e15241, #f97316)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <span style={{ color: '#e15241', fontWeight: 700, fontSize: '13.5px' }}>Platform Demo</span>
+                                        <span style={{ fontSize: '9.5px', fontWeight: 800, background: '#e15241', color: '#fff', padding: '1px 6px', borderRadius: '999px' }}>LIVE</span>
+                                    </div>
+                                    <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 400 }}>Interactive live school portal</div>
+                                </div>
+                                <svg width="15" height="15" fill="none" stroke="#e15241" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+
+                            {/* Modules */}
+                            <a
+                                href="#modules"
+                                onClick={() => setMobileMenuOpen(false)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    padding: '12px 14px',
+                                    borderRadius: '12px',
+                                    textDecoration: 'none',
+                                    color: '#1e293b',
+                                    fontWeight: 600,
+                                    fontSize: '14px',
+                                    background: '#f8fafc',
+                                    border: '1px solid #f1f5f9',
+                                    transition: 'all 0.18s ease',
+                                }}
+                            >
+                                <div style={{ width: '34px', height: '34px', borderRadius: '9px', background: 'rgba(99, 102, 241, 0.1)', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                                        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                                        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                                        <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                                    </svg>
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <span style={{ color: '#0f172a', fontWeight: 700, fontSize: '13.5px' }}>Modules</span>
+                                        <span style={{ fontSize: '9.5px', fontWeight: 700, background: '#ede9fe', color: '#6d28d9', padding: '1px 6px', borderRadius: '999px' }}>26+ Included</span>
+                                    </div>
+                                    <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 400 }}>Fees, admissions, gallery & more</div>
+                                </div>
+                                <svg width="15" height="15" fill="none" stroke="#94a3b8" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+
+                            {/* Preview */}
+                            <a
+                                href="#preview"
+                                onClick={() => setMobileMenuOpen(false)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    padding: '12px 14px',
+                                    borderRadius: '12px',
+                                    textDecoration: 'none',
+                                    color: '#1e293b',
+                                    fontWeight: 600,
+                                    fontSize: '14px',
+                                    background: '#f8fafc',
+                                    border: '1px solid #f1f5f9',
+                                    transition: 'all 0.18s ease',
+                                }}
+                            >
+                                <div style={{ width: '34px', height: '34px', borderRadius: '9px', background: 'rgba(16, 185, 129, 0.1)', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                                        <line x1="8" y1="21" x2="16" y2="21" />
+                                        <line x1="12" y1="17" x2="12" y2="21" />
+                                    </svg>
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ color: '#0f172a', fontWeight: 700, fontSize: '13.5px' }}>Live Previews</div>
+                                    <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 400 }}>Mobile & desktop real design showcase</div>
+                                </div>
+                                <svg width="15" height="15" fill="none" stroke="#94a3b8" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+
+                            {/* Why Us */}
+                            <a
+                                href="#trust"
+                                onClick={() => setMobileMenuOpen(false)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    padding: '12px 14px',
+                                    borderRadius: '12px',
+                                    textDecoration: 'none',
+                                    color: '#1e293b',
+                                    fontWeight: 600,
+                                    fontSize: '14px',
+                                    background: '#f8fafc',
+                                    border: '1px solid #f1f5f9',
+                                    transition: 'all 0.18s ease',
+                                }}
+                            >
+                                <div style={{ width: '34px', height: '34px', borderRadius: '9px', background: 'rgba(245, 158, 11, 0.1)', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ color: '#0f172a', fontWeight: 700, fontSize: '13.5px' }}>Why Web Builder Pro</div>
+                                    <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 400 }}>Engineered specifically for schools</div>
+                                </div>
+                                <svg width="15" height="15" fill="none" stroke="#94a3b8" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+
+                        {/* Drawer Actions Bottom */}
+                        <div style={{
+                            padding: '1.1rem 1.2rem 1.25rem',
+                            borderTop: '1px solid #f1f5f9',
+                            background: '#fafafa',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '10px',
+                        }}>
+                            <button
+                                type="button"
+                                onClick={() => { setMobileMenuOpen(false); navigate('/signup'); }}
+                                style={{
+                                    width: '100%',
+                                    padding: '13px',
+                                    background: '#e15241',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    borderRadius: '12px',
+                                    fontSize: '14.5px',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '8px',
+                                    boxShadow: '0 4px 14px rgba(225, 82, 65, 0.35)',
+                                    transition: 'all 0.2s ease',
+                                }}
+                            >
+                                Start Free Trial →
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => { setMobileMenuOpen(false); navigate('/login'); }}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    background: '#ffffff',
+                                    color: '#0f172a',
+                                    border: '1.5px solid #cbd5e1',
+                                    borderRadius: '12px',
+                                    fontSize: '14px',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '6px',
+                                    transition: 'all 0.2s ease',
+                                }}
+                            >
+                                Login to Dashboard
+                            </button>
+                            <div style={{ textAlign: 'center', fontSize: '11px', color: '#94a3b8', fontWeight: 500, marginTop: '2px' }}>
+                                ⚡ No credit card required • Instant setup
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* ── Hero — Light canvas with blurred school sports-day background image,
                      ambient glows, bold dark typography with wavy accent, dual pill CTAs ── */}
-                <section style={{
+                <section className="lp-hero-section" style={{
                     position: 'relative',
                     padding: 'calc(80px + clamp(2.5rem,6vw,4.2rem)) clamp(1.25rem,6vw,4rem) clamp(4.5rem,7vw,6.5rem)',
                     overflow: 'hidden',
