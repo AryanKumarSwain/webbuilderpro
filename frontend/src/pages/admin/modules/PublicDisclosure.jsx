@@ -115,7 +115,7 @@ const PublicDisclosure = () => {
                 merged.categories = normalizeCategories(res.data.content?.categories);
                 if (!merged.disclosurePdf) merged.disclosurePdf = defaultContent.disclosurePdf;
                 setContent(merged);
-                setSavedSnapshot(JSON.stringify(merged));
+                setSavedSnapshot(res.data.has_draft_changes ? JSON.stringify(res.data.published_content || defaultContent) : JSON.stringify(merged));
                 setIsPublished(res.data.is_published === 1);
             }
         } catch (e) {
@@ -125,23 +125,13 @@ const PublicDisclosure = () => {
         }
     };
 
-    const fetchPublishedFlag = async () => {
-        const res = await getModuleContentApi('disclosure');
-        return !!res?.data?.is_published;
-    };
-
     const handleSave = async (publish = false) => {
         publish ? setPublishing(true) : setSaving(true);
         try {
-            await saveModuleContentApi('disclosure', content, publish ? 1 : isPublished ? 1 : 0);
+            await saveModuleContentApi('disclosure', content, publish ? 1 : 0);
             setSavedSnapshot(JSON.stringify(content));
             if (publish) {
-                let current = await fetchPublishedFlag();
-                if (!current) {
-                    await togglePublishApi('disclosure', 1);
-                    current = await fetchPublishedFlag();
-                }
-                setIsPublished(current);
+                setIsPublished(true);
                 toast.success('Mandatory Public Disclosure page published! 🎉');
             }
             else toast.success('Saved!');
@@ -154,12 +144,8 @@ const PublicDisclosure = () => {
 
     const handleUnpublish = async () => {
         try {
-            let current = await fetchPublishedFlag();
-            if (current) {
-                await togglePublishApi('disclosure', 0);
-                current = await fetchPublishedFlag();
-            }
-            setIsPublished(current);
+            await togglePublishApi('disclosure', 0);
+            setIsPublished(false);
             toast.success('Unpublished');
         } catch (e) { toast.error('Failed'); }
     };
@@ -266,11 +252,12 @@ const PublicDisclosure = () => {
                         <div className="pd-hero-item pd-hero-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                             <ModuleActionButtons
                                 tc={tc}
+                                moduleKey="disclosure"
+                                content={content}
                                 saving={saving}
                                 publishing={publishing}
                                 isPublished={isPublished}
                                 isDirty={isDirty}
-                                onSave={() => handleSave(false)}
                                 onPublish={() => handleSave(true)}
                                 onUnpublish={handleUnpublish}
                             />

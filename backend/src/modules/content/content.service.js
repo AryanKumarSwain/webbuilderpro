@@ -30,28 +30,46 @@ const getModuleContentService = async (schoolId, moduleKey) => {
     if (rows.length === 0) return null;
 
     const row = rows[0];
-    row.content = typeof row.content === 'string' ? JSON.parse(row.content) : row.content;
+    const publishedContent = typeof row.content === 'string' ? JSON.parse(row.content) : row.content;
+    const draftContent = row.draft_content
+        ? (typeof row.draft_content === 'string' ? JSON.parse(row.draft_content) : row.draft_content)
+        : null;
+
+    // The admin editor loads draftContent if present, else publishedContent:
+    row.content = draftContent !== null ? draftContent : publishedContent;
+    row.published_content = publishedContent;
+    row.has_draft_changes = draftContent !== null && JSON.stringify(draftContent) !== JSON.stringify(publishedContent);
+    row.is_published = row.is_published === 1 ? 1 : 0;
     return row;
 };
 
 // ── Save Module Content ──────────────────────────────
-// RULE: Save NEVER touches is_published. Save = content only.
-// (Old bug: is_published = VALUES(is_published) reset the flag — or set
-//  NULL when the controller passed undefined — on every single save,
-//  silently unpublishing live modules.)
-const saveModuleContentService = async (schoolId, moduleKey, content) => {
+// If shouldPublish is true: promotes content to published, clears draft_content, marks is_published = 1.
+// If shouldPublish is false: saves to draft_content only (autosave), preserving live published content.
+const saveModuleContentService = async (schoolId, moduleKey, content, shouldPublish = false) => {
     const contentJson = JSON.stringify(content);
 
-    await pool.query(
-        `INSERT INTO tbl_module_content (school_id, module_key, content, is_published)
-         VALUES (?, ?, ?, 0)
-         ON DUPLICATE KEY UPDATE
-         content = VALUES(content),
-         updated_at = CURRENT_TIMESTAMP`,
-        [schoolId, moduleKey, contentJson]
-    );
-    // Note: is_published intentionally absent from the UPDATE clause —
-    // a new row starts as draft (0), an existing row keeps its flag.
+    if (shouldPublish) {
+        await pool.query(
+            `INSERT INTO tbl_module_content (school_id, module_key, content, draft_content, is_published)
+             VALUES (?, ?, ?, NULL, 1)
+             ON DUPLICATE KEY UPDATE
+             content = VALUES(content),
+             draft_content = NULL,
+             is_published = 1,
+             updated_at = CURRENT_TIMESTAMP`,
+            [schoolId, moduleKey, contentJson]
+        );
+    } else {
+        await pool.query(
+            `INSERT INTO tbl_module_content (school_id, module_key, content, draft_content, is_published)
+             VALUES (?, ?, ?, ?, 0)
+             ON DUPLICATE KEY UPDATE
+             draft_content = VALUES(draft_content),
+             updated_at = CURRENT_TIMESTAMP`,
+            [schoolId, moduleKey, contentJson, contentJson]
+        );
+    }
 
     // Free the school's storage quota for any uploads this save removed
     // (see storage.utils.js). Isolated so a reconcile hiccup can't fail a save.
@@ -64,20 +82,38 @@ const saveModuleContentService = async (schoolId, moduleKey, content) => {
     return await getModuleContentService(schoolId, moduleKey);
 };
 
-// ── Publish / Unpublish Module (server-side toggle) ──
-// RULE: Never trust a client-supplied flag (old bug: frontend sent
-// nothing → undefined → NULL). The server flips the current DB value,
-// NULL-safe: 1 → 0, and 0/NULL → 1.
-const togglePublishService = async (schoolId, moduleKey) => {
-    const [result] = await pool.query(
-        `UPDATE tbl_module_content
-         SET is_published = IF(is_published = 1, 0, 1)
-         WHERE school_id = ? AND module_key = ?`,
-        [schoolId, moduleKey]
-    );
+// ── Publish / Unpublish Module ──
+const togglePublishService = async (schoolId, moduleKey, explicitStatus) => {
+    let query, params;
+    if (explicitStatus !== undefined && explicitStatus !== null) {
+        const val = (explicitStatus === 1 || explicitStatus === true || explicitStatus === '1') ? 1 : 0;
+        if (val === 1) {
+            query = `UPDATE tbl_module_content
+                     SET is_published = 1,
+                     content = COALESCE(draft_content, content),
+                     draft_content = NULL,
+                     updated_at = CURRENT_TIMESTAMP
+                     WHERE school_id = ? AND module_key = ?`;
+        } else {
+            query = `UPDATE tbl_module_content
+                     SET is_published = 0,
+                     updated_at = CURRENT_TIMESTAMP
+                     WHERE school_id = ? AND module_key = ?`;
+        }
+        params = [schoolId, moduleKey];
+    } else {
+        query = `UPDATE tbl_module_content
+                 SET is_published = IF(is_published = 1, 0, 1),
+                 content = IF(is_published = 0, COALESCE(draft_content, content), content),
+                 draft_content = IF(is_published = 0, NULL, draft_content),
+                 updated_at = CURRENT_TIMESTAMP
+                 WHERE school_id = ? AND module_key = ?`;
+        params = [schoolId, moduleKey];
+    }
 
+    const [result] = await pool.query(query, params);
     if (result.affectedRows === 0) {
-        throw new AppError("Module content not found. Save the module before publishing.", 404);
+        throw new AppError("Module content not found.", 404);
     }
 
     const [rows] = await pool.query(

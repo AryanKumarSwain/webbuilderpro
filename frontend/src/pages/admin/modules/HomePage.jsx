@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getModuleContentApi, saveModuleContentApi, togglePublishApi, uploadContentImageApi } from '../../../api/content.api';
 import { uploadHeroVideoApi, updateSchoolProfileApi } from '../../../api/school.api';
 import toast from 'react-hot-toast';
+import ModuleActionButtons from '../../../components/admin/ModuleActionButtons';
 import RichTextEditor from '../../../components/common/RichTextEditor';
 import ImageCropModal from '../../../components/common/ImageCropModal';
 import ReorderButtons from '../../../components/common/ReorderButtons';
@@ -300,7 +301,7 @@ const HomePage = () => {
             if (res.data) {
                 const merged = { ...defaultContent, ...res.data.content };
                 setContent(merged);
-                setSavedSnapshot(JSON.stringify(merged));
+                setSavedSnapshot(res.data.has_draft_changes ? JSON.stringify(res.data.published_content || defaultContent) : JSON.stringify(merged));
                 setIsPublished(res.data.is_published === 1);
             }
         } catch (e) {
@@ -314,24 +315,13 @@ const HomePage = () => {
         setContent(prev => ({ ...prev, [field]: value }));
     };
 
-    const fetchPublishedFlag = async () => {
-        const res = await getModuleContentApi('home');
-        return !!res?.data?.is_published;
-    };
-
     const handleSave = async (publish = false) => {
         publish ? setPublishing(true) : setSaving(true);
         try {
-            await saveModuleContentApi('home', content, publish ? 1 : isPublished ? 1 : 0);
-            setSavedSnapshot(JSON.stringify(content));
+            await saveModuleContentApi('home', content, publish ? 1 : 0);
             if (publish) {
-                // Save never touches is_published — flip it server-side only if not already live.
-                let current = await fetchPublishedFlag();
-                if (!current) {
-                    await togglePublishApi('home', 1);
-                    current = await fetchPublishedFlag();
-                }
-                setIsPublished(current);
+                setSavedSnapshot(JSON.stringify(content));
+                setIsPublished(true);
                 toast.success('Home page published!');
             } else {
                 toast.success('Content saved!');
@@ -346,12 +336,8 @@ const HomePage = () => {
 
     const handleUnpublish = async () => {
         try {
-            let current = await fetchPublishedFlag();
-            if (current) {
-                await togglePublishApi('home', 0);
-                current = await fetchPublishedFlag();
-            }
-            setIsPublished(current);
+            await togglePublishApi('home', 0);
+            setIsPublished(false);
             toast.success('Unpublished');
         } catch (e) {
             toast.error('Failed to unpublish');
@@ -663,41 +649,17 @@ const HomePage = () => {
                             </div>
                         </div>
                         <div className="hp-hero-item hp-hero-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                            <button onClick={() => handleSave(false)} disabled={saving}
-                                className={`hp-btn hp-btn-save${isDirty ? ' is-dirty' : ''}`}
-                                style={{
-                                    padding: '10px 20px', borderRadius: '12px', fontSize: '12.5px', fontWeight: isDirty ? 700 : 600,
-                                    background: isDirty ? 'linear-gradient(160deg,#fcd34d,#eab308 60%,#ca8a04)' : 'linear-gradient(160deg,#ffffff,#e8edf4)',
-                                    color: isDirty ? '#422006' : '#1e293b',
-                                    border: 'none',
-                                    boxShadow: isDirty
-                                        ? 'inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 4px rgba(120,70,0,0.25), 0 6px 16px rgba(234,179,8,0.4)'
-                                        : 'inset 0 1px 0 rgba(255,255,255,0.9), 0 2px 4px rgba(0,0,0,0.08), 0 6px 14px rgba(0,0,0,0.16)',
-                                }}>
-                                {saving ? (
-                                    <svg style={{ animation: 'spin 1s linear infinite', width: '13px', height: '13px' }} viewBox="0 0 24 24" fill="none"><circle style={{ opacity: 0.3 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3.5" /><path d="M22 12a10 10 0 00-10-10" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" /></svg>
-                                ) : (
-                                    <span className="hp-btn-icon"><SaveIcon size={13} color={isDirty ? '#422006' : '#1e293b'} /></span>
-                                )}
-                                {saving ? 'Saving...' : 'Save'}
-                                {isDirty && !saving && <span className="hp-btn-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#422006' }} />}
-                            </button>
-                            {isPublished ? (
-                                <button onClick={handleUnpublish} className="hp-btn hp-btn-unpublish"
-                                    style={{ padding: '10px 20px', borderRadius: '12px', fontSize: '12.5px', fontWeight: 700, background: 'linear-gradient(160deg,#f87171,#dc2626 65%,#b91c1c)', color: '#ffffff', border: 'none', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), 0 2px 4px rgba(127,29,29,0.3), 0 6px 16px rgba(220,38,38,0.4)' }}>
-                                    <span className="hp-btn-icon"><EyeOffIcon size={13} color="#ffffff" /></span>
-                                    Unpublish
-                                </button>
-                            ) : (
-                                <button onClick={() => handleSave(true)} disabled={publishing} className="hp-btn hp-btn-publish"
-                                    style={{ padding: '10px 24px', borderRadius: '12px', background: `linear-gradient(160deg,${tc.secondary},${tc.primary} 65%,${tc.dark})`, color: '#fff', border: 'none', fontSize: '12.5px', fontWeight: 700, boxShadow: `inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 4px ${hexToRgba(tc.dark, 0.3)}, 0 8px 20px ${hexToRgba(tc.primary, 0.5)}` }}>
-                                    {publishing ? (
-                                        <><svg style={{ animation: 'spin 1s linear infinite', width: '13px', height: '13px' }} viewBox="0 0 24 24" fill="none"><circle style={{ opacity: 0.3 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3.5" /><path d="M22 12a10 10 0 00-10-10" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" /></svg>Publishing...</>
-                                    ) : (
-                                        <><span className="hp-btn-icon"><RocketIcon size={13} color="#fff" /></span>Publish</>
-                                    )}
-                                </button>
-                            )}
+                            <ModuleActionButtons
+                                tc={tc}
+                                moduleKey="home"
+                                content={content}
+                                saving={saving}
+                                publishing={publishing}
+                                isPublished={isPublished}
+                                isDirty={isDirty}
+                                onPublish={() => handleSave(true)}
+                                onUnpublish={handleUnpublish}
+                            />
                         </div>
                     </div>
                 </div>

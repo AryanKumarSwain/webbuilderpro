@@ -19,14 +19,15 @@ const getModuleContent = async (req, res) => {
 
 const saveModuleContent = async (req, res) => {
     try {
-        const { content, isPublished } = req.body;
+        const { content, isPublished, publish } = req.body;
+        const shouldPublish = publish === true || isPublished === 1 || isPublished === true;
         const result = await saveModuleContentService(
             req.user.schoolId,
             req.params.moduleKey,
             content,
-            isPublished ?? 0
+            shouldPublish
         );
-        return sendSuccess(res, 'Content saved', result);
+        return sendSuccess(res, shouldPublish ? 'Content published' : 'Draft saved', result);
     } catch (error) {
         return handleControllerError(res, error);
     }

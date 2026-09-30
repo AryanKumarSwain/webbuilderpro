@@ -56,6 +56,12 @@ const IconUpload = ({ size = 16, color = 'currentColor' }) => (
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
     </svg>
 );
+const IconCrop = ({ size = 14, color = 'currentColor' }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6 2v14a2 2 0 002 2h14" />
+        <path d="M18 22V8a2 2 0 00-2-2H2" />
+    </svg>
+);
 const IconSpinner = ({ size = 24, color = '#8b2252' }) => (
     <div style={{ width: size, height: size, border: '3px solid #f0c4c4', borderTop: `3px solid ${color}`, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }}></div>
 );
@@ -78,8 +84,7 @@ const Gallery = () => {
     const [uploading, setUploading] = useState({});
     const [showNewFolder, setShowNewFolder] = useState(false);
     const [newFolderName, setNewFolderName] = useState('');
-    const [cropTarget, setCropTarget] = useState(null); // { mode: 'cover' | 'image', folderId?, src }
-    const [imageQueue, setImageQueue] = useState([]); // remaining gallery-photo files still waiting to be cropped
+    const [cropTarget, setCropTarget] = useState(null); // { mode: 'cover' | 'vidThumb' | 'recropPhoto', folderId?, videoId?, index?, src, isBlob? }
 
     useEffect(() => { fetchContent(); }, []);
 
@@ -89,7 +94,7 @@ const Gallery = () => {
             if (res.data) {
                 const merged = { ...defaultContent, ...res.data.content };
                 setContent(merged);
-                setSavedSnapshot(JSON.stringify(merged));
+                setSavedSnapshot(res.data.has_draft_changes ? JSON.stringify(res.data.published_content || defaultContent) : JSON.stringify(merged));
                 setIsPublished(res.data.is_published === 1);
             }
         } catch (e) {
@@ -99,26 +104,17 @@ const Gallery = () => {
         }
     };
 
-    const fetchPublishedFlag = async () => {
-        const res = await getModuleContentApi('gallery');
-        return !!res?.data?.is_published;
-    };
-
     const handleSave = async (publish = false) => {
         publish ? setPublishing(true) : setSaving(true);
         try {
-            await saveModuleContentApi('gallery', content, publish ? 1 : isPublished ? 1 : 0);
-            setSavedSnapshot(JSON.stringify(content));
+            await saveModuleContentApi('gallery', content, publish ? 1 : 0);
             if (publish) {
-                let current = await fetchPublishedFlag();
-                if (!current) {
-                    await togglePublishApi('gallery', 1);
-                    current = await fetchPublishedFlag();
-                }
-                setIsPublished(current);
+                setSavedSnapshot(JSON.stringify(content));
+                setIsPublished(true);
                 toast.success('Gallery published!');
+            } else {
+                toast.success('Saved!');
             }
-            else toast.success('Saved!');
         } catch (e) {
             toast.error('Failed to save');
         } finally {
@@ -128,14 +124,10 @@ const Gallery = () => {
 
     const handleUnpublish = async () => {
         try {
-            let current = await fetchPublishedFlag();
-            if (current) {
-                await togglePublishApi('gallery', 0);
-                current = await fetchPublishedFlag();
-            }
-            setIsPublished(current);
+            await togglePublishApi('gallery', 0);
+            setIsPublished(false);
             toast.success('Unpublished');
-        } catch (e) { toast.error('Failed'); }
+        } catch (e) { toast.error('Failed to unpublish'); }
     };
 
     const nodesKey = activeTree === 'photo' ? 'photoNodes' : 'videoNodes';
@@ -190,59 +182,131 @@ const Gallery = () => {
     }
 
     // ── Image ops ──
-    // Each photo is cropped one at a time (freeform, adjustable from every side) before
-    // upload. Once confirmed, the next queued file automatically opens in the crop modal.
-    const startImageUpload = (files) => {
+    // Multiple images upload directly without popping up a crop modal for each one.
+    // Users can click "Crop" on any individual photo to re-crop it at any time.
+    const uploadMultipleImages = async (files) => {
         if (!currentFolderId) { toast.error('Open a folder first to add photos'); return; }
-        if (files.length === 0) return;
+        if (!files || files.length === 0) return;
         const current = currentFolder?.images || [];
         const room = MAX_PHOTOS_PER_FOLDER - current.length;
         if (room <= 0) {
             toast.error(`Maximum ${MAX_PHOTOS_PER_FOLDER} photos allowed per folder`);
             return;
         }
-        const toQueue = files.slice(0, room);
-        if (files.length > toQueue.length) {
+        const toUpload = files.slice(0, room);
+        if (files.length > toUpload.length) {
             toast.error(`Only ${room} more photo(s) can be added (max ${MAX_PHOTOS_PER_FOLDER} per folder)`);
         }
-        setImageQueue(toQueue.slice(1));
-        setCropTarget({ mode: 'image', src: URL.createObjectURL(toQueue[0]) });
+
+        setUploading(prev => ({ ...prev, images: true }));
+        const toastId = toast.loading(`Uploading ${toUpload.length} photo${toUpload.length > 1 ? 's' : ''}...`);
+
+        try {
+            const uploadedUrls = [];
+            let failCount = 0;
+            for (let i = 0; i < toUpload.length; i++) {
+                const file = toUpload[i];
+                if (toUpload.length > 1) {
+                    toast.loading(`Uploading photo ${i + 1} of ${toUpload.length}...`, { id: toastId });
+                }
+                try {
+                    const res = await uploadContentImageApi(file);
+                    if (res?.data?.url) {
+                        uploadedUrls.push(res.data.url);
+                    }
+                } catch (err) {
+                    console.error('Failed to upload photo:', file.name, err);
+                    failCount++;
+                }
+            }
+
+            if (uploadedUrls.length > 0) {
+                updateNodes(nodes.map(n => n.id === currentFolderId ? {
+                    ...n,
+                    images: [...(n.images || []), ...uploadedUrls]
+                } : n));
+            }
+
+            if (failCount === 0) {
+                toast.success(`${uploadedUrls.length} photo${uploadedUrls.length > 1 ? 's' : ''} uploaded!`, { id: toastId });
+            } else if (uploadedUrls.length > 0) {
+                toast.success(`${uploadedUrls.length} uploaded, ${failCount} failed`, { id: toastId });
+            } else {
+                toast.error('Failed to upload photos', { id: toastId });
+            }
+        } catch (e) {
+            toast.error(e?.response?.data?.message || 'Failed to upload photos', { id: toastId });
+        } finally {
+            setUploading(prev => ({ ...prev, images: false }));
+        }
     };
 
-    const addImage = async (file) => {
-        setUploading(prev => ({ ...prev, images: true }));
+    const handleRecropPhoto = async (index, imageUrl) => {
+        try {
+            const res = await fetch(imageUrl, { mode: 'cors' });
+            const blob = await res.blob();
+            const objUrl = URL.createObjectURL(blob);
+            setCropTarget({ mode: 'recropPhoto', index, folderId: currentFolderId, src: objUrl, isBlob: true });
+        } catch (e) {
+            const sep = imageUrl.includes('?') ? '&' : '?';
+            setCropTarget({ mode: 'recropPhoto', index, folderId: currentFolderId, src: `${imageUrl}${sep}t=${Date.now()}` });
+        }
+    };
+
+    const handleRecropCover = async (folderId, imageUrl) => {
+        try {
+            const res = await fetch(imageUrl, { mode: 'cors' });
+            const blob = await res.blob();
+            const objUrl = URL.createObjectURL(blob);
+            setCropTarget({ mode: 'cover', folderId, src: objUrl, isBlob: true });
+        } catch (e) {
+            const sep = imageUrl.includes('?') ? '&' : '?';
+            setCropTarget({ mode: 'cover', folderId, src: `${imageUrl}${sep}t=${Date.now()}` });
+        }
+    };
+
+    const replacePhoto = async (folderId, photoIndex, file) => {
+        setUploading(prev => ({ ...prev, [`photo-${photoIndex}`]: true }));
+        const toastId = toast.loading('Updating photo...');
         try {
             const res = await uploadContentImageApi(file);
-            updateNodes(nodes.map(n => n.id === currentFolderId ? { ...n, images: [...(n.images || []), res.data.url] } : n));
-        } catch (e) { toast.error(e?.response?.data?.message || 'Failed to upload'); }
-        finally { setUploading(prev => ({ ...prev, images: false })); }
+            updateNodes(nodes.map(n => {
+                if (n.id !== folderId) return n;
+                const images = [...(n.images || [])];
+                images[photoIndex] = res.data.url;
+                return { ...n, images };
+            }));
+            toast.success('Photo re-cropped successfully!', { id: toastId });
+        } catch (e) {
+            toast.error(e?.response?.data?.message || 'Failed to update cropped photo', { id: toastId });
+        } finally {
+            setUploading(prev => ({ ...prev, [`photo-${photoIndex}`]: false }));
+        }
     };
 
     const uploadFolderCover = async (folderId, file) => {
-    setUploading(prev => ({ ...prev, [`cover-${folderId}`]: true }));
-    try {
-        const res = await uploadContentImageApi(file);
-        updateNodes(nodes.map(n => n.id === folderId ? { ...n, coverImage: res.data.url } : n));
-        toast.success('Cover image set');
-    } catch (e) { toast.error(e?.response?.data?.message || 'Failed to upload'); }
-    finally { setUploading(prev => ({ ...prev, [`cover-${folderId}`]: false })); }
-};
+        setUploading(prev => ({ ...prev, [`cover-${folderId}`]: true }));
+        try {
+            const res = await uploadContentImageApi(file);
+            updateNodes(nodes.map(n => n.id === folderId ? { ...n, coverImage: res.data.url } : n));
+            toast.success('Cover image set');
+        } catch (e) { toast.error(e?.response?.data?.message || 'Failed to upload'); }
+        finally { setUploading(prev => ({ ...prev, [`cover-${folderId}`]: false })); }
+    };
 
-    // ── Crop confirm handler — shared by folder covers, gallery photos, and video thumbnails ──
+    // ── Crop confirm handler — shared by folder covers, re-cropped gallery photos, and video thumbnails ──
     const onCropConfirmed = async (croppedFile) => {
         const target = cropTarget;
         setCropTarget(null);
+        if (target?.isBlob && target?.src) {
+            try { URL.revokeObjectURL(target.src); } catch (_) {}
+        }
         if (target.mode === 'cover') {
             await uploadFolderCover(target.folderId, croppedFile);
         } else if (target.mode === 'vidThumb') {
             await uploadVideoThumb(target.videoId, croppedFile);
-        } else {
-            await addImage(croppedFile);
-        }
-        if (target.mode === 'image' && imageQueue.length > 0) {
-            const [next, ...rest] = imageQueue;
-            setImageQueue(rest);
-            setCropTarget({ mode: 'image', src: URL.createObjectURL(next) });
+        } else if (target.mode === 'recropPhoto') {
+            await replacePhoto(target.folderId, target.index, croppedFile);
         }
     };
 
@@ -347,11 +411,12 @@ const Gallery = () => {
                         <div className="gallery-hero-item gallery-hero-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                             <ModuleActionButtons
                                 tc={tc}
+                                moduleKey="gallery"
+                                content={content}
                                 saving={saving}
                                 publishing={publishing}
                                 isPublished={isPublished}
                                 isDirty={isDirty}
-                                onSave={() => handleSave(false)}
                                 onPublish={() => handleSave(true)}
                                 onUnpublish={handleUnpublish}
                             />
@@ -469,11 +534,18 @@ const Gallery = () => {
                                                 {uploading[`cover-${f.id}`] ? <IconSpinner size={11} color={tc.primary} /> : <><IconImage size={11} color="#475569" /> {f.coverImage ? 'Change' : 'Set'} Cover</>}
                                             </button>
                                             {f.coverImage && (
-                                                <button className="folder-action-btn" onClick={e => { e.stopPropagation(); updateNodes(nodes.map(n => n.id === f.id ? { ...n, coverImage: '' } : n)); }}
-                                                    title="Remove cover"
-                                                    style={{ position: 'absolute', bottom: '9px', right: '104px', width: '26px', height: '26px', background: 'rgba(255,255,255,0.95)', color: '#ef4444', border: 'none', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
-                                                    <IconClose size={10} />
-                                                </button>
+                                                <>
+                                                    <button className="folder-action-btn" onClick={e => { e.stopPropagation(); handleRecropCover(f.id, f.coverImage); }}
+                                                        title="Re-crop cover"
+                                                        style={{ position: 'absolute', bottom: '9px', right: '104px', width: '26px', height: '26px', background: 'rgba(255,255,255,0.95)', color: tc.primary, border: 'none', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+                                                        <IconCrop size={11} color={tc.primary} />
+                                                    </button>
+                                                    <button className="folder-action-btn" onClick={e => { e.stopPropagation(); updateNodes(nodes.map(n => n.id === f.id ? { ...n, coverImage: '' } : n)); }}
+                                                        title="Remove cover"
+                                                        style={{ position: 'absolute', bottom: '9px', right: '136px', width: '26px', height: '26px', background: 'rgba(255,255,255,0.95)', color: '#ef4444', border: 'none', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+                                                        <IconClose size={10} />
+                                                    </button>
+                                                </>
                                             )}
                                             <input id={`cover-${f.id}`} type="file" accept="image/*"
                                                 onClick={e => e.stopPropagation()}
@@ -511,9 +583,75 @@ const Gallery = () => {
                                 <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginBottom: '1.25rem' }}>Photos in "{currentFolder.name}" <span style={{ color: '#94a3b8', fontWeight: 400 }}>({(currentFolder.images || []).length} / {MAX_PHOTOS_PER_FOLDER})</span></p>
                                 <div className="gallery-photo-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: '12px', marginBottom: '1.25rem' }}>
                                     {(currentFolder.images || []).map((img, i) => (
-                                        <div key={i} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', aspectRatio: '1' }}>
-                                            <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                            <button onClick={() => removeImage(i)} style={{ position: 'absolute', top: '6px', right: '6px', width: '22px', height: '22px', background: 'rgba(15,23,42,0.7)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <div key={i} className="photo-card" style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', aspectRatio: '1', background: '#0f172a', boxShadow: '0 2px 8px rgba(15,23,42,0.08)' }}>
+                                            <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+
+                                            {/* Top gradient overlay for action button contrast */}
+                                            <div style={{ position: 'absolute', inset: '0 0 auto 0', height: '44px', background: 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, transparent 100%)', pointerEvents: 'none' }}></div>
+
+                                            {uploading[`photo-${i}`] && (
+                                                <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3 }}>
+                                                    <IconSpinner size={24} color={tc.primary} />
+                                                </div>
+                                            )}
+
+                                            {/* Re-crop button */}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRecropPhoto(i, img)}
+                                                title="Re-crop this photo"
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '6px',
+                                                    left: '6px',
+                                                    padding: '4px 9px',
+                                                    background: 'rgba(15,23,42,0.75)',
+                                                    color: '#fff',
+                                                    border: 'none',
+                                                    borderRadius: '20px',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px',
+                                                    fontSize: '11px',
+                                                    fontWeight: 600,
+                                                    backdropFilter: 'blur(6px)',
+                                                    zIndex: 2,
+                                                    transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
+                                                }}
+                                                onMouseEnter={e => { e.currentTarget.style.background = tc.primary; e.currentTarget.style.transform = 'scale(1.05)'; }}
+                                                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.75)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                                            >
+                                                <IconCrop size={11} color="#fff" />
+                                                <span>Crop</span>
+                                            </button>
+
+                                            {/* Delete button */}
+                                            <button
+                                                type="button"
+                                                onClick={() => removeImage(i)}
+                                                title="Delete photo"
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '6px',
+                                                    right: '6px',
+                                                    width: '24px',
+                                                    height: '24px',
+                                                    background: 'rgba(15,23,42,0.75)',
+                                                    color: '#fff',
+                                                    border: 'none',
+                                                    borderRadius: '50%',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    backdropFilter: 'blur(6px)',
+                                                    zIndex: 2,
+                                                    transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
+                                                }}
+                                                onMouseEnter={e => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.transform = 'scale(1.08)'; }}
+                                                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.75)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                                            >
                                                 <IconClose size={10} />
                                             </button>
                                         </div>
@@ -530,13 +668,13 @@ const Gallery = () => {
                                             <>
                                                 <IconUpload size={20} color="#94a3b8" />
                                                 <p style={{ fontSize: '13px', color: '#64748b', marginTop: '8px' }}>Click to add photos (multiple allowed)</p>
-                                                <p style={{ fontSize: '10.5px', color: '#94a3b8', marginTop: '4px' }}>You'll get a crop tool for each photo (freely adjustable from every side) before it's added. Square photos work best · JPG, PNG, WEBP · Max 1MB each · Up to {MAX_PHOTOS_PER_FOLDER} photos per folder.</p>
+                                                <p style={{ fontSize: '10.5px', color: '#94a3b8', marginTop: '4px' }}>All photos are uploaded directly. You can re-crop any photo at any time. Square photos work best · JPG, PNG, WEBP · Max 1MB each · Up to {MAX_PHOTOS_PER_FOLDER} photos per folder.</p>
                                             </>
                                         )}
                                     </div>
                                 )}
                                 <input id="img-upload" type="file" accept="image/*" multiple
-                                    onChange={e => { const files = Array.from(e.target.files); e.target.value = ''; if (files.length > 0) startImageUpload(files); }}
+                                    onChange={e => { const files = Array.from(e.target.files); e.target.value = ''; if (files.length > 0) uploadMultipleImages(files); }}
                                     style={{ display: 'none' }} />
                             </>
                         )}
@@ -613,9 +751,16 @@ const Gallery = () => {
             {cropTarget && (
                 <ImageCropModal
                     imageSrc={cropTarget.src}
-                    aspect={null}
-                    onCancel={() => { setCropTarget(null); setImageQueue([]); }}
+                    aspect={cropTarget.mode === 'cover' ? 4 / 3 : cropTarget.mode === 'vidThumb' ? 16 / 9 : null}
+                    onCancel={() => {
+                        if (cropTarget?.isBlob && cropTarget?.src) {
+                            try { URL.revokeObjectURL(cropTarget.src); } catch (_) {}
+                        }
+                        setCropTarget(null);
+                    }}
                     onCropComplete={onCropConfirmed}
+                    accent={tc.primary}
+                    accentLight={tc.secondary}
                 />
             )}
         </>

@@ -90,7 +90,7 @@ const Courses = () => {
                     merged[k] = { ...defaultLevelData, ...res.data.content[k] };
                 });
                 setContent(merged);
-                setSavedSnapshot(JSON.stringify(merged));
+                setSavedSnapshot(res.data.has_draft_changes ? JSON.stringify(res.data.published_content || defaultContent) : JSON.stringify(merged));
                 setIsPublished(res.data.is_published === 1);
                 const firstEnabled = LEVELS.find(l => merged[l.key]?.enabled);
                 if (firstEnabled) setActiveLevel(firstEnabled.key);
@@ -102,23 +102,13 @@ const Courses = () => {
         }
     };
 
-    const fetchPublishedFlag = async () => {
-        const res = await getModuleContentApi('courses');
-        return !!res?.data?.is_published;
-    };
-
     const handleSave = async (publish = false) => {
         publish ? setPublishing(true) : setSaving(true);
         try {
-            await saveModuleContentApi('courses', content, publish ? 1 : isPublished ? 1 : 0);
+            await saveModuleContentApi('courses', content, publish ? 1 : 0);
             setSavedSnapshot(JSON.stringify(content));
             if (publish) {
-                let current = await fetchPublishedFlag();
-                if (!current) {
-                    await togglePublishApi('courses', 1);
-                    current = await fetchPublishedFlag();
-                }
-                setIsPublished(current);
+                setIsPublished(true);
                 toast.success('Courses published!');
             }
             else toast.success('Saved!');
@@ -131,12 +121,8 @@ const Courses = () => {
 
     const handleUnpublish = async () => {
         try {
-            let current = await fetchPublishedFlag();
-            if (current) {
-                await togglePublishApi('courses', 0);
-                current = await fetchPublishedFlag();
-            }
-            setIsPublished(current);
+            await togglePublishApi('courses', 0);
+            setIsPublished(false);
             toast.success('Unpublished');
         } catch (e) { toast.error('Failed'); }
     };
@@ -356,11 +342,12 @@ const Courses = () => {
                         <div className="crs-hero-item crs-hero-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                             <ModuleActionButtons
                                 tc={tc}
+                                moduleKey="courses"
+                                content={content}
                                 saving={saving}
                                 publishing={publishing}
                                 isPublished={isPublished}
                                 isDirty={isDirty}
-                                onSave={() => handleSave(false)}
                                 onPublish={() => handleSave(true)}
                                 onUnpublish={handleUnpublish}
                             />

@@ -159,7 +159,11 @@ const TCInformation = () => {
                         sessions: normalizedSessions,
                     };
                 }
-                setSavedSnapshot(JSON.stringify(snapshotObj));
+                if (data?.has_draft_changes && data?.published_content) {
+                    setSavedSnapshot(JSON.stringify(data.published_content));
+                } else {
+                    setSavedSnapshot(JSON.stringify(snapshotObj));
+                }
                 setIsPublished(!!(data?.is_published));
             } catch (e) {
                 console.error('TC load failed', e);
@@ -172,50 +176,35 @@ const TCInformation = () => {
     // ------------------------------------------------------------------
     // Save / Publish
     // ------------------------------------------------------------------
-    // Reads the ACTUAL published flag from the server (source of truth).
-    const fetchPublishedFlag = async () => {
-        const res = await getModuleContentApi(MODULE_KEY);
-        const data = res?.data?.data || res?.data;
-        return !!(data?.is_published ?? data?.isPublished);
-    };
-
-    const handleSave = async () => {
-        setSaving(true);
+    const handleSave = async (publish = false) => {
+        publish ? setPublishing(true) : setSaving(true);
         try {
-            await saveModuleContentApi(MODULE_KEY, { heading, headingItalic, headingColor, headingFont, description, sessions });
-            setSavedSnapshot(JSON.stringify({ heading, headingItalic, headingColor, headingFont, description, sessions }));
-            // Some backends reset the published flag on save — re-sync badge from DB.
-            try { setIsPublished(await fetchPublishedFlag()); } catch { /* keep current */ }
-            flash('ok', 'Draft saved successfully.');
+            const payload = { heading, headingItalic, headingColor, headingFont, description, sessions };
+            await saveModuleContentApi(MODULE_KEY, payload, publish ? 1 : 0);
+            setSavedSnapshot(JSON.stringify(payload));
+            if (publish) {
+                setIsPublished(true);
+                flash('ok', 'Module published — live on public site.');
+            } else {
+                flash('ok', 'Draft saved successfully.');
+            }
         } catch (e) {
             console.error(e);
-            flash('err', 'Save failed. Please try again.');
+            flash('err', 'Action failed. Please try again.');
         } finally {
             setSaving(false);
+            setPublishing(false);
         }
     };
 
-    const handlePublishToggle = async () => {
-        setPublishing(true);
+    const handleUnpublish = async () => {
         try {
-            const wantPublished = !isPublished;
-            await saveModuleContentApi(MODULE_KEY, { heading, headingItalic, headingColor, headingFont, description, sessions });
-            setSavedSnapshot(JSON.stringify({ heading, headingItalic, headingColor, headingFont, description, sessions }));
-
-            // Toggle ONLY if the server state differs from what we want —
-            // never blind-flip based on possibly-stale UI state.
-            let current = await fetchPublishedFlag();
-            if (current !== wantPublished) {
-                await togglePublishApi(MODULE_KEY);
-                current = await fetchPublishedFlag();
-            }
-            setIsPublished(current);
-            flash('ok', current ? 'Module published — live on public site.' : 'Module unpublished.');
+            await togglePublishApi(MODULE_KEY, 0);
+            setIsPublished(false);
+            flash('ok', 'Module unpublished.');
         } catch (e) {
             console.error(e);
-            flash('err', 'Publish action failed.');
-        } finally {
-            setPublishing(false);
+            flash('err', 'Failed to unpublish.');
         }
     };
 
@@ -297,10 +286,11 @@ const TCInformation = () => {
         flash('ok', 'Record added. Don\'t forget to Save.');
     };
 
-    // ------------------------------------------------------------------
-    // Render
-    // ------------------------------------------------------------------
-    const isDirty = savedSnapshot !== null && JSON.stringify({ heading, headingItalic, headingColor, headingFont, description, sessions }) !== savedSnapshot;
+    const content = useMemo(
+        () => ({ heading, headingItalic, headingColor, headingFont, description, sessions }),
+        [heading, headingItalic, headingColor, headingFont, description, sessions]
+    );
+    const isDirty = savedSnapshot !== null && JSON.stringify(content) !== savedSnapshot;
 
     if (loading) {
         return (
@@ -364,13 +354,14 @@ const TCInformation = () => {
                     <div className="tc-hero-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
                         <ModuleActionButtons
                             tc={tc}
+                            moduleKey={MODULE_KEY}
+                            content={content}
                             saving={saving}
                             publishing={publishing}
                             isPublished={isPublished}
                             isDirty={isDirty}
-                            onSave={handleSave}
-                            onPublish={handlePublishToggle}
-                            onUnpublish={handlePublishToggle}
+                            onPublish={() => handleSave(true)}
+                            onUnpublish={handleUnpublish}
                         />
                     </div>
                 </div>

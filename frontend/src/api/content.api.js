@@ -8,8 +8,15 @@ export const getModuleContentApi = async (moduleKey) => {
     return response.data;
 };
 
-export const saveModuleContentApi = async (moduleKey, content, isPublished = 0) => {
-    const response = await axiosInstance.post(`/content/${moduleKey}`, { content: noBreakHyphensDeep(content), isPublished });
+export const saveModuleContentApi = async (moduleKey, content, publishOption = 0) => {
+    const isPublish = typeof publishOption === 'object'
+        ? !!(publishOption?.publish || publishOption?.isPublished)
+        : (publishOption === 1 || publishOption === true);
+    const response = await axiosInstance.post(`/content/${moduleKey}`, {
+        content: noBreakHyphensDeep(content),
+        isPublished: isPublish ? 1 : 0,
+        publish: isPublish,
+    });
     return response.data;
 };
 

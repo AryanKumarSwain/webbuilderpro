@@ -36,7 +36,7 @@ const Results = () => {
             if (res.data) {
                 const merged = { ...defaultContent, ...res.data.content };
                 setContent(merged);
-                setSavedSnapshot(JSON.stringify(merged));
+                setSavedSnapshot(res.data.has_draft_changes ? JSON.stringify(res.data.published_content || defaultContent) : JSON.stringify(merged));
                 setIsPublished(res.data.is_published === 1);
             }
         } catch (e) {
@@ -46,23 +46,13 @@ const Results = () => {
         }
     };
 
-    const fetchPublishedFlag = async () => {
-        const res = await getModuleContentApi('results');
-        return !!res?.data?.is_published;
-    };
-
     const handleSave = async (publish = false) => {
         publish ? setPublishing(true) : setSaving(true);
         try {
-            await saveModuleContentApi('results', content, publish ? 1 : isPublished ? 1 : 0);
+            await saveModuleContentApi('results', content, publish ? 1 : 0);
             setSavedSnapshot(JSON.stringify(content));
             if (publish) {
-                let current = await fetchPublishedFlag();
-                if (!current) {
-                    await togglePublishApi('results', 1);
-                    current = await fetchPublishedFlag();
-                }
-                setIsPublished(current);
+                setIsPublished(true);
                 toast.success('Results published! 🎉');
             }
             else toast.success('Saved!');
@@ -75,12 +65,8 @@ const Results = () => {
 
     const handleUnpublish = async () => {
         try {
-            let current = await fetchPublishedFlag();
-            if (current) {
-                await togglePublishApi('results', 0);
-                current = await fetchPublishedFlag();
-            }
-            setIsPublished(current);
+            await togglePublishApi('results', 0);
+            setIsPublished(false);
             toast.success('Unpublished');
         } catch (e) { toast.error('Failed'); }
     };
@@ -176,11 +162,12 @@ const Results = () => {
                         <div className="results-hero-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                             <ModuleActionButtons
                                 tc={tc}
+                                moduleKey="results"
+                                content={content}
                                 saving={saving}
                                 publishing={publishing}
                                 isPublished={isPublished}
                                 isDirty={isDirty}
-                                onSave={() => handleSave(false)}
                                 onPublish={() => handleSave(true)}
                                 onUnpublish={handleUnpublish}
                             />

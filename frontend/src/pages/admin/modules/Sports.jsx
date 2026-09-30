@@ -85,7 +85,7 @@ const Sports = () => {
                     else merged[k] = { ...defaultPageData, ...res.data.content[k] };
                 });
                 setContent(merged);
-                setSavedSnapshot(JSON.stringify(merged));
+                setSavedSnapshot(res.data.has_draft_changes ? JSON.stringify(res.data.published_content || defaultContent) : JSON.stringify(merged));
                 setIsPublished(res.data.is_published === 1);
             }
         } catch (e) {
@@ -95,23 +95,13 @@ const Sports = () => {
         }
     };
 
-    const fetchPublishedFlag = async () => {
-        const res = await getModuleContentApi('sports');
-        return !!res?.data?.is_published;
-    };
-
     const handleSave = async (publish = false) => {
         publish ? setPublishing(true) : setSaving(true);
         try {
-            await saveModuleContentApi('sports', content, publish ? 1 : isPublished ? 1 : 0);
+            await saveModuleContentApi('sports', content, publish ? 1 : 0);
             setSavedSnapshot(JSON.stringify(content));
             if (publish) {
-                let current = await fetchPublishedFlag();
-                if (!current) {
-                    await togglePublishApi('sports', 1);
-                    current = await fetchPublishedFlag();
-                }
-                setIsPublished(current);
+                setIsPublished(true);
                 toast.success('Sports page published! 🎉');
             }
             else toast.success('Saved!');
@@ -124,12 +114,8 @@ const Sports = () => {
 
     const handleUnpublish = async () => {
         try {
-            let current = await fetchPublishedFlag();
-            if (current) {
-                await togglePublishApi('sports', 0);
-                current = await fetchPublishedFlag();
-            }
-            setIsPublished(current);
+            await togglePublishApi('sports', 0);
+            setIsPublished(false);
             toast.success('Unpublished');
         } catch (e) { toast.error('Failed'); }
     };
@@ -560,11 +546,12 @@ const Sports = () => {
                         <div className="sports-hero-item sports-hero-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                             <ModuleActionButtons
                                 tc={tc}
+                                moduleKey="sports"
+                                content={content}
                                 saving={saving}
                                 publishing={publishing}
                                 isPublished={isPublished}
                                 isDirty={isDirty}
-                                onSave={() => handleSave(false)}
                                 onPublish={() => handleSave(true)}
                                 onUnpublish={handleUnpublish}
                             />

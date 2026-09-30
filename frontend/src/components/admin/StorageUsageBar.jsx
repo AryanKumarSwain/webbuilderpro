@@ -92,16 +92,30 @@ const StorageUsageBar = () => {
 
     return (
         <div style={{
-            background: '#ffffff',
-            border: `1px solid ${isNearLimit ? hexToRgba('#dc2626', 0.35) : '#e5e7eb'}`,
-            borderRadius: '14px',
-            padding: '1.25rem 1.4rem',
+            background: 'linear-gradient(145deg, #ffffff 65%, rgba(14, 165, 233, 0.04) 100%)',
+            border: `1.5px solid ${isNearLimit ? hexToRgba('#dc2626', 0.4) : 'rgba(226, 232, 240, 0.85)'}`,
+            borderRadius: '16px',
+            padding: '1.3rem 1.45rem',
+            position: 'relative',
+            overflow: 'hidden',
             boxShadow: isNearLimit
-                ? `0 0 0 3px ${hexToRgba('#dc2626', 0.06)}, 0 2px 10px rgba(15,23,42,0.04)`
-                : '0 2px 10px rgba(15,23,42,0.04)',
+                ? `0 0 0 3px ${hexToRgba('#dc2626', 0.08)}, 0 4px 20px rgba(220,38,38,0.08)`
+                : '0 2px 6px rgba(15,23,42,0.03), 0 10px 24px -8px rgba(15,23,42,0.04)',
             marginBottom: '1.5rem',
             animation: 'subCardIn 0.5s cubic-bezier(0.16,1,0.3,1) both',
         }}>
+            {/* Top gradient accent line */}
+            <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '3px',
+                background: isNearLimit
+                    ? 'linear-gradient(90deg, #dc2626, #f97316)'
+                    : 'linear-gradient(90deg, #0ea5e9, #6366f1)',
+            }} />
+
             <style>{`
                 @keyframes subCardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes subSpin { to { transform: rotate(360deg); } }
@@ -116,17 +130,19 @@ const StorageUsageBar = () => {
             <div onClick={() => hasBreakdown && setExpanded(v => !v)} role="button" tabIndex={0}
                 onKeyDown={e => { if (e.key === 'Enter' && hasBreakdown) setExpanded(v => !v); }}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap', cursor: hasBreakdown ? 'pointer' : 'default', marginBottom: '14px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <span style={{
-                        width: '26px', height: '26px', borderRadius: '8px', flexShrink: 0,
-                        background: hexToRgba(accent, 0.1), color: accent,
+                        width: '32px', height: '32px', borderRadius: '9px', flexShrink: 0,
+                        background: isNearLimit ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'linear-gradient(135deg, #0ea5e9, #2563eb)',
+                        color: '#ffffff',
+                        boxShadow: isNearLimit ? '0 4px 12px rgba(220,38,38,0.3)' : '0 4px 12px rgba(14,165,233,0.3)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <ellipse cx="12" cy="5" rx="8" ry="3" /><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" />
                         </svg>
                     </span>
-                    <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#64748b' }}>Storage</span>
+                    <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: isNearLimit ? '#dc2626' : '#0284c7' }}>Storage</span>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -146,7 +162,7 @@ const StorageUsageBar = () => {
                         {recalculating ? 'Recalculating' : 'Recalculate'}
                     </button>
                     {hasBreakdown && (
-                        <svg width="14" height="14" fill="none" stroke="#94a3b8" strokeWidth="2.4" viewBox="0 0 24 24"
+                        <svg width="14" height="14" fill="none" stroke="#64748b" strokeWidth="2.4" viewBox="0 0 24 24"
                             style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.25s ease' }}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
                         </svg>
@@ -160,7 +176,7 @@ const StorageUsageBar = () => {
                     <span style={{ fontSize: '22px', fontWeight: 800, letterSpacing: '-0.02em', color: '#0f172a', fontVariantNumeric: 'tabular-nums' }}>
                         {usedMb < 1 && usage.usedBytes > 0 ? formatBytes(usage.usedBytes) : `${usedMb.toFixed(usedMb >= 10 ? 0 : 1)} MB`}
                     </span>
-                    <span style={{ fontSize: '12.5px', fontWeight: 500, color: '#94a3b8' }}>/ {formatBytes(usage.limitBytes)}</span>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#64748b' }}>/ {formatBytes(usage.limitBytes)}</span>
                 </div>
                 <span style={{
                     fontSize: '12px', fontWeight: 800, fontVariantNumeric: 'tabular-nums',

@@ -116,7 +116,7 @@ const AboutUs = () => {
         }
 
         setContent(merged);
-        setSavedSnapshot(JSON.stringify(merged));
+        setSavedSnapshot(res.data.has_draft_changes ? JSON.stringify(res.data.published_content || defaultContent) : JSON.stringify(merged));
         setIsPublished(res.data.is_published === 1);
       }
     } catch (e) {
@@ -286,17 +286,11 @@ const AboutUs = () => {
       await saveModuleContentApi(
         "about",
         content,
-        publish ? 1 : isPublished ? 1 : 0,
+        publish ? 1 : 0,
       );
       setSavedSnapshot(JSON.stringify(content));
       if (publish) {
-        // Save never touches is_published — flip it server-side only if not already live.
-        let current = await fetchPublishedFlag();
-        if (!current) {
-          await togglePublishApi("about", 1);
-          current = await fetchPublishedFlag();
-        }
-        setIsPublished(current);
+        setIsPublished(true);
         toast.success("About Us published!");
       } else {
         toast.success("Content saved!");
@@ -311,12 +305,8 @@ const AboutUs = () => {
 
   const handleUnpublish = async () => {
     try {
-      let current = await fetchPublishedFlag();
-      if (current) {
-        await togglePublishApi("about", 0);
-        current = await fetchPublishedFlag();
-      }
-      setIsPublished(current);
+      await togglePublishApi("about", 0);
+      setIsPublished(false);
       toast.success("Unpublished");
     } catch (e) {
       toast.error("Failed to unpublish");
@@ -614,11 +604,12 @@ const AboutUs = () => {
             <div className="au-hero-item au-hero-actions" style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
               <ModuleActionButtons
                 tc={tc}
+                moduleKey="about"
+                content={content}
                 saving={saving}
                 publishing={publishing}
                 isPublished={isPublished}
                 isDirty={isDirty}
-                onSave={() => handleSave(false)}
                 onPublish={() => handleSave(true)}
                 onUnpublish={handleUnpublish}
               />

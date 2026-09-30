@@ -65,7 +65,7 @@ const Infrastructure = () => {
       if (res.data) {
         const merged = { ...defaultContent, ...res.data.content };
         setContent(merged);
-        setSavedSnapshot(JSON.stringify(merged));
+        setSavedSnapshot(res.data.has_draft_changes ? JSON.stringify(res.data.published_content || defaultContent) : JSON.stringify(merged));
         setIsPublished(res.data.is_published === 1);
         if (res.data.content?.categories?.length > 0) {
           setActiveCategory(res.data.content.categories[0].id);
@@ -78,27 +78,17 @@ const Infrastructure = () => {
     }
   };
 
-  const fetchPublishedFlag = async () => {
-    const res = await getModuleContentApi("infrastructure");
-    return !!res?.data?.is_published;
-  };
-
   const handleSave = async (publish = false) => {
     publish ? setPublishing(true) : setSaving(true);
     try {
       await saveModuleContentApi(
         "infrastructure",
         content,
-        publish ? 1 : isPublished ? 1 : 0,
+        publish ? 1 : 0,
       );
       setSavedSnapshot(JSON.stringify(content));
       if (publish) {
-        let current = await fetchPublishedFlag();
-        if (!current) {
-          await togglePublishApi("infrastructure", 1);
-          current = await fetchPublishedFlag();
-        }
-        setIsPublished(current);
+        setIsPublished(true);
         toast.success("Infrastructure published! 🎉");
       } else toast.success("Saved!");
     } catch (e) {
@@ -111,12 +101,8 @@ const Infrastructure = () => {
 
   const handleUnpublish = async () => {
     try {
-      let current = await fetchPublishedFlag();
-      if (current) {
-        await togglePublishApi("infrastructure", 0);
-        current = await fetchPublishedFlag();
-      }
-      setIsPublished(current);
+      await togglePublishApi("infrastructure", 0);
+      setIsPublished(false);
       toast.success("Unpublished");
     } catch (e) {
       toast.error("Failed");
@@ -349,11 +335,12 @@ const Infrastructure = () => {
             <div className="infra-hero-item infra-hero-actions" style={{ display: "flex", justifyContent: 'flex-end', gap: "8px" }}>
                 <ModuleActionButtons
                   tc={tc}
+                  moduleKey="infrastructure"
+                  content={content}
                   saving={saving}
                   publishing={publishing}
                   isPublished={isPublished}
                   isDirty={isDirty}
-                  onSave={() => handleSave(false)}
                   onPublish={() => handleSave(true)}
                   onUnpublish={handleUnpublish}
                 />

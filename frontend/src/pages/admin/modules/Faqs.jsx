@@ -81,7 +81,7 @@ const Faqs = () => {
             if (res.data) {
                 const merged = { ...defaultContent, ...res.data.content };
                 setContent(merged);
-                setSavedSnapshot(JSON.stringify(merged));
+                setSavedSnapshot(res.data.has_draft_changes ? JSON.stringify(res.data.published_content || defaultContent) : JSON.stringify(merged));
                 setIsPublished(res.data.is_published === 1);
             } else {
                 setSavedSnapshot(JSON.stringify(defaultContent));
@@ -94,23 +94,13 @@ const Faqs = () => {
         }
     };
 
-    const fetchPublishedFlag = async () => {
-        const res = await getModuleContentApi('faqs');
-        return !!res?.data?.is_published;
-    };
-
     const handleSave = async (publish = false) => {
         publish ? setPublishing(true) : setSaving(true);
         try {
-            await saveModuleContentApi('faqs', content, publish ? 1 : isPublished ? 1 : 0);
+            await saveModuleContentApi('faqs', content, publish ? 1 : 0);
             setSavedSnapshot(JSON.stringify(content));
             if (publish) {
-                let current = await fetchPublishedFlag();
-                if (!current) {
-                    await togglePublishApi('faqs', 1);
-                    current = await fetchPublishedFlag();
-                }
-                setIsPublished(current);
+                setIsPublished(true);
                 toast.success('FAQs published to website! 🎉');
             } else {
                 toast.success('FAQs draft saved!');
@@ -125,12 +115,8 @@ const Faqs = () => {
 
     const handleUnpublish = async () => {
         try {
-            let current = await fetchPublishedFlag();
-            if (current) {
-                await togglePublishApi('faqs', 0);
-                current = await fetchPublishedFlag();
-            }
-            setIsPublished(current);
+            await togglePublishApi('faqs', 0);
+            setIsPublished(false);
             toast.success('FAQs unpublished from public website');
         } catch (e) {
             toast.error('Failed to unpublish');
@@ -277,11 +263,12 @@ const Faqs = () => {
 
                                 <ModuleActionButtons
                                     tc={tc}
+                                    moduleKey="faqs"
+                                    content={content}
                                     isDirty={isDirty}
                                     saving={saving}
                                     publishing={publishing}
                                     isPublished={isPublished}
-                                    onSave={() => handleSave(false)}
                                     onPublish={() => handleSave(true)}
                                     onUnpublish={handleUnpublish}
                                     viewUrl={school?.slug ? `/school/${school.slug}/faqs` : null}

@@ -23,7 +23,7 @@ const pageTitles = {
 const SectionLabel = ({ children, tc }) => (
     <div style={{ padding: "10px 16px 6px", display: "flex", alignItems: "center", gap: "8px" }}>
         <span style={{ width: "14px", height: "2px", borderRadius: "2px", background: `linear-gradient(90deg, ${tc.primary}, ${tc.secondary})`, flexShrink: 0 }} />
-        <span style={{ fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.1em" }}>{children}</span>
+        <span style={{ fontSize: "10px", fontWeight: 700, color: "rgba(255, 255, 255, 0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{children}</span>
     </div>
 );
 
@@ -89,13 +89,13 @@ const AdminLayout = () => {
     };
 
     const theme = {
-        sidebarBg: bc.card,
-        sidebarText: '#334155',
+        sidebarBg: '#0b1329',
+        sidebarText: '#cbd5e1',
         sidebarTextMuted: '#94a3b8',
         sidebarActive: tc.primary,
-        sidebarActiveBg: tc.light,
-        sidebarActiveText: tc.primary,
-        sidebarHover: tc.light,
+        sidebarActiveBg: hexToRgba(tc.primary, 0.22),
+        sidebarActiveText: '#ffffff',
+        sidebarHover: 'rgba(255, 255, 255, 0.07)',
         navbarBg: '#ffffff',
         navbarText: '#0f172a',
         contentBg: bc.surface,
@@ -222,13 +222,24 @@ const AdminLayout = () => {
                     margin: "2px 8px", borderRadius: "10px",
                     justifyContent: isCollapsed ? "center" : "flex-start",
                     cursor: "pointer", position: "relative",
-                    background: isActive ? `linear-gradient(135deg, ${theme.sidebarActiveBg}, #ffffff)` : "transparent",
-                    border: isActive ? `1px solid ${hexToRgba(tc.primary, 0.28)}` : "1px solid transparent",
-                    boxShadow: isActive ? `0 2px 8px ${hexToRgba(tc.primary, 0.12)}` : "none",
+                    background: isActive ? `linear-gradient(135deg, ${hexToRgba(tc.primary, 0.28)}, rgba(255, 255, 255, 0.05))` : "transparent",
+                    border: isActive ? `1px solid ${hexToRgba(tc.primary, 0.45)}` : "1px solid transparent",
+                    boxShadow: isActive ? `0 4px 16px ${hexToRgba(tc.primary, 0.22)}` : "none",
                     animationDelay: `${Math.min(index, 12) * 0.03}s`,
+                    transition: "all 0.18s ease",
                 }}
-                onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.background = theme.sidebarHover; e.currentTarget.style.borderColor = "#e2e8f0"; } }}
-                onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "transparent"; } }}
+                onMouseEnter={(e) => {
+                    if (!isActive) {
+                        e.currentTarget.style.background = "rgba(255, 255, 255, 0.07)";
+                        e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.12)";
+                    }
+                }}
+                onMouseLeave={(e) => {
+                    if (!isActive) {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.borderColor = "transparent";
+                    }
+                }}
             >
                 {isActive && !isCollapsed && (
                     <span style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", width: "3px", height: "58%", borderRadius: "0 4px 4px 0", background: `linear-gradient(180deg, ${tc.primary}, ${tc.secondary})` }} />
@@ -236,15 +247,15 @@ const AdminLayout = () => {
                 <span className="admin-nav-icon" style={{
                     display: "flex", alignItems: "center", justifyContent: "center",
                     width: "30px", height: "30px", borderRadius: "8px", flexShrink: 0,
-                    background: isActive ? `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})` : hexToRgba(tc.primary, 0.06),
-                    border: isActive ? "1px solid rgba(255,255,255,0.35)" : `1px solid ${hexToRgba(tc.primary, 0.14)}`,
-                    color: isActive ? "#ffffff" : theme.sidebarTextMuted,
-                    boxShadow: isActive ? `0 3px 10px ${hexToRgba(tc.primary, 0.35)}` : "none",
+                    background: isActive ? `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})` : "rgba(255, 255, 255, 0.06)",
+                    border: isActive ? "1px solid rgba(255,255,255,0.4)" : "1px solid rgba(255, 255, 255, 0.1)",
+                    color: isActive ? "#ffffff" : "#94a3b8",
+                    boxShadow: isActive ? `0 3px 12px ${hexToRgba(tc.primary, 0.4)}` : "none",
                 }}>
                     {item.icon}
                 </span>
                 {!isCollapsed && (
-                    <span style={{ fontSize: "13px", fontWeight: isActive ? 600 : 500, letterSpacing: "-0.1px", color: isActive ? theme.sidebarActiveText : theme.sidebarText, whiteSpace: "nowrap" }}>
+                    <span style={{ fontSize: "13px", fontWeight: isActive ? 600 : 500, letterSpacing: "-0.1px", color: isActive ? "#ffffff" : "#cbd5e1", whiteSpace: "nowrap" }}>
                         {item.label}
                     </span>
                 )}
@@ -287,24 +298,24 @@ const AdminLayout = () => {
                 width: collapsed ? "64px" : "260px",
                 minHeight: "100vh",
                 background: theme.sidebarBg,
-                backgroundImage: "radial-gradient(rgba(15,23,42,0.035) 1px, transparent 1px)",
+                backgroundImage: "radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px)",
                 backgroundSize: "18px 18px",
                 display: "flex", flexDirection: "column",
                 transition: "width 0.25s ease",
                 overflow: "hidden", flexShrink: 0,
                 position: "relative",
-                boxShadow: "1px 0 0 rgba(15,23,42,0.06), 4px 0 24px rgba(15,23,42,0.03)",
+                borderRight: "1px solid rgba(255, 255, 255, 0.08)",
+                boxShadow: "4px 0 24px rgba(0,0,0,0.18)",
                 fontFamily: "'Inter', system-ui, sans-serif",
             }}>
-                {/* Decorative theme-colored orbs — same visual language as the page hero headers,
-                    so the sidebar doesn't read as a flat, empty column ── */}
-                <div style={{ position: "absolute", width: "220px", height: "220px", borderRadius: "50%", background: `radial-gradient(circle, ${hexToRgba(tc.secondary, 0.16)} 0%, transparent 70%)`, top: "-90px", left: "-70px", pointerEvents: "none" }} />
-                <div style={{ position: "absolute", width: "260px", height: "260px", borderRadius: "50%", background: `radial-gradient(circle, ${hexToRgba(tc.primary, 0.1)} 0%, transparent 70%)`, bottom: "120px", right: "-120px", pointerEvents: "none" }} />
+                {/* Decorative theme-colored orbs */}
+                <div style={{ position: "absolute", width: "220px", height: "220px", borderRadius: "50%", background: `radial-gradient(circle, ${hexToRgba(tc.secondary, 0.2)} 0%, transparent 70%)`, top: "-90px", left: "-70px", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", width: "260px", height: "260px", borderRadius: "50%", background: `radial-gradient(circle, ${hexToRgba(tc.primary, 0.15)} 0%, transparent 70%)`, bottom: "120px", right: "-120px", pointerEvents: "none" }} />
 
                 {/* Logo */}
                 <div style={{
                     height: "80px",
-                    padding: collapsed ? "0" : "0 16px",
+                    padding: collapsed ? "0 12px" : "0 16px",
                     display: "flex", alignItems: "center",
                     justifyContent: collapsed ? "center" : "flex-start",
                     flexShrink: 0,
@@ -312,18 +323,39 @@ const AdminLayout = () => {
                     zIndex: 1,
                 }}>
                     {collapsed ? (
-                        <img src={logoCollapsed} alt="Logo" style={{ width: "40px", height: "40px", objectFit: "contain" }} />
+                        <div style={{
+                            background: '#ffffff',
+                            borderRadius: '10px',
+                            padding: '6px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                        }}>
+                            <img src={logoCollapsed} alt="Logo" style={{ width: "28px", height: "28px", objectFit: "contain", display: "block" }} />
+                        </div>
                     ) : (
-                        <img src={logo} alt="Web Builder Pro" style={{ width: "200px", height: "90px", objectFit: "contain", objectPosition: "left center", display: "block", marginLeft: "8px" }} />
+                        <div style={{
+                            background: '#ffffff',
+                            borderRadius: '12px',
+                            padding: '6px 14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            width: '100%',
+                            boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+                            border: '1px solid rgba(255, 255, 255, 0.25)',
+                        }}>
+                            <img src={logo} alt="Web Builder Pro" style={{ height: "42px", width: "auto", maxWidth: "100%", objectFit: "contain", display: "block" }} />
+                        </div>
                     )}
-                    <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, borderBottom: "1px solid #f1f5f9" }} />
-                    <div style={{ position: "absolute", left: "16px", right: "16px", bottom: 0, height: "2px", borderRadius: "2px", background: `linear-gradient(90deg, ${tc.primary}, ${tc.secondary}, transparent)`, opacity: 0.55 }} />
+                    <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, borderBottom: "1px solid rgba(255, 255, 255, 0.08)" }} />
+                    <div style={{ position: "absolute", left: "16px", right: "16px", bottom: 0, height: "2px", borderRadius: "2px", background: `linear-gradient(90deg, ${tc.primary}, ${tc.secondary}, transparent)`, opacity: 0.8 }} />
                 </div>
 
-                {/* Scrollable nav area — fills remaining space so the branding footer below always stays pinned to the bottom */}
+                {/* Scrollable nav area */}
                 <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "10px", padding: "10px 8px 0", zIndex: 1, position: "relative" }}>
                     {/* Core Nav */}
-                    <div style={{ border: "1px solid #f1f5f9", borderRadius: "14px", background: "rgba(255,255,255,0.6)", padding: "4px 0" }}>
+                    <div style={{ border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "14px", background: "rgba(255, 255, 255, 0.03)", padding: "4px 0" }}>
                         {!collapsed && (
                             <SectionLabel tc={tc}>Main</SectionLabel>
                         )}
@@ -334,7 +366,7 @@ const AdminLayout = () => {
 
                     {/* Modules Nav */}
                     {hasActivePlan && moduleItems.length > 0 && (
-                        <div style={{ border: "1px solid #f1f5f9", borderRadius: "14px", background: "rgba(255,255,255,0.6)", padding: "4px 0" }}>
+                        <div style={{ border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "14px", background: "rgba(255, 255, 255, 0.03)", padding: "4px 0" }}>
                             {!collapsed && (
                                 <SectionLabel tc={tc}>Modules</SectionLabel>
                             )}
@@ -345,14 +377,14 @@ const AdminLayout = () => {
                     )}
                 </div>
 
-                {/* School branding — pinned at the bottom, always visible, never scrolls away */}
+                {/* School branding */}
                 {school && (
-                    <div style={{ flexShrink: 0, borderTop: "0.5px solid #f1f5f9", padding: collapsed ? "10px 8px" : "12px", position: "relative", zIndex: 1 }}>
+                    <div style={{ flexShrink: 0, borderTop: "1px solid rgba(255, 255, 255, 0.08)", padding: collapsed ? "10px 8px" : "12px", position: "relative", zIndex: 1 }}>
                         <div style={{
                             padding: collapsed ? "8px 0" : "10px 12px",
                             borderRadius: "14px",
-                            background: `linear-gradient(135deg, ${tc.light}, #ffffff)`,
-                            border: `1px solid ${hexToRgba(tc.primary, 0.14)}`,
+                            background: "rgba(255, 255, 255, 0.05)",
+                            border: "1px solid rgba(255, 255, 255, 0.1)",
                             display: "flex", alignItems: "center", gap: "12px",
                             justifyContent: collapsed ? "center" : "flex-start",
                         }}>
@@ -367,8 +399,8 @@ const AdminLayout = () => {
                                 <div style={{ minWidth: 0 }}>
                                     <p style={{ fontSize: "9.5px", fontWeight: 700, color: tc.primary, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px" }}>School Admin</p>
                                     <span style={{
-                                        fontFamily: getFontFamily(school.nav_font), fontSize: "14.5px", fontWeight: 700,
-                                        letterSpacing: "-0.1px", color: theme.sidebarText, lineHeight: 1.3,
+                                        fontFamily: getFontFamily(school.nav_font), fontSize: "14px", fontWeight: 700,
+                                        letterSpacing: "-0.1px", color: "#ffffff", lineHeight: 1.3,
                                         minWidth: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
                                     }}>
                                         {school.name}
@@ -388,14 +420,16 @@ const AdminLayout = () => {
                     height: "64px", background: theme.navbarBg,
                     display: "flex", alignItems: "center",
                     justifyContent: "space-between",
-                    padding: "0 16px",
+                    padding: "0 20px",
                     position: "sticky", top: 0, zIndex: 100,
+                    borderBottom: "1px solid #e2e8f0",
+                    boxShadow: "0 1px 3px rgba(15, 23, 42, 0.04)",
                 }}>
                     {mobileSearchOpen ? (
                         <div style={{ display: "flex", alignItems: "center", width: "100%", gap: "10px", position: "relative" }}>
                             <button
                                 onClick={() => { setMobileSearchOpen(false); setModuleSearch(""); }}
-                                style={{ width: "34px", height: "34px", background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: theme.navbarText, flexShrink: 0 }}
+                                style={{ width: "34px", height: "34px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#475569", flexShrink: 0 }}
                                 aria-label="Close search"
                             >
                                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
@@ -413,9 +447,9 @@ const AdminLayout = () => {
                                     autoFocus
                                     style={{
                                         width: "100%", padding: "8px 30px 8px 32px",
-                                        borderRadius: "9px", fontSize: "14px", color: theme.navbarText, outline: "none", boxSizing: "border-box",
-                                        background: "#f8fafc", border: `1.5px solid ${tc.primary}`,
-                                        boxShadow: `0 0 0 3px ${hexToRgba(tc.primary, 0.12)}`,
+                                        borderRadius: "9px", fontSize: "14px", color: "#0f172a", outline: "none", boxSizing: "border-box",
+                                        background: "#ffffff", border: `1.5px solid ${tc.primary}`,
+                                        boxShadow: `0 0 0 3px ${hexToRgba(tc.primary, 0.15)}`,
                                     }}
                                 />
                                 {moduleSearch && (
@@ -428,7 +462,7 @@ const AdminLayout = () => {
                                 )}
                             </div>
                             {moduleSearch.trim() && (
-                                <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, right: 0, background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", boxShadow: "0 16px 36px rgba(15,23,42,0.16)", overflow: "hidden", zIndex: 150, maxHeight: "360px", overflowY: "auto" }}>
+                                <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, right: 0, background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", boxShadow: "0 16px 36px rgba(15,23,42,0.14)", overflow: "hidden", zIndex: 150, maxHeight: "360px", overflowY: "auto" }}>
                                     {searchResults.length === 0 ? (
                                         <div style={{ padding: "20px 16px", textAlign: "center" }}>
                                             <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>No modules match "{moduleSearch.trim()}"</p>
@@ -436,13 +470,13 @@ const AdminLayout = () => {
                                     ) : (
                                         searchResults.map((item, i) => (
                                             <div key={item.key} onClick={() => { goToSearchResult(item); setMobileSearchOpen(false); }}
-                                                style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 14px", cursor: "pointer", borderBottom: i < searchResults.length - 1 ? "0.5px solid #f8fafc" : "none" }}
+                                                style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 14px", cursor: "pointer", borderBottom: i < searchResults.length - 1 ? "1px solid #f1f5f9" : "none" }}
                                             >
-                                                <span style={{ width: "28px", height: "28px", borderRadius: "8px", background: hexToRgba(tc.primary, 0.1), display: "flex", alignItems: "center", justifyContent: "center", color: tc.primary, flexShrink: 0 }}>
+                                                <span style={{ width: "28px", height: "28px", borderRadius: "8px", background: hexToRgba(tc.primary, 0.08), display: "flex", alignItems: "center", justifyContent: "center", color: tc.primary, flexShrink: 0 }}>
                                                     {item.icon}
                                                 </span>
-                                                <span style={{ fontSize: "13.5px", fontWeight: 500, color: theme.navbarText, flex: 1 }}>{item.label}</span>
-                                                <svg width="13" height="13" fill="none" stroke="#cbd5e1" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                <span style={{ fontSize: "13.5px", fontWeight: 500, color: "#0f172a", flex: 1 }}>{item.label}</span>
+                                                <svg width="13" height="13" fill="none" stroke="#94a3b8" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                                             </div>
                                         ))
                                     )}
@@ -455,7 +489,17 @@ const AdminLayout = () => {
                                 <button
                                     className="admin-desktop-toggle"
                                     onClick={() => setCollapsed(!collapsed)}
-                                    style={{ width: "32px", height: "32px", background: "transparent", border: "0.5px solid #e2e8f0", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: theme.navbarText }}
+                                    style={{
+                                        width: "34px", height: "34px",
+                                        background: "#f8fafc",
+                                        border: "1px solid #e2e8f0",
+                                        borderRadius: "9px",
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        cursor: "pointer", color: "#475569",
+                                        transition: "all 0.18s ease",
+                                    }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.background = "#f1f5f9"; e.currentTarget.style.borderColor = "#cbd5e1"; e.currentTarget.style.color = "#0f172a"; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.background = "#f8fafc"; e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.color = "#475569"; }}
                                 >
                                     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
@@ -464,23 +508,30 @@ const AdminLayout = () => {
                                 <button
                                     className="admin-hamburger"
                                     onClick={() => setMobileOpen(true)}
-                                    style={{ display: "none", width: "32px", height: "32px", background: "transparent", border: "0.5px solid #e2e8f0", borderRadius: "8px", alignItems: "center", justifyContent: "center", cursor: "pointer", color: theme.navbarText }}
+                                    style={{
+                                        display: "none", width: "34px", height: "34px",
+                                        background: "#f8fafc",
+                                        border: "1px solid #e2e8f0",
+                                        borderRadius: "9px",
+                                        alignItems: "center", justifyContent: "center",
+                                        cursor: "pointer", color: "#475569"
+                                    }}
                                     aria-label="Open menu"
                                 >
                                     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                                     </svg>
                                 </button>
-                                <div>
-                                    <span style={{ fontSize: "11px", color: "#94a3b8" }}>Admin / </span>
-                                    <span style={{ fontSize: "14px", fontWeight: 500, color: theme.navbarText }}>{title}</span>
+                                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                    <span style={{ fontSize: "11.5px", color: "#64748b", fontWeight: 500, letterSpacing: "0.02em" }}>Admin /</span>
+                                    <span style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a", letterSpacing: "-0.2px" }}>{title}</span>
                                 </div>
                             </div>
 
-                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                                 {/* Desktop Module search */}
                                 {hasActivePlan && (
-                                    <div className="admin-navbar-search" style={{ position: "relative", width: "236px" }}>
+                                    <div className="admin-navbar-search" style={{ position: "relative", width: "240px" }}>
                                         <svg width="14" height="14" fill="none" stroke={searchFocused ? tc.primary : "#94a3b8"} strokeWidth="2.2" viewBox="0 0 24 24" style={{ position: "absolute", left: "11px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none", transition: "stroke 0.15s ease" }}>
                                             <circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
                                         </svg>
@@ -491,45 +542,45 @@ const AdminLayout = () => {
                                             onChange={(e) => setModuleSearch(e.target.value)}
                                             onFocus={() => setSearchFocused(true)}
                                             onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
-                                            placeholder="Search modules"
+                                            placeholder="Search modules..."
                                             style={{
                                                 width: "100%", padding: moduleSearch || searchFocused ? "8px 12px 8px 32px" : "8px 44px 8px 32px",
-                                                borderRadius: "8px", fontSize: "13px", color: theme.navbarText, outline: "none", boxSizing: "border-box",
+                                                borderRadius: "9px", fontSize: "13px", color: "#0f172a", outline: "none", boxSizing: "border-box",
                                                 background: searchFocused ? "#ffffff" : "#f8fafc",
                                                 border: `1px solid ${searchFocused ? tc.primary : "#e2e8f0"}`,
-                                                boxShadow: searchFocused ? `0 0 0 3px ${hexToRgba(tc.primary, 0.12)}` : "none",
+                                                boxShadow: searchFocused ? `0 0 0 3px ${hexToRgba(tc.primary, 0.15)}` : "none",
                                                 transition: "border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease",
                                             }}
                                         />
                                         {!moduleSearch && !searchFocused && (
-                                            <span style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", display: "flex", alignItems: "center", gap: "1px", padding: "2px 6px", borderRadius: "5px", background: "#eef1f6", border: "0.5px solid #e2e8f0", fontSize: "10.5px", fontWeight: 600, color: "#94a3b8", pointerEvents: "none" }}>
+                                            <span style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", display: "flex", alignItems: "center", gap: "1px", padding: "2px 6px", borderRadius: "5px", background: "#ffffff", border: "1px solid #e2e8f0", fontSize: "10px", fontWeight: 600, color: "#64748b", pointerEvents: "none" }}>
                                                 ⌘K
                                             </span>
                                         )}
                                         {searchFocused && moduleSearch.trim() && (
-                                            <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: "300px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", boxShadow: "0 16px 36px rgba(15,23,42,0.16)", overflow: "hidden", zIndex: 150 }}>
+                                            <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: "300px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", boxShadow: "0 12px 32px rgba(15,23,42,0.12)", overflow: "hidden", zIndex: 150 }}>
                                                 {searchResults.length === 0 ? (
                                                     <div style={{ padding: "22px 16px", textAlign: "center" }}>
-                                                        <p style={{ fontSize: "12.5px", color: "#94a3b8" }}>No active modules match <span style={{ fontWeight: 600, color: "#64748b" }}>"{moduleSearch.trim()}"</span></p>
+                                                        <p style={{ fontSize: "12.5px", color: "#94a3b8" }}>No active modules match <span style={{ fontWeight: 600, color: "#0f172a" }}>"{moduleSearch.trim()}"</span></p>
                                                     </div>
                                                 ) : (
                                                     <>
-                                                        <div style={{ padding: "9px 14px", borderBottom: "0.5px solid #f1f5f9", background: "#fafbfc" }}>
-                                                            <span style={{ fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                                                        <div style={{ padding: "9px 14px", borderBottom: "1px solid #f1f5f9", background: "#f8fafc" }}>
+                                                            <span style={{ fontSize: "10px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                                                                 Modules · {searchResults.length}
                                                             </span>
                                                         </div>
                                                         {searchResults.map((item, i) => (
                                                             <div key={item.key} onMouseDown={() => goToSearchResult(item)} className="admin-search-result"
-                                                                style={{ display: "flex", alignItems: "center", gap: "10px", padding: "9px 14px", cursor: "pointer", borderBottom: i < searchResults.length - 1 ? "0.5px solid #f8fafc" : "none" }}
-                                                                onMouseEnter={(e) => { e.currentTarget.style.background = theme.sidebarHover; }}
+                                                                style={{ display: "flex", alignItems: "center", gap: "10px", padding: "9px 14px", cursor: "pointer", borderBottom: i < searchResults.length - 1 ? "1px solid #f8fafc" : "none" }}
+                                                                onMouseEnter={(e) => { e.currentTarget.style.background = "#f1f5f9"; }}
                                                                 onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                                                             >
-                                                                <span style={{ width: "28px", height: "28px", borderRadius: "8px", background: hexToRgba(tc.primary, 0.1), display: "flex", alignItems: "center", justifyContent: "center", color: tc.primary, flexShrink: 0 }}>
+                                                                <span style={{ width: "28px", height: "28px", borderRadius: "8px", background: hexToRgba(tc.primary, 0.08), display: "flex", alignItems: "center", justifyContent: "center", color: tc.primary, flexShrink: 0 }}>
                                                                     {item.icon}
                                                                 </span>
-                                                                <span style={{ fontSize: "13px", fontWeight: 500, color: theme.navbarText, flex: 1 }}>{item.label}</span>
-                                                                <svg width="13" height="13" fill="none" stroke="#cbd5e1" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                                                <span style={{ fontSize: "13px", fontWeight: 500, color: "#0f172a", flex: 1 }}>{item.label}</span>
+                                                                <svg width="13" height="13" fill="none" stroke="#94a3b8" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                                                             </div>
                                                         ))}
                                                     </>
@@ -548,10 +599,10 @@ const AdminLayout = () => {
                                             setTimeout(() => mobileSearchInputRef.current?.focus(), 80);
                                         }}
                                         style={{
-                                            width: "32px", height: "32px", background: "transparent",
-                                            border: "0.5px solid #e2e8f0", borderRadius: "8px",
+                                            width: "34px", height: "34px", background: "#f8fafc",
+                                            border: "1px solid #e2e8f0", borderRadius: "9px",
                                             display: "none", alignItems: "center", justifyContent: "center",
-                                            cursor: "pointer", color: theme.navbarText,
+                                            cursor: "pointer", color: "#475569",
                                         }}
                                         aria-label="Search modules"
                                     >
@@ -561,16 +612,37 @@ const AdminLayout = () => {
                                     </button>
                                 )}
 
-                                <div style={{ width: "30px", height: "30px", background: `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#fff" }}>
+                                <div style={{ width: "32px", height: "32px", background: `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#fff", border: "1.5px solid #ffffff", boxShadow: "0 2px 6px rgba(0,0,0,0.1)" }}>
                                     {user?.name?.charAt(0)?.toUpperCase() || "A"}
                                 </div>
-                                <span className="admin-navbar-username" style={{ fontSize: "13px", fontWeight: 500, color: theme.navbarText }}>
+                                <span className="admin-navbar-username" style={{ fontSize: "13px", fontWeight: 600, color: "#0f172a" }}>
                                     {user?.name || "Admin"}
                                 </span>
-                                <div style={{ width: "1px", height: "20px", background: "#e2e8f0" }}></div>
+                                <div style={{ width: "1px", height: "18px", background: "#e2e8f0" }}></div>
                                 <button
                                     onClick={handleLogout}
-                                    style={{ padding: "6px 12px", background: "transparent", border: "0.5px solid #e2e8f0", borderRadius: "8px", fontSize: "12px", color: "#64748b", cursor: "pointer", display: "flex", alignItems: "center", gap: "5px" }}
+                                    style={{
+                                        padding: "6px 13px",
+                                        background: "#f8fafc",
+                                        border: "1px solid #e2e8f0",
+                                        borderRadius: "9px",
+                                        fontSize: "12px",
+                                        fontWeight: 600,
+                                        color: "#475569",
+                                        cursor: "pointer",
+                                        display: "flex", alignItems: "center", gap: "6px",
+                                        transition: "all 0.18s ease",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = "#fef2f2";
+                                        e.currentTarget.style.borderColor = "#fecaca";
+                                        e.currentTarget.style.color = "#dc2626";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = "#f8fafc";
+                                        e.currentTarget.style.borderColor = "#e2e8f0";
+                                        e.currentTarget.style.color = "#475569";
+                                    }}
                                 >
                                     <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -619,20 +691,30 @@ const AdminLayout = () => {
                     <div style={{
                         position: "fixed", top: 0, left: 0, bottom: 0, width: "min(280px, 84vw)", zIndex: 999,
                         background: theme.sidebarBg,
-                        backgroundImage: "radial-gradient(rgba(15,23,42,0.035) 1px, transparent 1px)",
+                        backgroundImage: "radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px)",
                         backgroundSize: "18px 18px",
                         display: "flex", flexDirection: "column", overflow: "hidden",
-                        boxShadow: "0 0 40px rgba(0,0,0,0.25)", animation: "adminDrawerSlideIn 0.25s cubic-bezier(0.16,1,0.3,1)",
+                        borderRight: "1px solid rgba(255, 255, 255, 0.08)",
+                        boxShadow: "0 0 40px rgba(0,0,0,0.5)", animation: "adminDrawerSlideIn 0.25s cubic-bezier(0.16,1,0.3,1)",
                         fontFamily: "'Inter', system-ui, sans-serif",
                     }}>
-                        <div style={{ position: "absolute", width: "200px", height: "200px", borderRadius: "50%", background: `radial-gradient(circle, ${hexToRgba(tc.secondary, 0.16)} 0%, transparent 70%)`, top: "-80px", left: "-60px", pointerEvents: "none" }} />
-                        <div style={{ position: "absolute", width: "220px", height: "220px", borderRadius: "50%", background: `radial-gradient(circle, ${hexToRgba(tc.primary, 0.1)} 0%, transparent 70%)`, bottom: "100px", right: "-100px", pointerEvents: "none" }} />
+                        <div style={{ position: "absolute", width: "200px", height: "200px", borderRadius: "50%", background: `radial-gradient(circle, ${hexToRgba(tc.secondary, 0.2)} 0%, transparent 70%)`, top: "-80px", left: "-60px", pointerEvents: "none" }} />
+                        <div style={{ position: "absolute", width: "220px", height: "220px", borderRadius: "50%", background: `radial-gradient(circle, ${hexToRgba(tc.primary, 0.15)} 0%, transparent 70%)`, bottom: "100px", right: "-100px", pointerEvents: "none" }} />
 
                         {/* Logo + close */}
-                        <div style={{ height: "80px", padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, borderBottom: "0.5px solid #f1f5f9", position: "relative", zIndex: 1 }}>
-                            <img src={logo} alt="Web Builder Pro" style={{ width: "170px", height: "76px", objectFit: "contain", objectPosition: "left center", display: "block" }} />
+                        <div style={{ height: "80px", padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, borderBottom: "1px solid rgba(255, 255, 255, 0.08)", position: "relative", zIndex: 1 }}>
+                            <div style={{
+                                background: '#ffffff',
+                                borderRadius: '12px',
+                                padding: '6px 12px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+                            }}>
+                                <img src={logo} alt="Web Builder Pro" style={{ height: "38px", width: "auto", maxWidth: "160px", objectFit: "contain", display: "block" }} />
+                            </div>
                             <button onClick={() => setMobileOpen(false)}
-                                style={{ width: "32px", height: "32px", background: "#f8fafc", border: "0.5px solid #e2e8f0", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: theme.navbarText, flexShrink: 0 }}
+                                style={{ width: "32px", height: "32px", background: "rgba(255, 255, 255, 0.08)", border: "1px solid rgba(255, 255, 255, 0.14)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#ffffff", flexShrink: 0 }}
                                 aria-label="Close menu">
                                 <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18"/></svg>
                             </button>
@@ -642,7 +724,7 @@ const AdminLayout = () => {
                         {hasActivePlan && (
                             <div style={{ padding: "10px 12px 4px", position: "relative", zIndex: 2 }}>
                                 <div style={{ position: "relative" }}>
-                                    <svg width="14" height="14" fill="none" stroke="#94a3b8" strokeWidth="2.2" viewBox="0 0 24 24" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                                    <svg width="14" height="14" fill="none" stroke="rgba(255, 255, 255, 0.45)" strokeWidth="2.2" viewBox="0 0 24 24" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
                                         <circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
                                     </svg>
                                     <input
@@ -652,31 +734,31 @@ const AdminLayout = () => {
                                         placeholder="Search modules..."
                                         style={{
                                             width: "100%", padding: "8px 28px 8px 30px",
-                                            borderRadius: "10px", fontSize: "13px", color: theme.navbarText, outline: "none", boxSizing: "border-box",
-                                            background: "rgba(255,255,255,0.9)", border: "1px solid #e2e8f0",
+                                            borderRadius: "10px", fontSize: "13px", color: "#ffffff", outline: "none", boxSizing: "border-box",
+                                            background: "rgba(255, 255, 255, 0.08)", border: "1px solid rgba(255, 255, 255, 0.14)",
                                         }}
                                     />
                                     {moduleSearch && (
-                                        <button onClick={() => setModuleSearch("")} style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: 0, fontSize: "13px" }}>
+                                        <button onClick={() => setModuleSearch("")} style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "rgba(255, 255, 255, 0.6)", padding: 0, fontSize: "13px" }}>
                                             ✕
                                         </button>
                                     )}
                                 </div>
                                 {moduleSearch.trim() && (
-                                    <div style={{ marginTop: "6px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "10px", overflow: "hidden", maxHeight: "220px", overflowY: "auto", boxShadow: "0 8px 20px rgba(0,0,0,0.1)" }}>
+                                    <div style={{ marginTop: "6px", background: "#0f172a", border: "1px solid rgba(255, 255, 255, 0.14)", borderRadius: "10px", overflow: "hidden", maxHeight: "220px", overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
                                         {searchResults.length === 0 ? (
                                             <div style={{ padding: "12px", textAlign: "center" }}>
-                                                <p style={{ fontSize: "12px", color: "#94a3b8", margin: 0 }}>No matches found</p>
+                                                <p style={{ fontSize: "12px", color: "rgba(255, 255, 255, 0.5)", margin: 0 }}>No matches found</p>
                                             </div>
                                         ) : (
                                             searchResults.map((item) => (
                                                 <div key={item.key} onClick={() => { goToSearchResult(item); setMobileOpen(false); }}
-                                                    style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", cursor: "pointer", borderBottom: "0.5px solid #f8fafc" }}
+                                                    style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", cursor: "pointer", borderBottom: "0.5px solid rgba(255, 255, 255, 0.06)" }}
                                                 >
-                                                    <span style={{ width: "24px", height: "24px", borderRadius: "6px", background: hexToRgba(tc.primary, 0.1), display: "flex", alignItems: "center", justifyContent: "center", color: tc.primary, flexShrink: 0 }}>
+                                                    <span style={{ width: "24px", height: "24px", borderRadius: "6px", background: hexToRgba(tc.primary, 0.2), display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", flexShrink: 0 }}>
                                                         {item.icon}
                                                     </span>
-                                                    <span style={{ fontSize: "13px", fontWeight: 500, color: theme.navbarText, flex: 1 }}>{item.label}</span>
+                                                    <span style={{ fontSize: "13px", fontWeight: 500, color: "#f8fafc", flex: 1 }}>{item.label}</span>
                                                 </div>
                                             ))
                                         )}
@@ -686,14 +768,14 @@ const AdminLayout = () => {
                         )}
 
                         <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "10px", padding: "10px 8px 0", position: "relative", zIndex: 1 }}>
-                            <div style={{ border: "1px solid #f1f5f9", borderRadius: "14px", background: "rgba(255,255,255,0.6)", padding: "4px 0" }}>
+                            <div style={{ border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "14px", background: "rgba(255, 255, 255, 0.03)", padding: "4px 0" }}>
                                 <SectionLabel tc={tc}>Main</SectionLabel>
                                 <nav style={{ padding: "4px 0" }}>
                                     {visibleCoreItems.map((item, i) => <NavItem key={item.key} item={item} index={i} forceExpanded onNavigate={() => setMobileOpen(false)} />)}
                                 </nav>
                             </div>
                             {hasActivePlan && moduleItems.length > 0 && (
-                                <div style={{ border: "1px solid #f1f5f9", borderRadius: "14px", background: "rgba(255,255,255,0.6)", padding: "4px 0" }}>
+                                <div style={{ border: "1px solid rgba(255, 255, 255, 0.07)", borderRadius: "14px", background: "rgba(255, 255, 255, 0.03)", padding: "4px 0" }}>
                                     <SectionLabel tc={tc}>Modules</SectionLabel>
                                     <nav style={{ padding: "4px 0" }}>
                                         {moduleItems.map((item, i) => <NavItem key={item.key} item={item} index={coreItems.length + i} forceExpanded onNavigate={() => setMobileOpen(false)} />)}
@@ -703,11 +785,11 @@ const AdminLayout = () => {
                         </div>
 
                         {school && (
-                            <div style={{ flexShrink: 0, borderTop: "0.5px solid #f1f5f9", padding: "12px", position: "relative", zIndex: 1 }}>
+                            <div style={{ flexShrink: 0, borderTop: "1px solid rgba(255, 255, 255, 0.08)", padding: "12px", position: "relative", zIndex: 1 }}>
                                 <div style={{
                                     padding: "10px 12px", borderRadius: "14px",
-                                    background: `linear-gradient(135deg, ${tc.light}, #ffffff)`,
-                                    border: `1px solid ${hexToRgba(tc.primary, 0.14)}`,
+                                    background: "rgba(255, 255, 255, 0.05)",
+                                    border: "1px solid rgba(255, 255, 255, 0.1)",
                                     display: "flex", alignItems: "center", gap: "12px",
                                 }}>
                                     <div className="admin-logo-ring" style={{ flexShrink: 0 }}>
@@ -719,7 +801,7 @@ const AdminLayout = () => {
                                     </div>
                                     <div style={{ minWidth: 0 }}>
                                         <p style={{ fontSize: "9.5px", fontWeight: 700, color: tc.primary, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px" }}>School Admin</p>
-                                        <span style={{ fontFamily: getFontFamily(school.nav_font), fontSize: "14px", fontWeight: 700, letterSpacing: "-0.1px", color: theme.sidebarText, lineHeight: 1.3, minWidth: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                                        <span style={{ fontFamily: getFontFamily(school.nav_font), fontSize: "14px", fontWeight: 700, letterSpacing: "-0.1px", color: "#ffffff", lineHeight: 1.3, minWidth: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                                             {school.name}
                                         </span>
                                     </div>
