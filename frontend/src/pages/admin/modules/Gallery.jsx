@@ -4,6 +4,7 @@ import ModuleActionButtons from '../../../components/admin/ModuleActionButtons';
 import ImageCropModal from '../../../components/common/ImageCropModal';
 import useSchoolStore from '../../../store/schoolStore';
 import toast from 'react-hot-toast';
+import { getYouTubeVideoId, getYouTubeThumbnail } from '../../../utils/youtube';
 
 const MAX_PHOTOS_PER_FOLDER = 16;
 
@@ -317,11 +318,29 @@ const Gallery = () => {
     const addVideo = () => {
         if (!currentFolderId) { toast.error('Open a folder first to add videos'); return; }
         updateNodes(nodes.map(n => n.id === currentFolderId
-            ? { ...n, videos: [...(n.videos || []), { id: `vid-${Date.now()}`, title: '', date: '', sourceType: 'youtube', youtubeUrl: '', videoUrl: '', thumbnail: '' }] }
+            ? { ...n, videos: [...(n.videos || []), { id: `vid-${Date.now()}`, date: '', sourceType: 'youtube', youtubeUrl: '', videoUrl: '', thumbnail: '' }] }
             : n));
     };
 
-    const updateVideo = (videoId, field, value) => updateNodes(nodes.map(n => n.id === currentFolderId ? { ...n, videos: n.videos.map(v => v.id === videoId ? { ...v, [field]: value } : v) } : n));
+    const updateVideo = (videoId, field, value) => {
+        updateNodes(nodes.map(n => {
+            if (n.id !== currentFolderId) return n;
+            return {
+                ...n,
+                videos: (n.videos || []).map(v => {
+                    if (v.id !== videoId) return v;
+                    const updated = { ...v, [field]: value };
+                    if (field === 'youtubeUrl') {
+                        const ytThumb = getYouTubeThumbnail(value);
+                        if (ytThumb && (!v.thumbnail || v.thumbnail.includes('img.youtube.com'))) {
+                            updated.thumbnail = ytThumb;
+                        }
+                    }
+                    return updated;
+                })
+            };
+        }));
+    };
     const removeVideo = (videoId) => updateNodes(nodes.map(n => n.id === currentFolderId ? { ...n, videos: n.videos.filter(v => v.id !== videoId) } : n));
 
     const uploadVideoThumb = async (videoId, file) => {
@@ -376,14 +395,15 @@ const Gallery = () => {
                 @keyframes drift1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-24px, 18px) scale(1.08); } }
                 @media (max-width: 640px) {
                     .dash-hero { padding: 1.1rem 1.15rem !important; border-radius: 16px !important; margin-bottom: 1rem !important; }
-                    .gallery-hero-inner { gap: 12px !important; }
-                    .gallery-hero-top { flex-wrap: wrap !important; gap: 10px !important; }
-                    .gallery-hero-eyebrow { font-size: 9.5px !important; margin-bottom: 6px !important; }
+                    .gallery-hero-inner { gap: 10px !important; }
+                    .gallery-hero-top { flex-wrap: wrap !important; gap: 8px !important; }
+                    .gallery-hero-eyebrow { font-size: 9.5px !important; margin-bottom: 4px !important; }
                     .gallery-hero-title { font-size: 18px !important; margin-bottom: 4px !important; letter-spacing: -0.3px !important; }
-                    .gallery-hero-desc { font-size: 11px !important; line-height: 1.5 !important; }
+                    .gallery-hero-desc { font-size: 11px !important; line-height: 1.45 !important; }
                     .gallery-status-badge { padding: 4px 9px !important; }
                     .gallery-status-badge span { font-size: 9.5px !important; }
-                    .gallery-hero-actions button { padding: 6px 12px !important; font-size: 11px !important; }
+                    .gallery-hero-actions button { padding: 6px 12px !important; font-size: 11px !important; border-radius: 8px !important; }
+                    .dash-hero-stats-panel { display: none !important; }
                     .gallery-photo-grid { grid-template-columns: repeat(3, 1fr) !important; }
                 }
             `}</style>
@@ -413,7 +433,7 @@ const Gallery = () => {
                         </div>
                         <h1 style={{ fontSize: '30px', fontWeight: 700, color: '#ffffff', marginBottom: '8px', letterSpacing: '-0.5px', lineHeight: 1.2 }}>Photo & Video Gallery</h1>
                         <p style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, maxWidth: '520px', margin: 0 }}>
-                            Organize campus moments, celebrations, and sports galas in elegant nested albums.
+                            Organize photos and videos in nested folders — just like on your computer.
                         </p>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px' }}>
                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: isPublished ? 'rgba(34,197,94,0.18)' : 'rgba(255,255,255,0.12)', border: `1.5px solid ${isPublished ? 'rgba(34,197,94,0.45)' : 'rgba(255,255,255,0.25)'}`, borderRadius: '999px' }}>
@@ -426,7 +446,7 @@ const Gallery = () => {
                     </div>
 
                     {/* Standardized Whiter Frosted Glass Panel */}
-                    <div style={{
+                    <div className="dash-hero-stats-panel" style={{
                         background: 'linear-gradient(135deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.13) 100%)',
                         border: '1.5px solid rgba(255,255,255,0.42)',
                         borderRadius: '16px',
@@ -525,12 +545,16 @@ const Gallery = () => {
                 <div className="gallery-section" style={{ background: '#ffffff', border: '1px solid #f1f5f9', borderRadius: '20px', padding: '2rem', marginBottom: '1.25rem', boxShadow: '0 2px 12px rgba(15,23,42,0.04)' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '1.5rem', gap: '12px', flexWrap: 'wrap' }}>
                         <div>
-                            <p style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.2px' }}>Folders <span style={{ color: '#94a3b8', fontWeight: 500 }}>({childFolders.length})</span></p>
-                            <p style={{ fontSize: '11.5px', color: '#94a3b8', marginTop: '3px' }}>Set the # priority on a folder's cover to control its order — 1 shows first on the public gallery. Cover image: landscape (4:3) works best · JPG, PNG, WEBP · Max 1MB.</p>
+                            <p style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.2px' }}>
+                                {currentFolderId ? 'Sub-folders' : 'Folders'} <span style={{ color: '#94a3b8', fontWeight: 500 }}>({childFolders.length})</span>
+                            </p>
+                            <p style={{ fontSize: '11.5px', color: '#94a3b8', marginTop: '3px' }}>
+                                Set the # priority on a {currentFolderId ? 'sub-folder' : 'folder'}'s cover to control its order — 1 shows first on the public gallery. Cover image: landscape (4:3) works best · JPG, PNG, WEBP · Max 1MB.
+                            </p>
                         </div>
                         <button onClick={() => setShowNewFolder(true)} disabled={showNewFolder}
                             style={{ padding: '10px 18px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '12.5px', fontWeight: 600, cursor: showNewFolder ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: '7px', opacity: showNewFolder ? 0.5 : 1, boxShadow: `0 6px 16px ${hexToRgba(tc.primary, 0.28)}` }}>
-                            <IconPlus size={12} /> New Folder
+                            <IconPlus size={12} /> {currentFolderId ? 'New Sub-folder' : 'New Folder'}
                         </button>
                     </div>
 
@@ -539,10 +563,14 @@ const Gallery = () => {
                             <div style={{ width: '64px', height: '64px', borderRadius: '18px', background: `linear-gradient(135deg, ${hexToRgba(tc.primary, 0.1)}, ${hexToRgba(tc.secondary, 0.14)})`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
                                 <IconFolder size={28} color={tc.primary} />
                             </div>
-                            <p style={{ fontSize: '13.5px', color: '#64748b', marginTop: '16px', fontWeight: 500 }}>No folders here yet</p>
-                            <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>Create one to organize {activeTree === 'photo' ? 'photos' : 'videos'}</p>
+                            <p style={{ fontSize: '13.5px', color: '#64748b', marginTop: '16px', fontWeight: 500 }}>
+                                {currentFolderId ? 'No sub-folders here yet' : 'No folders here yet'}
+                            </p>
+                            <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>
+                                Create one to organize {activeTree === 'photo' ? 'photos' : 'videos'}
+                            </p>
                             <button onClick={() => setShowNewFolder(true)} style={{ marginTop: '18px', padding: '9px 20px', background: tc.light, color: tc.primary, border: `1px solid ${hexToRgba(tc.primary, 0.25)}`, borderRadius: '10px', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                                <IconPlus size={11} /> Create Folder
+                                <IconPlus size={11} /> {currentFolderId ? 'Create Sub-folder' : 'Create Folder'}
                             </button>
                         </div>
                     ) : (
@@ -553,10 +581,10 @@ const Gallery = () => {
                                         <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(15,23,42,0.06)' }}>
                                             <IconFolder size={18} color={tc.primary} />
                                         </div>
-                                        <span style={{ fontSize: '12.5px', fontWeight: 700, color: tc.primary }}>New Folder</span>
+                                        <span style={{ fontSize: '12.5px', fontWeight: 700, color: tc.primary }}>{currentFolderId ? 'New Sub-folder' : 'New Folder'}</span>
                                     </div>
                                     <input type="text" value={newFolderName} onChange={e => setNewFolderName(e.target.value)}
-                                        placeholder="Enter Folder Name" style={{ ...inputStyle, background: '#ffffff' }}
+                                        placeholder={currentFolderId ? "Enter Sub-folder Name" : "Enter Folder Name"} style={{ ...inputStyle, background: '#ffffff' }}
                                         onKeyDown={e => e.key === 'Enter' && createFolder()} autoFocus />
                                     <div style={{ display: 'flex', gap: '8px' }}>
                                         <button onClick={createFolder} style={{ flex: 1, padding: '9px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '9px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>Create</button>
@@ -594,7 +622,7 @@ const Gallery = () => {
                                             </div>
 
                                             {/* Delete — reveals on hover */}
-                                            <button className="folder-action-btn" onClick={e => { e.stopPropagation(); if (window.confirm(`Delete folder "${f.name}" and everything inside it?`)) deleteFolder(f.id); }}
+                                            <button className="folder-action-btn" onClick={e => { e.stopPropagation(); if (window.confirm(`Delete ${currentFolderId ? 'sub-folder' : 'folder'} "${f.name}" and everything inside it?`)) deleteFolder(f.id); }}
                                                 style={{ position: 'absolute', top: '9px', right: '9px', width: '26px', height: '26px', background: 'rgba(255,255,255,0.95)', border: 'none', borderRadius: '50%', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
                                                 <IconClose size={10} />
                                             </button>
@@ -634,7 +662,7 @@ const Gallery = () => {
                                                 style={{ width: '100%', fontSize: '13.5px', fontWeight: 600, color: '#0f172a', border: 'none', background: 'transparent', outline: 'none', padding: 0, marginBottom: '4px', fontFamily: 'inherit' }} />
                                             <p style={{ fontSize: '11.5px', color: '#94a3b8', fontWeight: 400, margin: 0 }}>
                                                 {subCount > 0
-                                                    ? `${subCount} subfolder${subCount > 1 ? 's' : ''}`
+                                                    ? `${subCount} ${subCount > 1 ? 'sub-folders' : 'sub-folder'}`
                                                     : `${itemCount} ${activeTree === 'photo' ? 'photo' : 'video'}${itemCount !== 1 ? 's' : ''}`}
                                             </p>
                                         </div>
@@ -757,52 +785,127 @@ const Gallery = () => {
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '1.25rem' }}>
                                     {(currentFolder.videos || []).map(v => {
                                         const thumbKey = `vidthumb-${v.id}`;
+                                        const ytThumb = getYouTubeThumbnail(v.youtubeUrl);
+                                        const activeThumb = v.thumbnail || ytThumb;
+                                        const isAutoYt = Boolean(ytThumb && (!v.thumbnail || v.thumbnail === ytThumb));
+                                        const ytId = getYouTubeVideoId(v.youtubeUrl);
+
                                         return (
-                                            <div key={v.id} style={{ border: '1px solid #f1f5f9', borderRadius: '12px', padding: '1rem', background: '#fafbfc' }}>
-                                                <div style={{ display: 'flex', gap: '14px' }}>
-                                                    {/* Thumbnail */}
-                                                    <div style={{ flexShrink: 0 }}>
-                                                        <div onClick={() => document.getElementById(`vidthumb-input-${v.id}`).click()}
-                                                            style={{
-                                                                position: 'relative', width: '120px', height: '68px', borderRadius: '8px', overflow: 'hidden', cursor: 'pointer',
-                                                                background: v.thumbnail ? 'transparent' : '#f1f5f9',
-                                                                border: v.thumbnail ? 'none' : '1.5px dashed #cbd5e1',
-                                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                            }}>
-                                                            {uploading[thumbKey] ? (
-                                                                <IconSpinner size={18} color={tc.primary} />
-                                                            ) : v.thumbnail ? (
-                                                                <>
-                                                                    <img src={v.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            <div key={v.id} style={{
+                                                border: '1px solid #e2e8f0', borderRadius: '16px', padding: '14px 16px',
+                                                background: '#ffffff', boxShadow: '0 2px 10px rgba(15,23,42,0.03)',
+                                                display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap'
+                                            }}>
+                                                {/* 16:9 Thumbnail Preview (Auto-fetched from YT or Custom) */}
+                                                <div style={{ flexShrink: 0 }}>
+                                                    <div onClick={() => document.getElementById(`vidthumb-input-${v.id}`).click()}
+                                                        title="Click to upload custom thumbnail"
+                                                        style={{
+                                                            position: 'relative', width: '140px', height: '79px', borderRadius: '10px',
+                                                            overflow: 'hidden', cursor: 'pointer', background: '#0f172a',
+                                                            border: '1.5px solid #e2e8f0', display: 'flex', alignItems: 'center',
+                                                            justifyContent: 'center', boxShadow: '0 3px 10px rgba(15,23,42,0.08)'
+                                                        }}>
+                                                        {uploading[thumbKey] ? (
+                                                            <IconSpinner size={20} color={tc.primary} />
+                                                        ) : activeThumb ? (
+                                                            <>
+                                                                <img src={activeThumb} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,255,255,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.3)' }}>
+                                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="#ef4444" style={{ marginLeft: '1px' }}><path d="M8 5v14l11-7z" /></svg>
+                                                                    </div>
+                                                                </div>
+                                                                <span style={{ position: 'absolute', bottom: '5px', right: '5px', background: 'rgba(15,23,42,0.8)', color: '#ffffff', fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', backdropFilter: 'blur(4px)' }}>
+                                                                    {isAutoYt ? 'AUTO' : 'CUSTOM'}
+                                                                </span>
+                                                                {v.thumbnail && (
                                                                     <button onClick={e => { e.stopPropagation(); updateVideo(v.id, 'thumbnail', ''); }}
-                                                                        style={{ position: 'absolute', top: '3px', right: '3px', width: '18px', height: '18px', background: 'rgba(15,23,42,0.7)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                                                        title="Remove thumbnail">
-                                                                        <IconClose size={8} />
+                                                                        style={{ position: 'absolute', top: '5px', right: '5px', width: '20px', height: '20px', background: 'rgba(15,23,42,0.75)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                                        title="Reset to YouTube thumbnail">
+                                                                        <IconClose size={9} />
                                                                     </button>
-                                                                </>
-                                                            ) : (
-                                                                <span style={{ fontSize: '10px', color: '#94a3b8', textAlign: 'center', padding: '0 8px' }}>+ Thumbnail</span>
-                                                            )}
+                                                                )}
+                                                            </>
+                                                        ) : (
+                                                            <div style={{ textAlign: 'center', padding: '6px' }}>
+                                                                <svg width="22" height="22" viewBox="0 0 24 24" fill="#94a3b8" style={{ margin: '0 auto', display: 'block' }}>
+                                                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                                                </svg>
+                                                                <span style={{ fontSize: '9px', color: '#94a3b8', marginTop: '3px', display: 'block', fontWeight: 600 }}>Paste YT URL</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <input id={`vidthumb-input-${v.id}`} type="file" accept="image/*"
+                                                        onChange={e => {
+                                                            const f = e.target.files[0];
+                                                            e.target.value = '';
+                                                            if (f) setCropTarget({ mode: 'vidThumb', videoId: v.id, src: URL.createObjectURL(f) });
+                                                        }}
+                                                        style={{ display: 'none' }} />
+                                                </div>
+
+                                                {/* YouTube URL + Date inputs (Title removed) */}
+                                                <div style={{ flex: '1 1 320px', minWidth: '220px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                                        <div style={{ flex: '1 1 240px', position: 'relative' }}>
+                                                            <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', display: 'flex', alignItems: 'center' }}>
+                                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="#ef4444">
+                                                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                                                </svg>
+                                                            </div>
+                                                            <input
+                                                                type="text"
+                                                                value={v.youtubeUrl || ''}
+                                                                onChange={e => updateVideo(v.id, 'youtubeUrl', e.target.value)}
+                                                                placeholder="Paste YouTube Video URL (e.g. https://www.youtube.com/watch?v=...)"
+                                                                style={{ ...inputStyle, paddingLeft: '38px', background: '#f8fafc' }}
+                                                            />
                                                         </div>
-                                                        <input id={`vidthumb-input-${v.id}`} type="file" accept="image/*"
-                                                            onChange={e => {
-                                                                const f = e.target.files[0];
-                                                                e.target.value = '';
-                                                                if (f) setCropTarget({ mode: 'vidThumb', videoId: v.id, src: URL.createObjectURL(f) });
+
+                                                        <div style={{ width: '145px', flexShrink: 0 }}>
+                                                            <input
+                                                                type="date"
+                                                                value={v.date || ''}
+                                                                onChange={e => updateVideo(v.id, 'date', e.target.value)}
+                                                                title="Optional Date"
+                                                                style={{ ...inputStyle, background: '#f8fafc' }}
+                                                            />
+                                                        </div>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeVideo(v.id)}
+                                                            title="Delete Video"
+                                                            style={{
+                                                                width: '38px', height: '38px', borderRadius: '10px',
+                                                                background: '#fef2f2', border: '1px solid #fecaca',
+                                                                color: '#ef4444', cursor: 'pointer', display: 'flex',
+                                                                alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                                                                transition: 'all 0.15s ease'
                                                             }}
-                                                            style={{ display: 'none' }} />
+                                                        >
+                                                            <IconClose size={13} />
+                                                        </button>
                                                     </div>
 
-                                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                                        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                                                            <input type="text" value={v.title} onChange={e => updateVideo(v.id, 'title', e.target.value)} placeholder="Video Title" style={{ ...inputStyle, flex: 2 }} />
-                                                            <input type="date" value={v.date} onChange={e => updateVideo(v.id, 'date', e.target.value)} style={{ ...inputStyle, flex: 1 }} />
-                                                            <button onClick={() => removeVideo(v.id)} style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', color: '#ef4444', cursor: 'pointer', width: '40px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                                <IconClose size={13} />
-                                                            </button>
-                                                        </div>
-
-                                                        <input type="text" value={v.youtubeUrl} onChange={e => updateVideo(v.id, 'youtubeUrl', e.target.value)} placeholder="https://youtube.com/watch?v=..." style={inputStyle} />
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', flexWrap: 'wrap', gap: '6px' }}>
+                                                        {ytId ? (
+                                                            <span style={{ color: '#16a34a', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                                                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e' }} />
+                                                                YouTube Connected · Thumbnail Auto-Fetched
+                                                            </span>
+                                                        ) : (
+                                                            <span style={{ color: '#94a3b8' }}>
+                                                                Paste any YouTube link — thumbnail will be fetched automatically.
+                                                            </span>
+                                                        )}
+                                                        <span
+                                                            onClick={() => document.getElementById(`vidthumb-input-${v.id}`).click()}
+                                                            style={{ color: tc.primary, cursor: 'pointer', fontWeight: 600 }}
+                                                        >
+                                                            {v.thumbnail ? 'Change Custom Thumbnail' : '+ Upload Custom Thumbnail'}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>

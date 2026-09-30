@@ -277,7 +277,7 @@ const SOCIAL_FIELDS = ['facebook', 'instagram', 'youtube', 'twitter', 'linkedin'
                         </div>
 
                         {/* Quick Contact — Whiter Frosted Glass Panel */}
-                        <div className="contact-hero-item contact-quick-panel" style={{
+                        <div className="contact-hero-item contact-quick-panel dash-hero-stats-panel" style={{
                             background: 'linear-gradient(135deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.13) 100%)',
                             border: '1.5px solid rgba(255,255,255,0.42)',
                             borderRadius: '16px',

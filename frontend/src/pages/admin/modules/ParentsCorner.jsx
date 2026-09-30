@@ -185,7 +185,7 @@ const ParentsCorner = () => {
                     </div>
 
                     {/* Standardized Whiter Frosted Glass Panel */}
-                    <div style={{
+                    <div className="dash-hero-stats-panel" style={{
                         background: 'linear-gradient(135deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.13) 100%)',
                         border: '1.5px solid rgba(255,255,255,0.42)',
                         borderRadius: '16px',

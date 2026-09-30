@@ -7,7 +7,7 @@ import Footer from "../../components/public/Footer";
 import NotPublished from "../../components/public/NotPublished";
 import { getThemeColors, getBaseColors, isModuleEnabled } from "../../constants/publicNav";
 import { normalizeDashes } from "../../utils/dateTimeFormat";
-import { getYoutubeEmbedUrl } from "../../utils/youtube";
+import { getYoutubeEmbedUrl, getYouTubeThumbnail } from "../../utils/youtube";
 
 // ── Icons (SVG, no emojis) ──
 const IconFolder = ({ size = 22, color = '#8b2252' }) => (
@@ -265,10 +265,38 @@ const GalleryPublic = () => {
                 .photo-tile:hover .photo-tile-zoom { opacity: 1; transform: scale(1); }
                 .video-row { transition: all 0.25s cubic-bezier(0.16,1,0.3,1); }
                 .video-row:hover { background: #f1f5f9 !important; transform: translateX(4px); box-shadow: 0 10px 26px rgba(15,23,42,0.08); }
-                .video-thumb img { transition: transform 0.5s cubic-bezier(0.16,1,0.3,1); }
-                .video-row:hover .video-thumb img { transform: scale(1.08); }
-                .video-play-btn { transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-                .video-row:hover .video-play-btn { transform: scale(1.18); }
+                .public-video-card {
+                    position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 16/9;
+                    cursor: pointer; background: #090d16; box-shadow: 0 4px 18px rgba(15,23,42,0.08);
+                    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease, border-color 0.4s ease;
+                    border: 1px solid rgba(15,23,42,0.06);
+                }
+                .public-video-card:hover {
+                    transform: translateY(-8px);
+                    box-shadow: 0 24px 44px -12px rgba(15,23,42,0.28) !important;
+                    border-color: rgba(15,23,42,0.16) !important;
+                }
+                .public-video-thumb-img {
+                    width: 100%; height: 100%; object-fit: cover; display: block;
+                    transition: transform 0.7s cubic-bezier(0.16,1,0.3,1), filter 0.3s ease;
+                }
+                .public-video-card:hover .public-video-thumb-img {
+                    transform: scale(1.08);
+                }
+                .public-video-play-badge {
+                    width: 54px; height: 54px; border-radius: 50%;
+                    background: rgba(255,255,255,0.95);
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+                    display: flex; align-items: center; justify-content: center;
+                    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.25s ease;
+                }
+                .public-video-card:hover .public-video-play-badge {
+                    transform: scale(1.18);
+                    background: #ef4444 !important;
+                }
+                .public-video-card:hover .public-video-play-badge svg {
+                    fill: #ffffff !important;
+                }
                 .crumb-link { transition: color 0.2s; cursor: pointer; }
                 .crumb-link:hover { color: ${tc.primary} !important; }
                 .tab-btn { transition: all 0.2s; }
@@ -278,6 +306,7 @@ const GalleryPublic = () => {
                 @media (max-width: 900px) {
                     .gallery-folder-grid { grid-template-columns: repeat(2,1fr) !important; }
                     .gallery-photo-grid { grid-template-columns: repeat(3,1fr) !important; }
+                    .gallery-video-grid { grid-template-columns: repeat(2,1fr) !important; }
                 }
                 @media (max-width: 640px) {
                     .gallery-folder-grid { grid-template-columns: repeat(2,1fr) !important; gap: 12px !important; }
@@ -297,14 +326,9 @@ const GalleryPublic = () => {
                     .folder-caption-text { padding-left: 46px !important; min-height: 0px !important; padding-bottom: 2px !important; }
                     .folder-caption-text p:first-child { font-size: 14.5px !important; }
                     .folder-caption-text p:last-child { font-size: 10px !important; }
-
-                    /* ── Video tiles — the row layout (thumb-left, title-right) only works at
-                       full width; in a 2-per-row grid it stacks into a compact vertical card
-                       instead, thumbnail on top so it isn't squeezed to almost nothing ── */
-                    .video-row { flex-direction: column !important; align-items: stretch !important; gap: 8px !important; padding: 8px !important; border-radius: 12px !important; }
-                    .video-thumb { width: 100% !important; max-width: none !important; }
-                    .video-info { padding-right: 0 !important; padding: 0 2px 2px !important; }
-                    .video-info p { font-size: 12.5px !important; }
+                }
+                @media (max-width: 480px) {
+                    .gallery-video-grid { grid-template-columns: 1fr !important; }
                 }
             `}</style>
 
@@ -446,35 +470,69 @@ const GalleryPublic = () => {
                         <Reveal>
                             <div style={{ marginBottom: '4rem' }}>
                                 <p style={{ fontSize: '12px', color: tc.primary, letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700, marginBottom: '1.5rem' }}>Videos in this folder</p>
-                                <div className="gallery-video-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '16px' }}>
-                                    {visibleVideos.map(v => {
+                                <div className="gallery-video-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '22px' }}>
+                                    {visibleVideos.map((v, i) => {
                                         const isUpload = v.sourceType === 'upload';
-                                        const thumbBox = (
-                                            <div className="video-thumb" style={{ position: 'relative', width: '45%', maxWidth: '190px', aspectRatio: '16/9', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, background: v.thumbnail ? '#000' : (isUpload ? tc.primary : '#ff0000'), boxShadow: '0 6px 18px rgba(15,23,42,0.12)' }}>
-                                                {v.thumbnail && <img src={v.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-                                                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: v.thumbnail ? 'rgba(15,23,42,0.22)' : 'transparent' }}>
-                                                    <svg className="video-play-btn" width="34" height="34" fill="#ffffff" viewBox="0 0 24 24" style={{ filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.6))' }}>
-                                                        <path d="M8 5v14l11-7z" />
-                                                    </svg>
+                                        const thumb = v.thumbnail || (!isUpload ? getYouTubeThumbnail(v.youtubeUrl) : '');
+                                        return (
+                                            <div
+                                                key={v.id}
+                                                className="public-video-card"
+                                                onClick={() => setVideoModal({ youtubeUrl: v.youtubeUrl, url: v.videoUrl, thumbnail: thumb })}
+                                                style={{ animationDelay: `${i * 0.05}s` }}
+                                            >
+                                                {thumb ? (
+                                                    <img src={thumb} alt="" className="public-video-thumb-img" />
+                                                ) : (
+                                                    <div style={{
+                                                        width: '100%', height: '100%',
+                                                        background: `linear-gradient(135deg, ${tc.dark || '#0f172a'}, ${tc.primary})`,
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                    }}>
+                                                        <IconVideo size={36} color="rgba(255,255,255,0.4)" />
+                                                    </div>
+                                                )}
+
+                                                {/* Overlay & play button */}
+                                                <div style={{
+                                                    position: 'absolute', inset: 0,
+                                                    background: 'linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.6) 100%)',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                }}>
+                                                    {/* Center Play Button Badge */}
+                                                    <div className="public-video-play-badge">
+                                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="#ef4444" style={{ marginLeft: '3px' }}>
+                                                            <path d="M8 5v14l11-7z" />
+                                                        </svg>
+                                                    </div>
+
+                                                    {/* Date chip */}
+                                                    {v.date && (
+                                                        <div style={{
+                                                            position: 'absolute', top: '10px', right: '10px',
+                                                            background: 'rgba(15,23,42,0.72)', backdropFilter: 'blur(8px)',
+                                                            padding: '4px 9px', borderRadius: '20px',
+                                                            fontSize: '10.5px', fontWeight: 600, color: '#ffffff',
+                                                            border: '1px solid rgba(255,255,255,0.18)',
+                                                            display: 'flex', alignItems: 'center', gap: '4px'
+                                                        }}>
+                                                            <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                                            {formatDate(v.date)}
+                                                        </div>
+                                                    )}
+
+                                                    {/* YouTube Tag */}
+                                                    <div style={{
+                                                        position: 'absolute', bottom: '10px', left: '10px',
+                                                        background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)',
+                                                        padding: '3px 8px', borderRadius: '6px',
+                                                        fontSize: '9.5px', fontWeight: 700, color: '#ffffff',
+                                                        display: 'flex', alignItems: 'center', gap: '4px', letterSpacing: '0.04em'
+                                                    }}>
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="#ef4444"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                                        <span>WATCH</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        );
-                                        const info = (
-                                            <div className="video-info" style={{ minWidth: 0, paddingRight: '8px' }}>
-                                                <p style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', letterSpacing: '-0.1px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{v.title || 'Untitled'}</p>
-                                            </div>
-                                        );
-                                        return isUpload ? (
-                                            <div key={v.id} className="video-row" onClick={() => setVideoModal({ url: v.videoUrl, title: v.title, thumbnail: v.thumbnail })}
-                                                style={{ display: 'flex', alignItems: 'center', gap: '20px', padding: '14px', background: bc.cardAlt, border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer' }}>
-                                                {thumbBox}
-                                                {info}
-                                            </div>
-                                        ) : (
-                                            <div key={v.id} className="video-row" onClick={() => setVideoModal({ youtubeUrl: v.youtubeUrl, title: v.title, thumbnail: v.thumbnail })}
-                                                style={{ display: 'flex', alignItems: 'center', gap: '20px', padding: '14px', background: bc.cardAlt, border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer' }}>
-                                                {thumbBox}
-                                                {info}
                                             </div>
                                         );
                                     })}

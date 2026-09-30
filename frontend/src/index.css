@@ -20,3 +20,108 @@
   flex-shrink: 0;
   white-space: nowrap;
 }
+
+/* ── Admin module mobile optimization (Applies across all admin pages & modules) ── */
+@media (max-width: 640px) {
+  /* Give extra breathing room to mobile screens by tightening outer layout padding */
+  .admin-content-pad {
+    padding: 12px 10px !important;
+  }
+  .admin-content-pad > div[style*="minHeight"],
+  .admin-content-pad > div[style*="min-height"] {
+    margin: -12px -10px !important;
+    padding: 12px 10px !important;
+  }
+
+  /* ── Compact Hero Box for ALL modules ── */
+  .dash-hero,
+  .enquiry-hero {
+    padding: 1rem 1.1rem !important;
+    border-radius: 16px !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Hide the 230px frosted stats/quick panels on mobile so hero doesn't take half the screen */
+  .dash-hero-stats-panel,
+  .hp-quick-panel,
+  .settings-quick-panel,
+  .contact-quick-panel,
+  .dash-hero [style*="230px"],
+  .enquiry-hero [style*="230px"] {
+    display: none !important;
+  }
+
+  /* Compact Hero Title across all modules */
+  .dash-hero h1,
+  .dash-hero-title,
+  .enquiry-hero-title,
+  .dash-hero [class*="-hero-title"] {
+    font-size: 19px !important;
+    margin-bottom: 4px !important;
+    letter-spacing: -0.3px !important;
+    line-height: 1.25 !important;
+  }
+
+  /* Compact Hero Description across all modules */
+  .dash-hero p,
+  .dash-hero-desc,
+  .enquiry-hero-desc,
+  .dash-hero [class*="-hero-desc"] {
+    font-size: 11px !important;
+    line-height: 1.45 !important;
+    max-width: 100% !important;
+  }
+
+  /* Compact eyebrow pill and breadcrumb text */
+  .dash-hero span[style*="uppercase"],
+  .enquiry-hero span[style*="uppercase"] {
+    font-size: 9.5px !important;
+  }
+  .dash-hero [style*="borderRadius: '999px'"],
+  .dash-hero [style*="border-radius: 999px"],
+  .dash-hero [style*="borderRadius: 999px"],
+  .dash-hero [style*="border-radius: '999px'"] {
+    padding: 3px 9px !important;
+    margin-bottom: 6px !important;
+  }
+
+  /* Compact status badge row (Live on Website / Draft) */
+  .dash-hero [style*="marginTop: '14px'"],
+  .dash-hero [style*="margin-top: 14px"] {
+    margin-top: 8px !important;
+  }
+
+  /* Compact bottom action strip inside hero */
+  .dash-hero [style*="borderTop"],
+  .dash-hero [style*="border-top"],
+  .enquiry-hero [style*="borderTop"],
+  .enquiry-hero [style*="border-top"] {
+    margin-top: 0.9rem !important;
+    padding-top: 0.75rem !important;
+    gap: 8px !important;
+  }
+  .dash-hero [style*="borderTop"] span,
+  .dash-hero [style*="border-top"] span {
+    font-size: 11px !important;
+  }
+
+  /* Admin tabs swipeable container */
+  .admin-tabs-row,
+  .sports-tabs,
+  .au-tabs,
+  .settings-tabs,
+  .contact-tabs {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    padding-bottom: 2px !important;
+  }
+  .admin-tabs-row::-webkit-scrollbar,
+  .sports-tabs::-webkit-scrollbar,
+  .au-tabs::-webkit-scrollbar,
+  .settings-tabs::-webkit-scrollbar,
+  .contact-tabs::-webkit-scrollbar {
+    display: none !important;
+  }
+}

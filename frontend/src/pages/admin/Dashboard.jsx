@@ -315,7 +315,7 @@ const AdminDashboard = () => {
                     .dash-school-card-top { gap: 10px !important; }
                     .dash-school-logo, .dash-school-logo-placeholder { width: 34px !important; height: 34px !important; border-radius: 9px !important; }
                     .dash-school-logo-placeholder svg { width: 17px !important; height: 17px !important; }
-                    .dash-school-name { font-size: 12px !important; max-width: 60vw !important; white-space: normal !important; overflow-wrap: break-word !important; word-break: normal !important; margin-bottom: 4px !important; }
+                    .dash-school-name { font-size: 12px !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; margin-bottom: 4px !important; }
                     .dash-school-badge { font-size: 9.5px !important; padding: 2px 8px 2px 6px !important; }
                     .visit-site-link { font-size: 11px !important; padding: 9px 12px !important; }
 
@@ -378,9 +378,9 @@ const AdminDashboard = () => {
                             backdropFilter: 'blur(20px)',
                             WebkitBackdropFilter: 'blur(20px)',
                             boxShadow: '0 10px 30px rgba(0,0,0,0.18), inset 0 1px 1.5px rgba(255,255,255,0.5)',
-                            width: '260px',
-                            minWidth: '260px',
-                            maxWidth: '260px',
+                            width: 'max-content',
+                            minWidth: '280px',
+                            maxWidth: '380px',
                             flexShrink: 0,
                             boxSizing: 'border-box',
                             animationDelay: '0.2s',
@@ -397,8 +397,8 @@ const AdminDashboard = () => {
                                         </div>
                                     )}
                                 </div>
-                                <div style={{ minWidth: 0, flex: 1 }}>
-                                    <p className="dash-school-name" style={{ fontSize: '13.5px', fontWeight: 700, color: '#ffffff', margin: 0, lineHeight: 1.3 }}>{school?.name || 'School Name'}</p>
+                                <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
+                                    <p className="dash-school-name" title={school?.name || 'School Name'} style={{ fontSize: '13.5px', fontWeight: 700, color: '#ffffff', margin: 0, lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{school?.name || 'School Name'}</p>
                                     <span className="dash-school-badge" style={{
                                         fontSize: '9.5px', padding: '2px 8px', borderRadius: '20px', fontWeight: 600,
                                         background: isLive ? 'rgba(21,128,61,0.25)' : 'rgba(161,98,7,0.25)',

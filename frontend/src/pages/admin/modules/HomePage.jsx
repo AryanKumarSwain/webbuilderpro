@@ -753,7 +753,7 @@ const HomePage = () => {
                         </div>
 
                         {/* Quick Snapshot — Standardized Whiter Frosted Glass Panel */}
-                        <div className="hp-hero-item hp-quick-panel" style={{
+                        <div className="hp-hero-item hp-quick-panel dash-hero-stats-panel" style={{
                             background: 'linear-gradient(135deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.13) 100%)',
                             border: '1.5px solid rgba(255,255,255,0.42)',
                             borderRadius: '16px',
