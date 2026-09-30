@@ -169,19 +169,19 @@ const SingleImageUploadBox = ({ label, url, inputId, onSelect, onRemove, uploadi
 // Each card manages its own crop-modal session for its photo upload. ──
 const TestimonialEntryCard = ({ tc, testimonial, index, length, onMove, onUpdate, onRemove, onUploadPhoto, uploading }) => {
     const [cropSrc, setCropSrc] = useState(null);
-    const inputStyle = { width: '100%', padding: '10px 13px', border: '1px solid #e5e9f0', borderRadius: '10px', fontSize: '13px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', background: '#f8fafc', transition: 'border 0.2s, box-shadow 0.2s, background 0.2s' };
-    const labelStyle = { display: 'block', fontSize: '11px', fontWeight: 600, color: '#64748b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' };
+    const inputStyle = { width: '100%', padding: '10px 14px', border: '1.5px solid #e2e8f0', borderRadius: '10px', fontSize: '13.5px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', background: '#f8fafc', transition: 'border 0.2s, box-shadow 0.2s, background 0.2s' };
+    const labelStyle = { display: 'block', fontSize: '11px', fontWeight: 700, color: '#64748b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' };
 
     return (
-        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', padding: '1.75rem', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ width: '26px', height: '26px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11.5px', fontWeight: 700, color: '#fff', background: `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})`, flexShrink: 0 }}>{index + 1}</span>
-                    <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{testimonial.name || 'New Testimonial'}</p>
+        <div style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', borderRadius: '18px', padding: '1.75rem', boxShadow: '0 4px 18px rgba(0,0,0,0.04)', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ width: '28px', height: '28px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, color: '#fff', background: `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})`, boxShadow: `0 4px 10px ${hexToRgba(tc.primary, 0.3)}`, flexShrink: 0 }}>{index + 1}</span>
+                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>{testimonial.name || 'New Testimonial'}</p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <ReorderButtons index={index} length={length} onMove={onMove} vertical={false} />
-                    <button onClick={onRemove} style={{ background: '#fef2f2', border: '0.5px solid #fecaca', borderRadius: '6px', color: '#ef4444', cursor: 'pointer', fontSize: '14px', width: '28px', height: '28px' }}>×</button>
+                    <button onClick={onRemove} style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', color: '#ef4444', cursor: 'pointer', fontSize: '16px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s ease' }}>×</button>
                 </div>
             </div>
 
@@ -283,9 +283,8 @@ const HomePage = () => {
     const [removingVideo, setRemovingVideo] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
     const [cropSrc, setCropSrc] = useState(null);
-    const [cropTarget, setCropTarget] = useState('banner'); // 'banner' | 'recrop-banner' | 'intro1' | 'intro2' | 'campus' | 'recrop-campus'
+    const [cropTarget, setCropTarget] = useState('banner'); // 'recrop-banner' | 'intro1' | 'intro2' | 'recrop-campus'
     const [recropId, setRecropId] = useState(null);
-    const [imageQueue, setImageQueue] = useState([]); // remaining files still waiting to be cropped
     const [activeTab, setActiveTab] = useState('hero');
     const [testimonialUploading, setTestimonialUploading] = useState({});
 
@@ -349,32 +348,90 @@ const HomePage = () => {
         if (file) { setVideoFile(file); setVideoPreview(URL.createObjectURL(file)); }
     };
 
-    // Every image field (hero banners, the two intro highlight photos, campus glimpse
-    // images) shares one crop flow — files are cropped one at a time (freeform, adjustable
-    // from every side unless a fixed shape is enforced, see below); once confirmed, the next
-    // queued file automatically opens in the crop modal. `cropTarget` says which field the
-    // current crop session is feeding.
+    // Direct upload for multiple photos (Hero Banners and Campus Glimpses).
+    // Uploads files directly without crop modal interrupts, while keeping Recrop available on every card.
+    const uploadMultipleImages = async (files, target) => {
+        if (!files || files.length === 0) return;
+
+        let toUpload = [...files];
+        const isBanner = target === 'banner';
+        const maxAllowed = isBanner ? HERO_BANNERS_MAX : CAMPUS_IMAGES_MAX;
+        const currentCount = isBanner ? (content.heroBanners || []).length : (content.campusImages || []).length;
+        const remaining = Math.max(0, maxAllowed - currentCount);
+        const itemLabel = isBanner ? 'banner' : 'photo';
+
+        if (remaining === 0) {
+            toast.error(isBanner ? `You can upload up to ${HERO_BANNERS_MAX} banner images` : `You can upload up to ${CAMPUS_IMAGES_MAX} photos in Campus Glimpses`);
+            return;
+        }
+
+        if (toUpload.length > remaining) {
+            toast.error(`Only ${remaining} more ${itemLabel}${remaining === 1 ? '' : 's'} can be added (max ${maxAllowed})`);
+            toUpload = toUpload.slice(0, remaining);
+        }
+
+        setUploadingImage(true);
+        setCropTarget(target);
+        const toastId = toast.loading(toUpload.length > 1 ? `Uploading ${toUpload.length} ${itemLabel}s...` : `Uploading ${itemLabel}...`);
+
+        try {
+            const newItems = [];
+            let failCount = 0;
+
+            for (let i = 0; i < toUpload.length; i++) {
+                const file = toUpload[i];
+                if (toUpload.length > 1) {
+                    toast.loading(`Uploading ${itemLabel} ${i + 1} of ${toUpload.length}...`, { id: toastId });
+                }
+                try {
+                    const res = await uploadContentImageApi(file);
+                    if (res?.data?.url) {
+                        newItems.push({
+                            id: `${target}-${Date.now()}-${i}-${Math.random().toString(36).substring(2, 7)}`,
+                            url: res.data.url
+                        });
+                    }
+                } catch (err) {
+                    console.error(`Failed to upload ${itemLabel}:`, file.name, err);
+                    failCount++;
+                }
+            }
+
+            if (newItems.length > 0) {
+                if (isBanner) {
+                    setContent(prev => ({
+                        ...prev,
+                        heroBanners: [...(prev.heroBanners || []), ...newItems]
+                    }));
+                } else {
+                    setContent(prev => ({
+                        ...prev,
+                        campusImages: [...(prev.campusImages || []), ...newItems]
+                    }));
+                }
+            }
+
+            if (failCount === 0) {
+                toast.success(`${newItems.length} ${itemLabel}${newItems.length > 1 ? 's' : ''} uploaded!`, { id: toastId });
+            } else if (newItems.length > 0) {
+                toast.success(`${newItems.length} uploaded, ${failCount} failed`, { id: toastId });
+            } else {
+                toast.error(`Failed to upload ${itemLabel}${toUpload.length > 1 ? 's' : ''}`, { id: toastId });
+            }
+        } catch (e) {
+            toast.error(e?.response?.data?.message || `Failed to upload ${itemLabel}${toUpload.length > 1 ? 's' : ''}`, { id: toastId });
+        } finally {
+            setUploadingImage(false);
+            setCropTarget(null);
+        }
+    };
+
+    // Single-photo crop flow used for shield highlight photos (intro1, intro2)
     const openImageCrop = (e, target) => {
-        let files = Array.from(e.target.files || []);
+        const files = Array.from(e.target.files || []);
         e.target.value = '';
         if (files.length === 0) return;
-        if (target === 'campus') {
-            const remaining = Math.max(0, CAMPUS_IMAGES_MAX - content.campusImages.length);
-            if (remaining === 0) { toast.error(`You can upload up to ${CAMPUS_IMAGES_MAX} photos in Campus Glimpses`); return; }
-            if (files.length > remaining) {
-                toast.error(`Only ${remaining} more photo${remaining === 1 ? '' : 's'} can be added (max ${CAMPUS_IMAGES_MAX})`);
-                files = files.slice(0, remaining);
-            }
-        } else if (target === 'banner') {
-            const remaining = Math.max(0, HERO_BANNERS_MAX - content.heroBanners.length);
-            if (remaining === 0) { toast.error(`You can upload up to ${HERO_BANNERS_MAX} banner images`); return; }
-            if (files.length > remaining) {
-                toast.error(`Only ${remaining} more banner${remaining === 1 ? '' : 's'} can be added (max ${HERO_BANNERS_MAX})`);
-                files = files.slice(0, remaining);
-            }
-        }
         setCropTarget(target);
-        setImageQueue(files.slice(1));
         setCropSrc(URL.createObjectURL(files[0]));
     };
 
@@ -386,21 +443,17 @@ const HomePage = () => {
             if (cropTarget === 'recrop-banner') {
                 setContent(prev => ({
                     ...prev,
-                    heroBanners: prev.heroBanners.map(b => b.id === recropId ? { ...b, url: res.data.url } : b)
+                    heroBanners: (prev.heroBanners || []).map(b => b.id === recropId ? { ...b, url: res.data.url } : b)
                 }));
                 setRecropId(null);
                 toast.success('Banner updated!');
-            } else if (cropTarget === 'banner') {
-                setContent(prev => ({ ...prev, heroBanners: [...prev.heroBanners, { id: `banner-${Date.now()}`, url: res.data.url }] }));
             } else if (cropTarget === 'recrop-campus') {
                 setContent(prev => ({
                     ...prev,
-                    campusImages: prev.campusImages.map(img => img.id === recropId ? { ...img, url: res.data.url } : img)
+                    campusImages: (prev.campusImages || []).map(img => img.id === recropId ? { ...img, url: res.data.url } : img)
                 }));
                 setRecropId(null);
                 toast.success('Campus image updated!');
-            } else if (cropTarget === 'campus') {
-                setContent(prev => ({ ...prev, campusImages: [...prev.campusImages, { id: `campus-${Date.now()}`, url: res.data.url }] }));
             } else if (cropTarget === 'intro1') {
                 setContent(prev => ({ ...prev, introImage1: res.data.url }));
             } else if (cropTarget === 'intro2') {
@@ -410,11 +463,7 @@ const HomePage = () => {
             toast.error(e?.response?.data?.message || 'Failed to upload image');
         } finally {
             setUploadingImage(false);
-            if (imageQueue.length > 0) {
-                const [next, ...rest] = imageQueue;
-                setImageQueue(rest);
-                setCropSrc(URL.createObjectURL(next));
-            }
+            setCropTarget(null);
         }
     };
 
@@ -432,11 +481,12 @@ const HomePage = () => {
         setRecropId(banner.id);
         setCropTarget('recrop-banner');
         try {
-            const res = await fetch(banner.url);
+            const res = await fetch(banner.url, { mode: 'cors' });
             const blob = await res.blob();
             setCropSrc(URL.createObjectURL(blob));
         } catch (e) {
-            setCropSrc(banner.url);
+            const sep = banner.url.includes('?') ? '&' : '?';
+            setCropSrc(`${banner.url}${sep}t=${Date.now()}`);
         }
     };
 
@@ -458,11 +508,12 @@ const HomePage = () => {
         setRecropId(img.id);
         setCropTarget('recrop-campus');
         try {
-            const res = await fetch(img.url);
+            const res = await fetch(img.url, { mode: 'cors' });
             const blob = await res.blob();
             setCropSrc(URL.createObjectURL(blob));
         } catch (e) {
-            setCropSrc(img.url);
+            const sep = img.url.includes('?') ? '&' : '?';
+            setCropSrc(`${img.url}${sep}t=${Date.now()}`);
         }
     };
 
@@ -534,7 +585,7 @@ const HomePage = () => {
     };
 
     const inputStyle = {
-        width: '100%', padding: '11px 14px', border: '1px solid #e5e9f0',
+        width: '100%', padding: '11px 14px', border: '1.5px solid #e2e8f0',
         borderRadius: '10px', fontSize: '13.5px', color: '#0f172a', outline: 'none',
         boxSizing: 'border-box', background: '#f8fafc', fontFamily: 'system-ui, sans-serif',
         transition: 'border 0.2s, box-shadow 0.2s, background 0.2s'
@@ -567,9 +618,45 @@ const HomePage = () => {
                 @keyframes heroIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes drift1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-24px, 18px) scale(1.08); } }
                 .hp-section { animation: fadeInUp 0.35s ease forwards; }
-                .hp-input:focus { border-color: ${tc.primary} !important; box-shadow: 0 0 0 3px ${hexToRgba(tc.primary, 0.08)} !important; background: #ffffff !important; }
+                .hp-input:focus { border-color: ${tc.primary} !important; box-shadow: 0 0 0 3px ${hexToRgba(tc.primary, 0.14)} !important; background: #ffffff !important; }
                 .hp-hero-item { animation: heroIn 0.55s cubic-bezier(0.16,1,0.3,1) both; }
                 .hp-hero-orb { animation: drift1 9s ease-in-out infinite; }
+
+                /* ── Premium Card Design Standard ── */
+                .hp-card-premium {
+                    background: #ffffff;
+                    border: 1.5px solid #e2e8f0;
+                    border-radius: 18px;
+                    overflow: hidden;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+                    position: relative;
+                    transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s cubic-bezier(0.16,1,0.3,1), border-color 0.2s ease;
+                    margin-bottom: 1.5rem;
+                }
+                .hp-card-premium::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 3.5px;
+                    background: linear-gradient(90deg, ${tc.primary} 0%, ${tc.secondary} 100%);
+                    opacity: 0.85;
+                }
+                .hp-card-premium:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+                    border-color: #cbd5e1;
+                }
+                .hp-btn-primary {
+                    border-radius: 10px !important;
+                    font-weight: 700 !important;
+                    transition: all 0.2s cubic-bezier(0.16,1,0.3,1) !important;
+                }
+                .hp-btn-primary:hover:not(:disabled) {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 20px ${hexToRgba(tc.primary, 0.35)} !important;
+                }
 
                 /* ── Save / Publish / Unpublish buttons ── */
                 .hp-btn { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; position: relative; overflow: hidden; letter-spacing: 0.01em; transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease, filter 0.25s ease; }
@@ -629,57 +716,144 @@ const HomePage = () => {
             <div style={{ fontFamily: 'system-ui, sans-serif', background: bc.surface, margin: '-24px', padding: '24px', minHeight: '100vh' }}>
 
                 {/* Hero Header */}
-                <div className="dash-hero" style={{ background: `linear-gradient(135deg, ${tc.dark} 0%, ${tc.primary} 55%, ${tc.dark} 100%)`, borderRadius: '22px', padding: '2.25rem 2.5rem', marginBottom: '1.75rem', position: 'relative', overflow: 'hidden', boxShadow: `0 12px 40px ${hexToRgba(tc.primary, 0.25)}` }}>
+                <div className="dash-hero" style={{
+                    background: `linear-gradient(135deg, ${tc.dark} 0%, ${tc.primary} 55%, ${tc.secondary} 100%)`,
+                    borderRadius: '22px',
+                    padding: '2.5rem 2.75rem',
+                    marginBottom: '1.75rem',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    boxShadow: `0 24px 60px ${hexToRgba(tc.primary, 0.28)}, 0 4px 20px rgba(0,0,0,0.18)`
+                }}>
+                    {/* Dot grid texture */}
                     <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '24px 24px', pointerEvents: 'none' }}></div>
-                    <div className="hp-hero-orb" style={{ position: 'absolute', width: '300px', height: '300px', borderRadius: '50%', background: `radial-gradient(circle, ${hexToRgba(tc.primary, 0.25)} 0%, transparent 70%)`, top: '-140px', right: '4%', pointerEvents: 'none' }}></div>
-                    <div className="hp-hero-inner" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                        <div className="hp-hero-top" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px' }}>
-                            <div className="hp-hero-item">
-                                <p className="hp-hero-eyebrow" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>Admin / Pages / Home Page</p>
-                                <h1 className="hp-hero-title" style={{ fontSize: '26px', fontWeight: 700, color: '#ffffff', marginBottom: '8px', letterSpacing: '-0.4px' }}>Home Page</h1>
-                                <p className="hp-hero-desc" style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, maxWidth: '400px' }}>
-                                    Manage your school's home page hero text.
-                                </p>
+                    
+                    {/* Glowing radial gradient orbs */}
+                    <div className="hp-hero-orb" style={{ position: 'absolute', width: '380px', height: '380px', borderRadius: '50%', background: `radial-gradient(circle, ${hexToRgba(tc.primary, 0.32)} 0%, transparent 70%)`, top: '-130px', right: '5%', pointerEvents: 'none' }}></div>
+                    <div style={{ position: 'absolute', width: '240px', height: '240px', borderRadius: '50%', background: `radial-gradient(circle, ${hexToRgba(tc.secondary, 0.25)} 0%, transparent 70%)`, bottom: '-80px', right: '32%', pointerEvents: 'none' }}></div>
+
+                    <div className="hp-hero-inner" style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '2rem', flexWrap: 'wrap' }}>
+                        <div className="hp-hero-item" style={{ animationDelay: '0.05s', flex: 1, minWidth: '280px' }}>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '4px 12px', background: 'rgba(255,255,255,0.12)', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.22)', marginBottom: '12px' }}>
+                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80' }}></div>
+                                <span style={{ fontSize: '10.5px', color: '#ffffff', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>Admin / Pages / Home Page</span>
                             </div>
-                            <div className="hp-hero-item hp-status-badge" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 11px', background: isPublished ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.08)', border: `1px solid ${isPublished ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.15)'}`, borderRadius: '999px', flexShrink: 0 }}>
-                                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: isPublished ? '#22c55e' : '#94a3b8', flexShrink: 0 }}></div>
-                                <span style={{ fontSize: '10.5px', color: isPublished ? '#86efac' : 'rgba(255,255,255,0.55)', fontWeight: 600, letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
-                                    {isPublished ? 'Published' : 'Draft'}
-                                </span>
+                            <h1 className="dash-hero-title" style={{ fontSize: '32px', fontWeight: 700, color: '#ffffff', marginBottom: '8px', letterSpacing: '-0.6px', lineHeight: 1.2 }}>Home Page Builder</h1>
+                            <p className="dash-hero-desc" style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, maxWidth: '440px' }}>
+                                Customize your school's hero showcase, video tour, highlight shields, campus gallery, and visitor testimonials.
+                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px' }}>
+                                <div className="hp-status-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '5px 12px', background: isPublished ? 'rgba(34,197,94,0.18)' : 'rgba(255,255,255,0.12)', border: `1.5px solid ${isPublished ? 'rgba(34,197,94,0.45)' : 'rgba(255,255,255,0.25)'}`, borderRadius: '999px' }}>
+                                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: isPublished ? '#4ade80' : '#facc15' }}></div>
+                                    <span style={{ fontSize: '11px', color: isPublished ? '#bbf7d0' : '#ffffff', fontWeight: 700, letterSpacing: '0.03em' }}>
+                                        {isPublished ? 'Live on Website' : 'Draft (Unpublished)'}
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                        <div className="hp-hero-item hp-hero-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                            <ModuleActionButtons
-                                tc={tc}
-                                moduleKey="home"
-                                content={content}
-                                saving={saving}
-                                publishing={publishing}
-                                isPublished={isPublished}
-                                isDirty={isDirty}
-                                onPublish={() => handleSave(true)}
-                                onUnpublish={handleUnpublish}
-                            />
+
+                        {/* Quick Snapshot — Standardized Whiter Frosted Glass Panel */}
+                        <div className="hp-hero-item hp-quick-panel" style={{
+                            background: 'linear-gradient(135deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.13) 100%)',
+                            border: '1.5px solid rgba(255,255,255,0.42)',
+                            borderRadius: '16px',
+                            padding: '0.75rem 1.1rem',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.18), inset 0 1px 1.5px rgba(255,255,255,0.5)',
+                            width: '230px',
+                            minWidth: '230px',
+                            maxWidth: '230px',
+                            flexShrink: 0,
+                            boxSizing: 'border-box',
+                            animationDelay: '0.15s'
+                        }}>
+                            {[
+                                {
+                                    label: 'Hero Background',
+                                    value: content.heroBgType === 'video' ? (school?.hero_video_url ? 'Video Active' : 'No Video') : `${content.heroBanners?.length || 0} Slides`,
+                                    icon: content.heroBgType === 'video' ? <VideoIcon size={14} color="currentColor" /> : <BannerIcon size={14} color="currentColor" />
+                                },
+                                {
+                                    label: 'Campus & Tour',
+                                    value: `${content.campusImages?.length || 0} Photos · ${content.tourYoutubeUrl ? 'Tour On' : 'No Tour'}`,
+                                    icon: <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>
+                                },
+                            ].map((item, i) => (
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '5px 0', borderBottom: i === 0 ? '1px solid rgba(255,255,255,0.18)' : 'none' }}>
+                                    <div style={{
+                                        width: '28px', height: '28px', borderRadius: '8px',
+                                        background: 'rgba(255,255,255,0.22)',
+                                        border: '1px solid rgba(255,255,255,0.38)',
+                                        color: '#ffffff',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                                    }}>
+                                        {item.icon}
+                                    </div>
+                                    <div style={{ minWidth: 0, flex: 1 }}>
+                                        <p style={{ fontSize: '9.5px', color: 'rgba(255,255,255,0.7)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, lineHeight: 1.2 }}>{item.label}</p>
+                                        <p style={{ fontSize: '12.5px', fontWeight: 700, color: '#ffffff', margin: 0, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.value}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
+                    </div>
+
+                    {/* Action buttons embedded smoothly at bottom */}
+                    <div className="hp-hero-item hp-hero-actions" style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.16)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>
+                                {isDirty ? '⚠️ You have unsaved changes in this module' : '✓ All changes are currently up to date'}
+                            </span>
+                        </div>
+                        <ModuleActionButtons
+                            tc={tc}
+                            moduleKey="home"
+                            content={content}
+                            saving={saving}
+                            publishing={publishing}
+                            isPublished={isPublished}
+                            isDirty={isDirty}
+                            onPublish={() => handleSave(true)}
+                            onUnpublish={handleUnpublish}
+                        />
                     </div>
                 </div>
 
-                {/* ── Section tabs ── */}
-                <ScrollTabs colors={tc} style={{ marginBottom: '1.75rem' }}>
-                    {HOME_TABS.map(t => (
-                        <button key={t.key} type="button" onClick={() => setActiveTab(t.key)}
-                            style={{ padding: '10px 20px', borderRadius: '6px', border: activeTab === t.key ? `1.5px solid ${tc.primary}` : '1px solid #e2e8f0', fontSize: '13px', cursor: 'pointer', background: activeTab === t.key ? tc.light : '#ffffff', color: activeTab === t.key ? tc.primary : '#64748b', fontWeight: activeTab === t.key ? 600 : 400, display: 'flex', alignItems: 'center', gap: '7px', transition: 'all 0.15s', boxShadow: activeTab === t.key ? `0 4px 12px ${hexToRgba(tc.primary, 0.15)}` : 'none' }}>
-                            <span style={{ color: activeTab === t.key ? tc.primary : '#94a3b8' }}>{t.icon}</span>
-                            {t.label}
-                        </button>
-                    ))}
-                </ScrollTabs>
+                {/* ── Section tabs (Modern pill styling) ── */}
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '1.75rem', background: '#f1f5f9', padding: '6px', borderRadius: '14px', width: 'fit-content', border: '1px solid #e2e8f0', flexWrap: 'wrap' }}>
+                    {HOME_TABS.map(t => {
+                        const isActive = activeTab === t.key;
+                        return (
+                            <button key={t.key} type="button" onClick={() => setActiveTab(t.key)}
+                                style={{
+                                    padding: '9px 18px',
+                                    borderRadius: '10px',
+                                    border: 'none',
+                                    fontSize: '13px',
+                                    fontWeight: isActive ? 700 : 500,
+                                    cursor: 'pointer',
+                                    background: isActive ? '#ffffff' : 'transparent',
+                                    color: isActive ? tc.primary : '#64748b',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    transition: 'all 0.18s cubic-bezier(0.16,1,0.3,1)',
+                                    boxShadow: isActive ? '0 4px 14px rgba(0,0,0,0.06)' : 'none',
+                                    transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                                }}>
+                                <span style={{ color: isActive ? tc.primary : '#94a3b8', display: 'flex', alignItems: 'center' }}>{t.icon}</span>
+                                {t.label}
+                            </button>
+                        );
+                    })}
+                </div>
 
                 {activeTab === 'hero' && <>
                 {/* ── Hero Background ── */}
-                <div className="hp-section" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', marginBottom: '1.25rem' }}>
-                    <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#1a1a2e,#0f3460)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(15,52,96,0.3)' }}>
+                <div className="hp-card-premium hp-section">
+                    <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#1a1a2e,#0f3460)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(15,52,96,0.3)' }}>
                             <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                         </div>
                         <div>
@@ -690,13 +864,13 @@ const HomePage = () => {
 
                     {/* Type toggle */}
                     <div style={{ padding: '1.25rem 1.75rem 0' }}>
-                        <div style={{ display: 'inline-flex', padding: '4px', background: '#f1f5f9', borderRadius: '8px', gap: '4px' }}>
+                        <div style={{ display: 'inline-flex', padding: '4px', background: '#f1f5f9', borderRadius: '10px', gap: '4px', border: '1px solid #e2e8f0' }}>
                             <button onClick={() => handleChange('heroBgType', 'video')}
-                                style={{ padding: '8px 18px', borderRadius: '6px', border: 'none', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer', background: content.heroBgType === 'video' ? '#ffffff' : 'transparent', color: content.heroBgType === 'video' ? '#0f172a' : '#64748b', boxShadow: content.heroBgType === 'video' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', background: content.heroBgType === 'video' ? '#ffffff' : 'transparent', color: content.heroBgType === 'video' ? tc.primary : '#64748b', boxShadow: content.heroBgType === 'video' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.15s ease' }}>
                                 <VideoIcon size={14} color={content.heroBgType === 'video' ? tc.primary : '#94a3b8'} /> Video
                             </button>
                             <button onClick={() => handleChange('heroBgType', 'banner')}
-                                style={{ padding: '8px 18px', borderRadius: '6px', border: 'none', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer', background: content.heroBgType === 'banner' ? '#ffffff' : 'transparent', color: content.heroBgType === 'banner' ? '#0f172a' : '#64748b', boxShadow: content.heroBgType === 'banner' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', fontSize: '12.5px', fontWeight: 700, cursor: 'pointer', background: content.heroBgType === 'banner' ? '#ffffff' : 'transparent', color: content.heroBgType === 'banner' ? tc.primary : '#64748b', boxShadow: content.heroBgType === 'banner' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.15s ease' }}>
                                 <BannerIcon size={14} color={content.heroBgType === 'banner' ? tc.primary : '#94a3b8'} /> Banner Slideshow
                             </button>
                         </div>
@@ -707,13 +881,13 @@ const HomePage = () => {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                                 <div>
                                     <label style={labelStyle}>Video Title (optional)</label>
-                                    <input type="text" value={videoTitle} onChange={e => setVideoTitle(e.target.value)} placeholder="Enter Video Title" style={inputStyle} />
+                                    <input type="text" value={videoTitle} onChange={e => setVideoTitle(e.target.value)} placeholder="Enter Video Title" className="hp-input" style={inputStyle} />
                                 </div>
                                 <div onClick={() => document.getElementById('heroVideoInput').click()}
                                     style={{ border: '1.5px dashed #e2e8f0', borderRadius: '8px', padding: '1.5rem', textAlign: 'center', cursor: 'pointer', background: videoFile ? '#f8fafc' : '#fafafa' }}>
                                     {videoFile ? (
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' }}>
-                                            <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg,#1a1a2e,#0f3460)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg,#1a1a2e,#0f3460)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                 <svg width="18" height="18" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                                             </div>
                                             <div style={{ textAlign: 'left' }}>
@@ -731,7 +905,7 @@ const HomePage = () => {
                                 </div>
                                 <input id="heroVideoInput" type="file" accept="video/mp4,video/webm,video/mov" onChange={handleVideoChange} style={{ display: 'none' }} />
                                 <button onClick={handleVideoUpload} disabled={uploadingVideo || !videoFile}
-                                    style={{ padding: '11px', background: uploadingVideo || !videoFile ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: uploadingVideo || !videoFile ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                    className="hp-btn-primary" style={{ padding: '12px', background: uploadingVideo || !videoFile ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: uploadingVideo || !videoFile ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     {uploadingVideo ? <><svg style={{ animation: 'spin 1s linear infinite', width: '16px', height: '16px' }} viewBox="0 0 24 24" fill="none"><circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>Uploading...</> : <><svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Upload Hero Video</>}
                                 </button>
                             </div>
@@ -761,7 +935,7 @@ const HomePage = () => {
                         <div style={{ padding: '1.75rem 2rem 2rem' }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '14px' }}>
                                 <p style={{ fontSize: '11px', color: '#94a3b8' }}>
-                                    Upload up to {HERO_BANNERS_MAX} images — they'll auto-rotate with a fade every 3 seconds behind the hero text. Wide images (16:9 or wider) work best. You'll get a crop tool for each image (freely adjustable from every side) before it's added. JPG, PNG, WEBP · Max 1MB each.
+                                    Upload up to {HERO_BANNERS_MAX} images — they'll auto-rotate with a fade every 3 seconds behind the hero text. Wide images (16:9 or wider) work best. All banners are uploaded directly; you can recrop any banner at any time. JPG, PNG, WEBP · Max 1MB each.
                                 </p>
                                 <span style={{ fontSize: '11px', color: content.heroBanners.length >= HERO_BANNERS_MAX ? '#dc2626' : '#94a3b8', fontWeight: 600, whiteSpace: 'nowrap' }}>{content.heroBanners.length} / {HERO_BANNERS_MAX}</span>
                             </div>
@@ -873,7 +1047,18 @@ const HomePage = () => {
                                     </div>
                                 )}
                             </div>
-                            <input id="heroBannerInput" type="file" accept="image/jpeg,image/jpg,image/png,image/webp" multiple onChange={e => openImageCrop(e, 'banner')} style={{ display: 'none' }} />
+                            <input
+                                id="heroBannerInput"
+                                type="file"
+                                accept="image/jpeg,image/jpg,image/png,image/webp"
+                                multiple
+                                onChange={e => {
+                                    const files = Array.from(e.target.files || []);
+                                    e.target.value = '';
+                                    if (files.length > 0) uploadMultipleImages(files, 'banner');
+                                }}
+                                style={{ display: 'none' }}
+                            />
                             {content.heroBanners.length === 0 && (
                                 <p style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '10px' }}>No banners uploaded yet — until you add at least one, the video (or theme gradient) will show instead.</p>
                             )}
@@ -882,10 +1067,10 @@ const HomePage = () => {
                 </div>
 
                 {/* ── Announcement Ticker ── */}
-                <div className="hp-section" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', marginBottom: '1.25rem' }}>
+                <div className="hp-card-premium hp-section">
                     <div style={{ padding: '1.25rem 1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}`, flexShrink: 0 }}>
+                            <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}`, flexShrink: 0 }}>
                                 <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                             </div>
                             <div>
@@ -901,9 +1086,9 @@ const HomePage = () => {
                 </div>
 
                 {/* ── Hero Section ── */}
-                <div className="hp-section" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                    <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                <div className="hp-card-premium hp-section">
+                    <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                             <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                         </div>
                         <div>
@@ -951,9 +1136,9 @@ const HomePage = () => {
 
                 {activeTab === 'highlight' && <>
                 {/* ── Homepage Highlight ── */}
-                <div className="hp-section" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', marginTop: '1.25rem' }}>
-                    <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                <div className="hp-card-premium hp-section">
+                    <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                             <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
                         </div>
                         <div>
@@ -974,7 +1159,7 @@ const HomePage = () => {
                         <div>
                             <label style={labelStyle}>Section Heading</label>
                             <input type="text" value={content.introHeading} onChange={e => handleChange('introHeading', e.target.value)}
-                                placeholder="Enter section heading" style={inputStyle} />
+                                placeholder="Enter section heading" className="hp-input" style={inputStyle} />
                             <ColorField label="Heading Color" value={content.introHeadingColor} defaultColor={tc.primary}
                                 onChange={val => handleChange('introHeadingColor', val)} />
                             <FontField label="Heading Font" value={content.introHeadingFont} onChange={val => handleChange('introHeadingFont', val)} />
@@ -991,9 +1176,9 @@ const HomePage = () => {
 
                 {activeTab === 'tour' && <>
                 {/* ── School Tour (YouTube video) ── */}
-                <div className="hp-section" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', marginTop: '1.25rem' }}>
-                    <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                <div className="hp-card-premium hp-section">
+                    <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                             <VideoIcon size={18} color="white" />
                         </div>
                         <div>
@@ -1005,12 +1190,12 @@ const HomePage = () => {
                         <div>
                             <label style={labelStyle}>Section Heading</label>
                             <input type="text" value={content.tourHeading} onChange={e => handleChange('tourHeading', e.target.value)}
-                                placeholder="Enter section heading" style={inputStyle} />
+                                placeholder="Enter section heading" className="hp-input" style={inputStyle} />
                         </div>
                         <div>
                             <label style={labelStyle}>YouTube Video URL</label>
                             <input type="text" value={content.tourYoutubeUrl} onChange={e => handleChange('tourYoutubeUrl', e.target.value)}
-                                placeholder="Enter YouTube video link (e.g. https://youtu.be/...)" style={inputStyle} />
+                                placeholder="Enter YouTube video link (e.g. https://youtu.be/...)" className="hp-input" style={inputStyle} />
                             {content.tourYoutubeUrl && !getYoutubeEmbedUrl(content.tourYoutubeUrl) && (
                                 <p style={{ fontSize: '11px', color: '#dc2626', marginTop: '6px' }}>This doesn't look like a valid YouTube link.</p>
                             )}
@@ -1028,9 +1213,9 @@ const HomePage = () => {
 
                 {activeTab === 'campus' && <>
                 {/* ── Campus Glimpses ── */}
-                <div className="hp-section" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', marginTop: '1.25rem' }}>
-                    <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                <div className="hp-card-premium hp-section">
+                    <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                             <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>
                         </div>
                         <div>
@@ -1042,7 +1227,7 @@ const HomePage = () => {
                         <div>
                             <label style={labelStyle}>Heading</label>
                             <input type="text" value={content.campusHeading} onChange={e => handleChange('campusHeading', e.target.value)}
-                                placeholder="Enter heading" style={inputStyle} />
+                                placeholder="Enter heading" className="hp-input" style={inputStyle} />
                             <ColorField label="Heading Color" value={content.campusHeadingColor} defaultColor={tc.primary}
                                 onChange={val => handleChange('campusHeadingColor', val)} />
                             <FontField label="Heading Font" value={content.campusHeadingFont} onChange={val => handleChange('campusHeadingFont', val)} />
@@ -1055,7 +1240,10 @@ const HomePage = () => {
                         </div>
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                                <label style={{ ...labelStyle, marginBottom: 0 }}>Photos</label>
+                                <div>
+                                    <label style={{ ...labelStyle, marginBottom: '2px' }}>Photos</label>
+                                    <p style={{ fontSize: '10.5px', color: '#94a3b8', margin: 0 }}>All photos are uploaded directly; you can recrop any photo at any time.</p>
+                                </div>
                                 <span style={{ fontSize: '11px', color: content.campusImages.length >= CAMPUS_IMAGES_MAX ? '#dc2626' : '#94a3b8', fontWeight: 600 }}>{content.campusImages.length} / {CAMPUS_IMAGES_MAX}</span>
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '14px' }}>
@@ -1166,7 +1354,18 @@ const HomePage = () => {
                                     </div>
                                 )}
                             </div>
-                            <input id="campusImagesInput" type="file" accept="image/jpeg,image/jpg,image/png,image/webp" multiple onChange={e => openImageCrop(e, 'campus')} style={{ display: 'none' }} />
+                            <input
+                                id="campusImagesInput"
+                                type="file"
+                                accept="image/jpeg,image/jpg,image/png,image/webp"
+                                multiple
+                                onChange={e => {
+                                    const files = Array.from(e.target.files || []);
+                                    e.target.value = '';
+                                    if (files.length > 0) uploadMultipleImages(files, 'campus');
+                                }}
+                                style={{ display: 'none' }}
+                            />
                             {content.campusImages.length === 0 && (
                                 <p style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '10px' }}>No photos uploaded yet — this section stays hidden on the public page until you add at least one.</p>
                             )}
@@ -1177,9 +1376,9 @@ const HomePage = () => {
 
                 {activeTab === 'testimonials' && <>
                 {/* ── Testimonials ── */}
-                <div className="hp-section" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                    <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                <div className="hp-card-premium hp-section">
+                    <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                             <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                         </div>
                         <div>
@@ -1191,7 +1390,7 @@ const HomePage = () => {
                         <div>
                             <label style={labelStyle}>Heading</label>
                             <input type="text" value={content.testimonialsHeading} onChange={e => handleChange('testimonialsHeading', e.target.value)}
-                                placeholder="Enter heading" style={inputStyle} />
+                                placeholder="Enter heading" className="hp-input" style={inputStyle} />
                             <ColorField label="Heading Color" value={content.testimonialsHeadingColor} defaultColor={tc.primary}
                                 onChange={val => handleChange('testimonialsHeadingColor', val)} />
                             <FontField label="Heading Font" value={content.testimonialsHeadingFont} onChange={val => handleChange('testimonialsHeadingFont', val)} />
@@ -1201,7 +1400,10 @@ const HomePage = () => {
 
                 <div style={{ display: 'flex', margin: '1.25rem 0' }}>
                     <button onClick={addTestimonial}
-                        style={{ padding: '11px 20px', background: '#ffffff', border: `1.5px dashed ${tc.primary}55`, borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: tc.primary, cursor: 'pointer' }}>
+                        style={{ padding: '12px 22px', background: '#ffffff', border: `1.5px dashed ${tc.primary}88`, borderRadius: '10px', fontSize: '13.5px', fontWeight: 700, color: tc.primary, cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.03)', transition: 'all 0.18s ease' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = hexToRgba(tc.primary, 0.05); e.currentTarget.style.borderColor = tc.primary; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.borderColor = `${tc.primary}88`; }}
+                    >
                         + Add Testimonial
                     </button>
                 </div>
@@ -1229,8 +1431,17 @@ const HomePage = () => {
                     imageSrc={cropSrc}
                     aspect={(cropTarget === 'intro1' || cropTarget === 'intro2') ? SHIELD_ASPECT : null}
                     maskShape={(cropTarget === 'intro1' || cropTarget === 'intro2') ? 'shield' : undefined}
-                    onCancel={() => { setCropSrc(null); setImageQueue([]); }}
+                    onCancel={() => {
+                        if (cropSrc && cropSrc.startsWith('blob:')) {
+                            try { URL.revokeObjectURL(cropSrc); } catch (_) {}
+                        }
+                        setCropSrc(null);
+                        setCropTarget(null);
+                        setRecropId(null);
+                    }}
                     onCropComplete={onImageCropConfirmed}
+                    accent={tc.primary}
+                    accentLight={tc.secondary}
                 />
             )}
         </>

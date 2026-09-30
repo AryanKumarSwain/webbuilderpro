@@ -94,9 +94,9 @@ const ModuleActionButtons = ({
                 .mab-btn-unpublish:hover:not(:disabled) .mab-btn-icon { transform: scale(1.12); }
                 .mab-btn-unpublish:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.08); box-shadow: 0 2px 4px rgba(127,29,29,0.35), 0 12px 28px rgba(220,38,38,0.5) !important; }
                 .mab-btn-publish::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent); transform: skewX(-20deg); transition: left 0.65s ease; pointer-events: none; }
-                .mab-btn-publish:hover:not(:disabled) { transform: translateY(-2px) scale(1.02); filter: brightness(1.08); box-shadow: 0 2px 4px ${hexToRgba(safeTc.dark, 0.3)}, 0 14px 32px ${hexToRgba(safeTc.primary, 0.6)} !important; }
+                .mab-btn-publish:hover:not(:disabled) { transform: translateY(-2px) scale(1.02); filter: brightness(1.08); box-shadow: 0 2px 6px rgba(21,128,61,0.35), 0 14px 32px rgba(34,197,94,0.6) !important; }
                 .mab-btn-publish:hover:not(:disabled)::after { left: 130%; }
-                @keyframes mabPulseGlow { 0%, 100% { box-shadow: 0 2px 4px ${hexToRgba(safeTc.dark, 0.2)}, 0 8px 24px ${hexToRgba(safeTc.primary, 0.45)}; } 50% { box-shadow: 0 2px 6px ${hexToRgba(safeTc.dark, 0.3)}, 0 12px 32px ${hexToRgba(safeTc.primary, 0.75)}; } }
+                @keyframes mabPulseGlow { 0%, 100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 4px rgba(21,128,61,0.25), 0 8px 24px rgba(34,197,94,0.5); } 50% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), 0 2px 6px rgba(21,128,61,0.35), 0 12px 32px rgba(34,197,94,0.75); } }
                 .mab-btn-dirty { animation: mabPulseGlow 2.5s ease-in-out infinite; }
             `}</style>
 
@@ -122,12 +122,13 @@ const ModuleActionButtons = ({
                     style={{
                         padding: '10px 24px',
                         borderRadius: '12px',
-                        background: `linear-gradient(160deg,${safeTc.secondary},${safeTc.primary} 65%,${safeTc.dark})`,
-                        color: '#fff',
-                        border: 'none',
+                        background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 55%, #15803d 100%)',
+                        color: '#ffffff',
+                        border: '1px solid rgba(255,255,255,0.3)',
                         fontSize: '12.5px',
                         fontWeight: 700,
-                        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 4px ${hexToRgba(safeTc.dark, 0.3)}, 0 8px 24px ${hexToRgba(safeTc.primary, 0.55)}`,
+                        textShadow: '0 1px 2px rgba(0,0,0,0.15)',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 4px rgba(21,128,61,0.25), 0 8px 24px rgba(34,197,94,0.5)',
                     }}
                 >
                     {publishing ? (
@@ -163,12 +164,13 @@ const ModuleActionButtons = ({
                     style={{
                         padding: '10px 24px',
                         borderRadius: '12px',
-                        background: `linear-gradient(160deg,${safeTc.secondary},${safeTc.primary} 65%,${safeTc.dark})`,
-                        color: '#fff',
-                        border: 'none',
+                        background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 55%, #15803d 100%)',
+                        color: '#ffffff',
+                        border: '1px solid rgba(255,255,255,0.3)',
                         fontSize: '12.5px',
                         fontWeight: 700,
-                        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 4px ${hexToRgba(safeTc.dark, 0.3)}, 0 8px 20px ${hexToRgba(safeTc.primary, 0.5)}`,
+                        textShadow: '0 1px 2px rgba(0,0,0,0.15)',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 4px rgba(21,128,61,0.25), 0 8px 20px rgba(34,197,94,0.45)',
                     }}
                 >
                     {publishing ? (

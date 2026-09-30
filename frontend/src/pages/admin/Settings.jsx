@@ -684,15 +684,15 @@ const AdminSettings = () => {
     const themes = [...gradientThemes, ...solidThemes];
 
     const inputStyle = {
-        width: '100%', padding: '11px 14px', border: '1px solid #e2e8f0',
-        borderRadius: '6px', fontSize: '13.5px', color: '#0f172a', outline: 'none',
-        boxSizing: 'border-box', background: '#ffffff', fontFamily: 'system-ui, sans-serif',
-        transition: 'border 0.2s, box-shadow 0.2s'
+        width: '100%', padding: '11px 15px', border: '1.5px solid #e2e8f0',
+        borderRadius: '10px', fontSize: '13.5px', color: '#0f172a', outline: 'none',
+        boxSizing: 'border-box', background: '#f8fafc', fontFamily: 'system-ui, sans-serif',
+        transition: 'border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, transform 0.2s ease'
     };
 
     const labelStyle = {
-        display: 'block', fontSize: '11px', fontWeight: 600, color: '#64748b',
-        marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em'
+        display: 'block', fontSize: '11px', fontWeight: 700, color: '#475569',
+        marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em'
     };
 
     const tabs = [
@@ -734,11 +734,63 @@ const AdminSettings = () => {
                 .settings-section { animation: fadeInUp 0.35s ease forwards; }
                 .settings-tabs { scrollbar-width: none; -ms-overflow-style: none; }
                 .settings-tabs::-webkit-scrollbar { display: none; }
-                .settings-input:focus { border-color: ${tc.primary} !important; box-shadow: 0 0 0 3px ${hexToRgba(tc.primary, 0.08)} !important; }
                 .settings-hero-item { animation: heroIn 0.55s cubic-bezier(0.16,1,0.3,1) both; }
                 .settings-hero-orb { animation: drift1 9s ease-in-out infinite; }
-                .settings-basecolor-card { transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important; }
-                .settings-basecolor-card:hover { transform: translateY(-4px) !important; box-shadow: 0 10px 24px rgba(0,0,0,0.08) !important; }
+
+                .settings-card-premium {
+                    background: #ffffff !important;
+                    border: 1.5px solid #e2e8f0 !important;
+                    border-radius: 18px !important;
+                    overflow: hidden !important;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.04) !important;
+                    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease !important;
+                    position: relative !important;
+                }
+                .settings-card-premium:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 12px 30px rgba(0,0,0,0.07) !important;
+                    border-color: #cbd5e1 !important;
+                }
+                .settings-card-premium::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 3.5px;
+                    background: linear-gradient(90deg, ${tc.primary}, ${tc.secondary});
+                    z-index: 2;
+                }
+
+                .settings-input {
+                    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, transform 0.2s ease !important;
+                }
+                .settings-input:focus {
+                    background: #ffffff !important;
+                    border-color: ${tc.primary} !important;
+                    box-shadow: 0 0 0 3px ${hexToRgba(tc.primary, 0.14)} !important;
+                    transform: translateY(-1px);
+                }
+
+                .settings-btn-primary {
+                    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                }
+                .settings-btn-primary:hover:not(:disabled) {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px ${hexToRgba(tc.primary, 0.4)} !important;
+                }
+                .settings-btn-primary:active:not(:disabled) {
+                    transform: translateY(0);
+                }
+
+                .settings-theme-card, .settings-basecolor-card, .settings-font-card {
+                    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                }
+                .settings-theme-card:hover, .settings-basecolor-card:hover, .settings-font-card:hover {
+                    transform: translateY(-4px) !important;
+                    box-shadow: 0 10px 24px rgba(0,0,0,0.08) !important;
+                }
+
                 @media (max-width: 900px) {
                     .settings-3col { grid-template-columns: repeat(2, 1fr) !important; }
                 }
@@ -748,18 +800,25 @@ const AdminSettings = () => {
                 }
                 @media (max-width: 640px) {
                     /* ── Tabs — horizontal swipeable strip instead of ugly uneven wrapping ── */
-                    .settings-tabs { flex-wrap: nowrap !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; scrollbar-width: none !important; padding-bottom: 2px !important; margin-bottom: 1.25rem !important; }
-                    .settings-tabs::-webkit-scrollbar { display: none !important; }
+                    .settings-tabs { flex-wrap: nowrap !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; scrollbar-width: none !important; padding-bottom: 2px !important; }
                     .settings-tabs button { flex-shrink: 0 !important; padding: 8px 14px !important; font-size: 12px !important; gap: 5px !important; }
                     .settings-tabs button svg { width: 14px !important; height: 14px !important; }
 
                     /* ── Hero header — compact, same treatment as the Dashboard hero ── */
-                    .dash-hero { padding: 1.1rem 1.15rem !important; border-radius: 16px !important; margin-bottom: 1rem !important; }
+                    .dash-hero { padding: 1.25rem 1.25rem !important; border-radius: 16px !important; margin-bottom: 1.25rem !important; }
+                    .settings-hero-inner { flex-wrap: wrap !important; gap: 1rem !important; }
                     .dash-hero-greeting { margin-bottom: 6px !important; }
                     .dash-hero-greeting p { font-size: 10px !important; }
                     .dash-hero-greeting svg { width: 12px !important; height: 12px !important; }
-                    .dash-hero-title { font-size: 19px !important; margin-bottom: 4px !important; letter-spacing: -0.3px !important; }
-                    .dash-hero-desc { font-size: 11px !important; line-height: 1.5 !important; max-width: 100% !important; }
+                    .dash-hero-title { font-size: 21px !important; margin-bottom: 4px !important; letter-spacing: -0.3px !important; }
+                    .dash-hero-desc { font-size: 11.5px !important; line-height: 1.5 !important; max-width: 100% !important; }
+
+                    .settings-quick-panel { padding: 0.75rem 1rem !important; width: 100% !important; min-width: 0 !important; border-radius: 14px !important; }
+                    .settings-quick-row { padding: 9px 0 !important; gap: 10px !important; }
+                    .settings-quick-icon { width: 30px !important; height: 30px !important; border-radius: 8px !important; }
+                    .settings-quick-icon svg { width: 15px !important; height: 15px !important; }
+                    .settings-quick-label { font-size: 9.5px !important; }
+                    .settings-quick-value { font-size: 12px !important; white-space: normal !important; overflow-wrap: break-word !important; }
 
                     /* ── Logo tab — hide the Navbar Preview card, upload card takes full width ── */
                     .settings-navbar-preview { display: none !important; }
@@ -797,41 +856,125 @@ const AdminSettings = () => {
             <div style={{ fontFamily: 'system-ui, sans-serif' }}>
 
                 {/* Hero Header */}
-                <div className="dash-hero" style={{ background: `linear-gradient(135deg, ${tc.dark} 0%, ${tc.primary} 55%, ${tc.dark} 100%)`, borderRadius: '22px', padding: '2.5rem 2.75rem', marginBottom: '1.75rem', position: 'relative', overflow: 'hidden', boxShadow: `0 20px 60px ${hexToRgba(tc.primary, 0.2)}, 0 4px 20px rgba(0,0,0,0.15)` }}>
+                <div className="dash-hero" style={{
+                    background: `linear-gradient(135deg, ${tc.dark} 0%, ${tc.primary} 55%, ${tc.dark} 100%)`,
+                    borderRadius: '22px',
+                    padding: '2.5rem 2.75rem',
+                    marginBottom: '1.75rem',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    boxShadow: `0 24px 60px ${hexToRgba(tc.primary, 0.28)}, 0 4px 20px rgba(0,0,0,0.18)`
+                }}>
+                    {/* Dot grid texture */}
                     <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '24px 24px', pointerEvents: 'none' }}></div>
-                    <div className="settings-hero-orb" style={{ position: 'absolute', width: '300px', height: '300px', borderRadius: '50%', background: `radial-gradient(circle, ${hexToRgba(tc.primary, 0.25)} 0%, transparent 70%)`, top: '-140px', right: '4%', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'relative', zIndex: 1 }}>
+
+                    {/* Glowing radial gradient orbs */}
+                    <div className="settings-hero-orb" style={{ position: 'absolute', width: '380px', height: '380px', borderRadius: '50%', background: `radial-gradient(circle, ${hexToRgba(tc.primary, 0.3)} 0%, transparent 70%)`, top: '-130px', right: '5%', pointerEvents: 'none' }}></div>
+                    <div style={{ position: 'absolute', width: '220px', height: '220px', borderRadius: '50%', background: `radial-gradient(circle, ${hexToRgba(tc.secondary, 0.22)} 0%, transparent 70%)`, bottom: '-80px', right: '35%', pointerEvents: 'none' }}></div>
+
+                    <div className="settings-hero-inner" style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '2rem' }}>
                         <div className="settings-hero-item" style={{ animationDelay: '0.05s' }}>
-                            <div className="dash-hero-greeting" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: tc.secondary }}></div>
-                                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Admin / Settings</p>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '4px 12px', background: 'rgba(255,255,255,0.12)', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.22)', marginBottom: '12px' }}>
+                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80' }}></div>
+                                <span style={{ fontSize: '10.5px', color: '#ffffff', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>Admin / Settings</span>
                             </div>
-                            <h1 className="dash-hero-title" style={{ fontSize: '30px', fontWeight: 700, color: '#ffffff', marginBottom: '10px', letterSpacing: '-0.5px' }}>General Settings</h1>
-                            <p className="dash-hero-desc" style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, maxWidth: '460px' }}>
-                                Manage how your school is presented online — profile details, branding and the visual identity of your public website.
+                            <h1 className="dash-hero-title" style={{ fontSize: '32px', fontWeight: 700, color: '#ffffff', marginBottom: '10px', letterSpacing: '-0.6px', lineHeight: 1.2 }}>General Settings</h1>
+                            <p className="dash-hero-desc" style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, maxWidth: '440px' }}>
+                                Manage your school profile, visual branding, color palettes, typography, and public website preferences in one place.
                             </p>
+                        </div>
+
+                        {/* Quick Branding Snapshot — Standardized Whiter Frosted Glass Panel */}
+                        <div className="settings-hero-item settings-quick-panel" style={{
+                            background: 'linear-gradient(135deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.13) 100%)',
+                            border: '1.5px solid rgba(255,255,255,0.42)',
+                            borderRadius: '16px',
+                            padding: '0.75rem 1.1rem',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.18), inset 0 1px 1.5px rgba(255,255,255,0.5)',
+                            width: '230px',
+                            minWidth: '230px',
+                            maxWidth: '230px',
+                            flexShrink: 0,
+                            boxSizing: 'border-box',
+                            animationDelay: '0.15s'
+                        }}>
+                            {[
+                                {
+                                    label: 'School Identity',
+                                    value: profileData.name || 'Your School',
+                                    icon: <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                },
+                                {
+                                    label: 'Active Theme',
+                                    value: themes.find(t => t.key === settingsData.theme)?.label || 'Modern Gradient',
+                                    badgeColor: tc.primary,
+                                    icon: <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+                                }
+                            ].map((item, i) => (
+                                <div key={i} className="settings-quick-row" style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '5px 0', borderBottom: i === 0 ? '1px solid rgba(255,255,255,0.18)' : 'none' }}>
+                                    <div className="settings-quick-icon" style={{
+                                        width: '28px', height: '28px', borderRadius: '8px',
+                                        background: 'rgba(255,255,255,0.22)',
+                                        border: '1px solid rgba(255,255,255,0.38)',
+                                        color: '#ffffff',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                                    }}>
+                                        {item.icon}
+                                    </div>
+                                    <div style={{ minWidth: 0, flex: 1 }}>
+                                        <p className="settings-quick-label" style={{ fontSize: '9.5px', color: 'rgba(255,255,255,0.7)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, lineHeight: 1.2 }}>{item.label}</p>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '2px' }}>
+                                            {item.badgeColor && (
+                                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: item.badgeColor, boxShadow: `0 0 5px ${item.badgeColor}`, flexShrink: 0 }}></span>
+                                            )}
+                                            <p className="settings-quick-value" style={{ fontSize: '12.5px', fontWeight: 700, color: '#ffffff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.value}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Tabs — single scrollable row with prev/next buttons instead of wrapping to
-                     multiple rows, since the tab count keeps growing as features are added. */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.75rem' }}>
+                {/* Tabs — single scrollable row in modern pill bar */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.75rem', background: '#f1f5f9', padding: '6px 8px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
                     <button type="button" onClick={() => scrollTabs(-1)} aria-label="Scroll tabs left"
-                        style={{ flexShrink: 0, width: '32px', height: '32px', borderRadius: '8px', border: '1px solid #e2e8f0', background: '#ffffff', color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ flexShrink: 0, width: '34px', height: '34px', borderRadius: '10px', border: '1px solid #e2e8f0', background: '#ffffff', color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
                         <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 18l-6-6 6-6" /></svg>
                     </button>
-                    <div ref={tabsScrollRef} className="settings-tabs" style={{ display: 'flex', gap: '6px', flexWrap: 'nowrap', overflowX: 'auto', scrollBehavior: 'smooth', flex: 1 }}>
-                        {tabs.map(tab => (
-                            <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                                style={{ padding: '10px 20px', borderRadius: '6px', border: activeTab === tab.key ? `1.5px solid ${tc.primary}` : '1px solid #e2e8f0', fontSize: '13px', cursor: 'pointer', background: activeTab === tab.key ? tc.light : '#ffffff', color: activeTab === tab.key ? tc.primary : '#64748b', fontWeight: activeTab === tab.key ? 600 : 400, display: 'flex', alignItems: 'center', gap: '7px', transition: 'all 0.15s', boxShadow: activeTab === tab.key ? `0 4px 12px ${hexToRgba(tc.primary, 0.15)}` : 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                                <span style={{ color: activeTab === tab.key ? tc.primary : '#94a3b8' }}>{tab.icon}</span>
-                                {tab.label}
-                            </button>
-                        ))}
+                    <div ref={tabsScrollRef} className="settings-tabs" style={{ display: 'flex', gap: '6px', flexWrap: 'nowrap', overflowX: 'auto', scrollBehavior: 'smooth', flex: 1, padding: '2px 0' }}>
+                        {tabs.map(tab => {
+                            const isActive = activeTab === tab.key;
+                            return (
+                                <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+                                    style={{
+                                        padding: '9px 18px',
+                                        borderRadius: '10px',
+                                        border: 'none',
+                                        fontSize: '13px',
+                                        cursor: 'pointer',
+                                        background: isActive ? '#ffffff' : 'transparent',
+                                        color: isActive ? tc.primary : '#64748b',
+                                        fontWeight: isActive ? 700 : 500,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '7px',
+                                        transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                                        boxShadow: isActive ? '0 4px 14px rgba(15, 23, 42, 0.08)' : 'none',
+                                        transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                                        flexShrink: 0,
+                                        whiteSpace: 'nowrap'
+                                    }}>
+                                    <span style={{ color: isActive ? tc.primary : '#94a3b8', display: 'flex', alignItems: 'center' }}>{tab.icon}</span>
+                                    {tab.label}
+                                </button>
+                            );
+                        })}
                     </div>
                     <button type="button" onClick={() => scrollTabs(1)} aria-label="Scroll tabs right"
-                        style={{ flexShrink: 0, width: '32px', height: '32px', borderRadius: '8px', border: `1.5px solid ${tc.primary}`, background: tc.light, color: tc.primary, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        style={{ flexShrink: 0, width: '34px', height: '34px', borderRadius: '10px', border: `1.5px solid ${tc.primary}`, background: tc.light, color: tc.primary, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', boxShadow: `0 2px 8px ${hexToRgba(tc.primary, 0.2)}` }}>
                         <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6" /></svg>
                     </button>
                 </div>
@@ -846,9 +989,9 @@ const AdminSettings = () => {
                     const currentPlan = allPlans.find(p => p.id === planInfo.plan_id);
                     const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
                     return (
-                        <div className="settings-section" style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', maxWidth: '640px' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                        <div className="settings-section settings-card-premium" style={{ maxWidth: '640px' }}>
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2" /><path strokeLinecap="round" strokeLinejoin="round" d="M8 11V7a4 4 0 018 0v4" /></svg>
                                 </div>
                                 <div style={{ flex: 1 }}>
@@ -872,11 +1015,11 @@ const AdminSettings = () => {
                                 ) : (
                                     <>
                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '14px' }}>
-                                            <div style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '8px', padding: '12px 14px' }}>
+                                            <div style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '10px', padding: '12px 14px' }}>
                                                 <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Current Plan</div>
                                                 <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginTop: '2px' }}>{currentPlan?.name || `Plan #${planInfo.plan_id}`}</div>
                                             </div>
-                                            <div style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '8px', padding: '12px 14px' }}>
+                                            <div style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '10px', padding: '12px 14px' }}>
                                                 <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{isExpired ? 'Expired On' : 'Valid Until'}</div>
                                                 <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginTop: '2px' }}>{fmtDate(planInfo.plan_end_date)}</div>
                                             </div>
@@ -889,8 +1032,8 @@ const AdminSettings = () => {
                                     </>
                                 )}
                                 <div>
-                                    <button onClick={() => navigate('/admin/billing')}
-                                        style={{ padding: '11px 20px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                    <button onClick={() => navigate('/admin/billing')} className="settings-btn-primary"
+                                        style={{ padding: '12px 24px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13.5px', fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
                                         {!planInfo.plan_id ? 'Choose a Plan' : isExpired ? 'Renew Plan' : 'Extend / Upgrade Plan'}
                                     </button>
                                 </div>
@@ -906,10 +1049,10 @@ const AdminSettings = () => {
                      from the School Profile tab below which is the school's
                      public-facing details. ── */}
                 {activeTab === 'account' && (
-                    <div className="settings-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                    <div className="settings-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '640px' }}>
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                 </div>
                                 <div>
@@ -930,8 +1073,8 @@ const AdminSettings = () => {
                                     <InfoIcon /> Changing your email changes what you log in with — use the new one next time.
                                 </p>
                                 <div>
-                                    <button onClick={handleAccountSave} disabled={savingAccount}
-                                        style={{ padding: '11px 20px', background: savingAccount ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: savingAccount ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                    <button onClick={handleAccountSave} disabled={savingAccount} className="settings-btn-primary"
+                                        style={{ padding: '11px 24px', background: savingAccount ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13.5px', fontWeight: 700, cursor: savingAccount ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
                                         {savingAccount ? 'Saving...' : 'Save Account'}
                                     </button>
                                 </div>
@@ -945,9 +1088,9 @@ const AdminSettings = () => {
                     <div className="settings-section" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
 
                         {/* Basic Info */}
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                 </div>
                                 <div>
@@ -972,8 +1115,8 @@ const AdminSettings = () => {
                         </div>
 
                         {/* Location */}
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#1e3a5f,#2563eb)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(37,99,235,0.3)' }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 </div>
@@ -1005,8 +1148,8 @@ const AdminSettings = () => {
                         </div>
 
                         {/* Intro Message — Full width */}
-                        <div style={{ gridColumn: '1 / -1', background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="settings-card-premium" style={{ gridColumn: '1 / -1' }}>
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#4a1d96,#7c3aed)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(124,58,237,0.3)' }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 4V2m10 2V2M3 8h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>
                                 </div>
@@ -1017,7 +1160,7 @@ const AdminSettings = () => {
                             </div>
                             <div style={{ padding: '1.5rem 1.75rem' }}>
                                 {/* Enable/disable */}
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', marginBottom: '16px', background: profileData.intro_message_enabled ? '#f0fdf4' : '#f8fafc', border: `1px solid ${profileData.intro_message_enabled ? '#bbf7d0' : '#e2e8f0'}`, borderRadius: '8px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', marginBottom: '16px', background: profileData.intro_message_enabled ? '#f0fdf4' : '#f8fafc', border: `1px solid ${profileData.intro_message_enabled ? '#bbf7d0' : '#e2e8f0'}`, borderRadius: '10px' }}>
                                     <div>
                                         <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>Show Intro Animation</p>
                                         <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>White reveal animation plays once when a visitor opens your homepage</p>
@@ -1059,7 +1202,7 @@ const AdminSettings = () => {
 
                                 {/* Preview */}
                                 {profileData.intro_message_enabled && profileData.intro_message && (
-                                    <div style={{ marginTop: '1rem', borderRadius: '16px', overflow: 'hidden', border: '1px solid #e2e8f0', position: 'relative', height: '120px', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <div style={{ marginTop: '1rem', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e2e8f0', position: 'relative', height: '120px', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, opacity: 0.15 }}></div>
                                         <p style={{ fontSize: '28px', fontWeight: 900, letterSpacing: '0.15em', textTransform: 'uppercase', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', position: 'relative', zIndex: 1 }}>
                                             {profileData.intro_message}
@@ -1072,8 +1215,8 @@ const AdminSettings = () => {
 
                         {/* Save */}
                         <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end' }}>
-                            <button onClick={handleProfileSave} disabled={saving}
-                                style={{ padding: '12px 32px', background: saving ? hexToRgba(tc.primary, 0.5) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '14px', fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}`, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <button onClick={handleProfileSave} disabled={saving} className="settings-btn-primary"
+                                style={{ padding: '12px 32px', background: saving ? hexToRgba(tc.primary, 0.5) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}`, display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 {saving ? <><svg style={{ animation: 'spin 1s linear infinite', width: '16px', height: '16px' }} viewBox="0 0 24 24" fill="none"><circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>Saving...</> : <><svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>Save Profile</>}
                             </button>
                         </div>
@@ -1083,9 +1226,9 @@ const AdminSettings = () => {
                 {/* ── Logo Tab ── */}
                 {activeTab === 'logo' && (
                     <div className="settings-section" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                 </div>
                                 <div>
@@ -1095,10 +1238,10 @@ const AdminSettings = () => {
                             </div>
                             <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                                 <div onClick={() => document.getElementById('schoolLogoInput').click()}
-                                    style={{ position: 'relative', border: '1.5px dashed #cbd5e1', borderRadius: '8px', padding: '2rem', textAlign: 'center', cursor: 'pointer', background: logoFile ? '#f8fafc' : '#fafafa', transition: 'all 0.2s' }}>
+                                    style={{ position: 'relative', border: '1.5px dashed #cbd5e1', borderRadius: '10px', padding: '2rem', textAlign: 'center', cursor: 'pointer', background: logoFile ? '#f8fafc' : '#fafafa', transition: 'all 0.2s' }}>
                                     {logoFile || settingsData.logo_url ? (
                                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-                                            <img src={logoPreview || settingsData.logo_url} alt="Logo" style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '8px', border: '1px solid #e2e8f0' }} />
+                                            <img src={logoPreview || settingsData.logo_url} alt="Logo" style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '10px', border: '1px solid #e2e8f0' }} />
                                             <p style={{ fontSize: '12px', color: '#64748b' }}>Click to change logo</p>
                                             {settingsData.logo_url && !logoFile && (
                                                 <button type="button" onClick={e => { e.stopPropagation(); handleLogoRemove(); }} disabled={removingLogo}
@@ -1115,21 +1258,21 @@ const AdminSettings = () => {
                                     )}
                                 </div>
                                 <input id="schoolLogoInput" type="file" accept="image/png,image/jpg,image/jpeg,image/webp" onChange={handleLogoChange} style={{ display: 'none' }} />
-                                <div style={{ padding: '12px 14px', background: 'linear-gradient(135deg,#fdf0f5,#fff5f8)', borderRadius: '8px', border: '1px solid #f9c4d4' }}>
+                                <div style={{ padding: '12px 14px', background: 'linear-gradient(135deg,#fdf0f5,#fff5f8)', borderRadius: '10px', border: '1px solid #f9c4d4' }}>
                                     <p style={{ fontSize: '12px', fontWeight: 600, color: tc.primary, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '5px' }}><InfoIcon /> Best practices</p>
                                     {['Use PNG with transparent background', 'Square format works best (1:1 ratio)', 'Minimum 200×200px resolution', 'Max file size: 1MB'].map((tip, i) => (
                                         <p key={i} style={{ fontSize: '11px', color: '#9f1239', marginBottom: '3px' }}>• {tip}</p>
                                     ))}
                                 </div>
-                                <button onClick={handleLogoUpload} disabled={uploadingLogo || !logoFile}
-                                    style={{ padding: '11px', background: uploadingLogo || !logoFile ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: uploadingLogo || !logoFile ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: !logoFile ? 'none' : `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                <button onClick={handleLogoUpload} disabled={uploadingLogo || !logoFile} className="settings-btn-primary"
+                                    style={{ padding: '12px', background: uploadingLogo || !logoFile ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13.5px', fontWeight: 700, cursor: uploadingLogo || !logoFile ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: !logoFile ? 'none' : `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     {uploadingLogo ? <><svg style={{ animation: 'spin 1s linear infinite', width: '16px', height: '16px' }} viewBox="0 0 24 24" fill="none"><circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>Uploading...</> : <><svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Upload Logo</>}
                                 </button>
                             </div>
                         </div>
 
-                        <div className="settings-navbar-preview" style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="settings-navbar-preview settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#064e3b,#059669)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(5,150,105,0.3)' }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 </div>
@@ -1139,7 +1282,7 @@ const AdminSettings = () => {
                                 </div>
                             </div>
                             <div style={{ padding: '1.5rem 1.75rem' }}>
-                                <div style={{ background: 'rgba(2,6,23,0.95)', borderRadius: '8px', padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                                <div style={{ background: 'rgba(2,6,23,0.95)', borderRadius: '10px', padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                         {logoPreview || settingsData.logo_url ? (
                                             <img src={logoPreview || settingsData.logo_url} alt="Logo" style={{ width: '36px', height: '36px', objectFit: 'contain', borderRadius: '6px' }} />
@@ -1171,9 +1314,9 @@ const AdminSettings = () => {
 
                 {/* ── Theme Tab ── */}
                 {activeTab === 'theme' && (
-                    <div className="settings-section" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                        <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#4a1d96,#7c3aed)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(124,58,237,0.3)' }}>
+                    <div className="settings-section settings-card-premium">
+                        <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#4a1d96,#7c3aed)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(124,58,237,0.3)' }}>
                                 <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
                             </div>
                             <div>
@@ -1401,10 +1544,10 @@ const AdminSettings = () => {
                      site's overall background + card shades (previously hardcoded white), so
                      the two can be mixed and matched (e.g. Ocean Blue accent + Cream base). ── */}
                 {activeTab === 'baseColor' && (
-                    <div className="settings-section" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                        <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                    <div className="settings-section settings-card-premium">
+                        <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#9c8a63,#e6d7b0)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(156,138,99,0.3)' }}>
+                                <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#9c8a63,#e6d7b0)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(156,138,99,0.3)' }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
                                 </div>
                                 <div>
@@ -1492,9 +1635,9 @@ const AdminSettings = () => {
                         {[
                             { field: 'nav_font', title: 'Navbar Font', desc: 'Font for the school name shown in the navbar', gradient: 'linear-gradient(135deg,#1e3a5f,#2563eb)', shadow: 'rgba(37,99,235,0.3)' },
                         ].map(section => (
-                            <div key={section.field} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                                <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <div style={{ width: '38px', height: '38px', background: section.gradient, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${section.shadow}` }}>
+                            <div key={section.field} className="settings-card-premium">
+                                <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <div style={{ width: '38px', height: '38px', background: section.gradient, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${section.shadow}` }}>
                                         <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h10M4 18h7M17 12l3 6m0 0l-3-6m3 6h-6"/></svg>
                                     </div>
                                     <div>
@@ -1530,9 +1673,9 @@ const AdminSettings = () => {
                 {/* ── Welcome Banner Tab — optional popup poster shown once on the homepage ── */}
                 {activeTab === 'welcomeBanner' && (
                     <div className="settings-section" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
                                 </div>
                                 <div>
@@ -1543,7 +1686,7 @@ const AdminSettings = () => {
                             <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
                                 {/* Enable/disable */}
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: bannerData.welcome_banner_enabled ? '#f0fdf4' : '#f8fafc', border: `1px solid ${bannerData.welcome_banner_enabled ? '#bbf7d0' : '#e2e8f0'}`, borderRadius: '8px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: bannerData.welcome_banner_enabled ? '#f0fdf4' : '#f8fafc', border: `1px solid ${bannerData.welcome_banner_enabled ? '#bbf7d0' : '#e2e8f0'}`, borderRadius: '10px' }}>
                                     <div>
                                         <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>Show Welcome Banner</p>
                                         <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>Popup appears once per visit on your homepage</p>
@@ -1572,7 +1715,7 @@ const AdminSettings = () => {
                                 <div>
                                     <label style={labelStyle}>Banner Image</label>
                                     <div onClick={() => document.getElementById('welcomeBannerInput').click()}
-                                        style={{ position: 'relative', border: '1.5px dashed #cbd5e1', borderRadius: '8px', padding: bannerPreview || bannerData.welcome_banner_url ? 0 : '2rem', textAlign: 'center', cursor: 'pointer', background: bannerFile ? '#f8fafc' : '#fafafa', overflow: 'hidden', transition: 'all 0.2s' }}>
+                                        style={{ position: 'relative', border: '1.5px dashed #cbd5e1', borderRadius: '10px', padding: bannerPreview || bannerData.welcome_banner_url ? 0 : '2rem', textAlign: 'center', cursor: 'pointer', background: bannerFile ? '#f8fafc' : '#fafafa', overflow: 'hidden', transition: 'all 0.2s' }}>
                                         {bannerPreview || bannerData.welcome_banner_url ? (
                                             <>
                                                 <img src={bannerPreview || bannerData.welcome_banner_url} alt="Welcome banner" style={{ width: '100%', maxHeight: '260px', objectFit: 'contain', display: 'block', background: '#0f172a' }} />
@@ -1596,8 +1739,8 @@ const AdminSettings = () => {
                                     )}
                                 </div>
 
-                                <button onClick={handleBannerUpload} disabled={uploadingBanner || !bannerFile}
-                                    style={{ padding: '11px', background: uploadingBanner || !bannerFile ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: uploadingBanner || !bannerFile ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: !bannerFile ? 'none' : `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                <button onClick={handleBannerUpload} disabled={uploadingBanner || !bannerFile} className="settings-btn-primary"
+                                    style={{ padding: '12px', background: uploadingBanner || !bannerFile ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13.5px', fontWeight: 700, cursor: uploadingBanner || !bannerFile ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: !bannerFile ? 'none' : `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     {uploadingBanner ? <><svg style={{ animation: 'spin 1s linear infinite', width: '16px', height: '16px' }} viewBox="0 0 24 24" fill="none"><circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>Uploading...</> : <><svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Upload Banner</>}
                                 </button>
 
@@ -1609,15 +1752,15 @@ const AdminSettings = () => {
                                         <InfoIcon /> Clicking the banner opens this link in a new tab. Leave blank if the poster is just informational.
                                     </p>
                                 </div>
-                                <button onClick={handleBannerLinkSave} disabled={savingBannerLink}
-                                    style={{ padding: '11px', background: '#ffffff', color: '#64748b', border: '1px solid #e2e8f0', borderRadius: '6px', fontSize: '13px', fontWeight: 500, cursor: savingBannerLink ? 'not-allowed' : 'pointer', alignSelf: 'flex-start' }}>
+                                <button onClick={handleBannerLinkSave} disabled={savingBannerLink} className="settings-btn-primary"
+                                    style={{ padding: '11px 20px', background: '#ffffff', color: tc.primary, border: `1.5px solid ${tc.primary}`, borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: savingBannerLink ? 'not-allowed' : 'pointer', alignSelf: 'flex-start' }}>
                                     {savingBannerLink ? 'Saving...' : 'Save Link'}
                                 </button>
                             </div>
                         </div>
 
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#064e3b,#059669)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(5,150,105,0.3)' }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 </div>
@@ -1628,7 +1771,7 @@ const AdminSettings = () => {
                             </div>
                             <div style={{ padding: '1.5rem 1.75rem' }}>
                                 {bannerPreview || bannerData.welcome_banner_url ? (
-                                    <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0', background: 'rgba(2,6,23,0.9)', padding: '1.5rem' }}>
+                                    <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1px solid #e2e8f0', background: 'rgba(2,6,23,0.9)', padding: '1.5rem' }}>
                                         <div style={{ position: 'relative', maxWidth: '260px', margin: '0 auto', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
                                             <img src={bannerPreview || bannerData.welcome_banner_url} alt="Preview" style={{ width: '100%', display: 'block' }} />
                                             <div style={{ position: 'absolute', top: '6px', right: '6px', width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(0,0,0,0.55)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}>×</div>
@@ -1639,7 +1782,7 @@ const AdminSettings = () => {
                                         <p style={{ fontSize: '13px', color: '#94a3b8' }}>Upload a banner image to see the preview</p>
                                     </div>
                                 )}
-                                <div style={{ marginTop: '14px', padding: '10px 12px', background: bannerData.welcome_banner_enabled ? '#f0fdf4' : '#fefce8', borderRadius: '8px', border: `0.5px solid ${bannerData.welcome_banner_enabled ? '#bbf7d0' : '#fde68a'}`, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{ marginTop: '14px', padding: '10px 12px', background: bannerData.welcome_banner_enabled ? '#f0fdf4' : '#fefce8', borderRadius: '10px', border: `1px solid ${bannerData.welcome_banner_enabled ? '#bbf7d0' : '#fde68a'}`, display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     {bannerData.welcome_banner_enabled ? (
                                         <>
                                             <svg width="14" height="14" fill="none" stroke="#15803d" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
@@ -1660,9 +1803,9 @@ const AdminSettings = () => {
                 {/* ── Footer Background Tab — subtle background image behind the site footer ── */}
                 {activeTab === 'footerBg' && (
                     <div className="settings-section" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z"/><path strokeLinecap="round" strokeLinejoin="round" d="M4 15l4-4a2 2 0 012.8 0L16 16m-3-3l1.6-1.6a2 2 0 012.8 0L20 14"/></svg>
                                 </div>
                                 <div>
@@ -1672,7 +1815,7 @@ const AdminSettings = () => {
                             </div>
                             <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                 <div onClick={() => document.getElementById('footerBgInput').click()}
-                                    style={{ position: 'relative', border: '1.5px dashed #cbd5e1', borderRadius: '8px', padding: footerBgPreview || footerBgUrl ? 0 : '2rem', textAlign: 'center', cursor: 'pointer', background: footerBgFile ? '#f8fafc' : '#fafafa', overflow: 'hidden', transition: 'all 0.2s' }}>
+                                    style={{ position: 'relative', border: '1.5px dashed #cbd5e1', borderRadius: '10px', padding: footerBgPreview || footerBgUrl ? 0 : '2rem', textAlign: 'center', cursor: 'pointer', background: footerBgFile ? '#f8fafc' : '#fafafa', overflow: 'hidden', transition: 'all 0.2s' }}>
                                     {footerBgPreview || footerBgUrl ? (
                                         <>
                                             <img src={footerBgPreview || footerBgUrl} alt="Footer background" style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', display: 'block' }} />
@@ -1694,27 +1837,27 @@ const AdminSettings = () => {
                                 {footerBgPreview && (
                                     <p style={{ fontSize: '11px', color: '#64748b' }}>New image ready — click "Upload Background" below to save it.</p>
                                 )}
-                                <button onClick={handleFooterBgUpload} disabled={uploadingFooterBg || !footerBgFile}
-                                    style={{ padding: '11px', background: uploadingFooterBg || !footerBgFile ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: uploadingFooterBg || !footerBgFile ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: !footerBgFile ? 'none' : `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                <button onClick={handleFooterBgUpload} disabled={uploadingFooterBg || !footerBgFile} className="settings-btn-primary"
+                                    style={{ padding: '12px', background: uploadingFooterBg || !footerBgFile ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13.5px', fontWeight: 700, cursor: uploadingFooterBg || !footerBgFile ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: !footerBgFile ? 'none' : `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     {uploadingFooterBg ? <><svg style={{ animation: 'spin 1s linear infinite', width: '16px', height: '16px' }} viewBox="0 0 24 24" fill="none"><circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>Uploading...</> : <><svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>Upload Background</>}
                                 </button>
 
-                                <div style={{ borderTop: '0.5px solid #f1f5f9', paddingTop: '16px', marginTop: '4px' }}>
+                                <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '16px', marginTop: '4px' }}>
                                     <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginBottom: '4px' }}>Footer About Text</p>
                                     <p style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '10px' }}>Shown below your logo in the footer, in place of the address/phone (which already appear in the Contact Us section) — keep it short, e.g. a one-line tagline about your school.</p>
                                     <textarea value={footerAboutText} onChange={e => setFooterAboutText(e.target.value)} maxLength={280} rows={3}
                                         placeholder="Enter a short line about your school for the footer"
-                                        style={{ display: 'block', width: '100%', maxWidth: '280px', padding: '10px 12px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical', background: '#f8fafc' }} />
-                                    <button onClick={handleFooterAboutTextSave} disabled={savingFooterAboutText}
-                                        style={{ marginTop: '10px', padding: '9px 18px', background: savingFooterAboutText ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12.5px', fontWeight: 600, cursor: savingFooterAboutText ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                        style={{ display: 'block', width: '100%', maxWidth: '280px', padding: '10px 12px', border: '1.5px solid #e2e8f0', borderRadius: '10px', fontSize: '13px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical', background: '#f8fafc' }} />
+                                    <button onClick={handleFooterAboutTextSave} disabled={savingFooterAboutText} className="settings-btn-primary"
+                                        style={{ marginTop: '10px', padding: '10px 20px', background: savingFooterAboutText ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: savingFooterAboutText ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
                                         {savingFooterAboutText ? 'Saving...' : 'Save Footer Text'}
                                     </button>
                                 </div>
                             </div>
                         </div>
 
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#064e3b,#059669)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(5,150,105,0.3)' }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 </div>
@@ -1724,7 +1867,7 @@ const AdminSettings = () => {
                                 </div>
                             </div>
                             <div style={{ padding: '1.5rem 1.75rem' }}>
-                                <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', background: '#222831', padding: '2rem 1.5rem', minHeight: '140px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', background: '#222831', padding: '2rem 1.5rem', minHeight: '140px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                                     {(footerBgPreview || footerBgUrl) && (
                                         <img src={footerBgPreview || footerBgUrl} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.18 }} />
                                     )}
@@ -1737,12 +1880,12 @@ const AdminSettings = () => {
                                     </div>
                                 </div>
                                 {footerBgUrl || footerBgPreview ? (
-                                    <div style={{ marginTop: '14px', padding: '10px 12px', background: '#f0fdf4', borderRadius: '8px', border: '0.5px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <div style={{ marginTop: '14px', padding: '10px 12px', background: '#f0fdf4', borderRadius: '10px', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <svg width="14" height="14" fill="none" stroke="#15803d" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
                                         <p style={{ fontSize: '12px', color: '#15803d', fontWeight: 500 }}>{footerBgPreview ? 'New image ready — click Upload' : 'Footer background is live on your website ✓'}</p>
                                     </div>
                                 ) : (
-                                    <div style={{ marginTop: '14px', padding: '10px 12px', background: '#fefce8', borderRadius: '8px', border: '0.5px solid #fde68a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <div style={{ marginTop: '14px', padding: '10px 12px', background: '#fefce8', borderRadius: '10px', border: '1px solid #fde68a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <svg width="14" height="14" fill="none" stroke="#a16207" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         <p style={{ fontSize: '12px', color: '#a16207', fontWeight: 500 }}>No background set — footer stays a plain solid color</p>
                                     </div>
@@ -1754,21 +1897,21 @@ const AdminSettings = () => {
 
                 {/* ── Background Music Tab — school picks from a small curated preset (no upload) to avoid copyright issues ── */}
                 {activeTab === 'bgMusic' && (
-                    <div className="settings-section" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
-                                    <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <div className="settings-section" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#064e3b,#059669)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(5,150,105,0.3)' }}>
+                                    <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
                                 </div>
                                 <div>
-                                    <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>Background Music</p>
-                                    <p style={{ fontSize: '11px', color: '#94a3b8' }}>Optional — plays softly on your homepage. Pick from a curated royalty-free set (no custom upload) so there's no copyright risk.</p>
+                                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>Background Music</p>
+                                    <p style={{ fontSize: '11.5px', color: '#64748b' }}>Plays soft instrumental music while visitors browse your website</p>
                                 </div>
                             </div>
                             <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
                                 {/* Enable/disable */}
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: musicData.bg_music_enabled ? '#f0fdf4' : '#f8fafc', border: `1px solid ${musicData.bg_music_enabled ? '#bbf7d0' : '#e2e8f0'}`, borderRadius: '8px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: musicData.bg_music_enabled ? '#f0fdf4' : '#f8fafc', border: `1px solid ${musicData.bg_music_enabled ? '#bbf7d0' : '#e2e8f0'}`, borderRadius: '10px' }}>
                                     <div>
                                         <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>Play Background Music</p>
                                         <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>Starts muted for visitors — they tap a speaker icon to turn it on</p>
@@ -1806,7 +1949,7 @@ const AdminSettings = () => {
                                                         display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px',
                                                         border: `1.5px solid ${selected ? tc.primary : '#e2e8f0'}`,
                                                         background: selected ? hexToRgba(tc.primary, 0.06) : '#fff',
-                                                        borderRadius: '8px', cursor: selectingTrack ? 'wait' : 'pointer', transition: 'all 0.15s',
+                                                        borderRadius: '10px', cursor: selectingTrack ? 'wait' : 'pointer', transition: 'all 0.15s',
                                                     }}>
                                                     <div style={{
                                                         width: '18px', height: '18px', borderRadius: '50%', flexShrink: 0,
@@ -1835,33 +1978,38 @@ const AdminSettings = () => {
                             </div>
                         </div>
 
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        {/* Status / Live Preview Card */}
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg,#064e3b,#059669)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(5,150,105,0.3)' }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 </div>
                                 <div>
-                                    <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>Status</p>
-                                    <p style={{ fontSize: '11px', color: '#94a3b8' }}>How this looks to visitors on your homepage</p>
+                                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>Status & Preview</p>
+                                    <p style={{ fontSize: '11.5px', color: '#64748b' }}>How this looks to visitors on your homepage</p>
                                 </div>
                             </div>
                             <div style={{ padding: '1.5rem 1.75rem' }}>
-                                <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center', border: '1.5px dashed #e2e8f0', borderRadius: '12px', background: '#fafafa' }}>
-                                    <div style={{ width: '48px', height: '48px', margin: '0 auto 12px', borderRadius: '50%', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-                                        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path strokeLinecap="round" strokeLinejoin="round" d="M23 9l-6 6m0-6l6 6"/></svg>
+                                <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center', border: '1.5px dashed #cbd5e1', borderRadius: '14px', background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)' }}>
+                                    <div style={{ width: '52px', height: '52px', margin: '0 auto 12px', borderRadius: '50%', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: `0 8px 20px ${hexToRgba(tc.primary, 0.35)}` }}>
+                                        <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path strokeLinecap="round" strokeLinejoin="round" d="M23 9l-6 6m0-6l6 6"/></svg>
                                     </div>
-                                    <p style={{ fontSize: '13px', color: '#64748b' }}>A floating speaker icon appears bottom-right on your homepage. Visitors tap it to play/mute — nothing plays automatically with sound.</p>
+                                    <p style={{ fontSize: '13px', color: '#475569', maxWidth: '380px', margin: '0 auto', lineHeight: 1.5 }}>A floating speaker icon appears bottom-right on your homepage. Visitors tap it to play/mute — audio starts muted by default for browser compliance.</p>
                                 </div>
-                                <div style={{ marginTop: '14px', padding: '10px 12px', background: musicData.bg_music_enabled ? '#f0fdf4' : '#fefce8', borderRadius: '8px', border: `0.5px solid ${musicData.bg_music_enabled ? '#bbf7d0' : '#fde68a'}`, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{ marginTop: '16px', padding: '12px 14px', background: musicData.bg_music_enabled ? '#f0fdf4' : '#fefce8', borderRadius: '10px', border: `1px solid ${musicData.bg_music_enabled ? '#bbf7d0' : '#fde68a'}`, display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     {musicData.bg_music_enabled ? (
                                         <>
-                                            <svg width="14" height="14" fill="none" stroke="#15803d" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                            <p style={{ fontSize: '12px', color: '#15803d', fontWeight: 500 }}>Live — {MUSIC_TRACKS.find(t => t.key === musicData.bg_music_track)?.label || 'a track'} is playable on your homepage ✓</p>
+                                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                <svg width="13" height="13" fill="none" stroke="#15803d" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                            </div>
+                                            <p style={{ fontSize: '12.5px', color: '#15803d', fontWeight: 600 }}>Live — {MUSIC_TRACKS.find(t => t.key === musicData.bg_music_track)?.label || 'a track'} is active on your homepage</p>
                                         </>
                                     ) : (
                                         <>
-                                            <svg width="14" height="14" fill="none" stroke="#a16207" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                                            <p style={{ fontSize: '12px', color: '#a16207', fontWeight: 500 }}>Disabled — not shown on your website</p>
+                                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                                <svg width="13" height="13" fill="none" stroke="#a16207" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                            </div>
+                                            <p style={{ fontSize: '12.5px', color: '#a16207', fontWeight: 600 }}>Disabled — not shown to visitors</p>
                                         </>
                                     )}
                                 </div>
@@ -1872,54 +2020,54 @@ const AdminSettings = () => {
 
                 {/* ── Affiliation Badges Tab — board/accreditation logos (e.g. CBSE, Cambridge) shown top-right of the navbar ── */}
                 {activeTab === 'affiliationBadges' && (
-                    <div className="settings-section" style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                        <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                    <div className="settings-card-premium">
+                        <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                                 <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15a4 4 0 100-8 4 4 0 000 8z"/><path strokeLinecap="round" strokeLinejoin="round" d="M8.5 13.5L7 21l5-2.5L17 21l-1.5-7.5"/></svg>
                             </div>
                             <div>
-                                <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>Affiliation Badges</p>
-                                <p style={{ fontSize: '11px', color: '#94a3b8' }}>Optional — up to {MAX_AFFILIATION_BADGES} board/accreditation logos (e.g. CBSE, Cambridge Assessment) shown top-right of your navbar, next to the menu</p>
+                                <p style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>Affiliation Badges</p>
+                                <p style={{ fontSize: '11.5px', color: '#64748b' }}>Optional — up to {MAX_AFFILIATION_BADGES} board/accreditation logos (e.g. CBSE, Cambridge Assessment) shown top-right of your navbar, next to the menu</p>
                             </div>
                         </div>
                         <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
                             {badges.length === 0 && (
-                                <div style={{ padding: '2rem', textAlign: 'center', border: '1.5px dashed #e2e8f0', borderRadius: '12px', background: '#fafafa' }}>
-                                    <p style={{ fontSize: '13px', color: '#94a3b8' }}>No badges added yet</p>
+                                <div style={{ padding: '2.5rem', textAlign: 'center', border: '1.5px dashed #cbd5e1', borderRadius: '14px', background: '#f8fafc' }}>
+                                    <p style={{ fontSize: '13px', color: '#94a3b8' }}>No badges added yet. Click "+ Add Badge" below to showcase your educational board affiliations.</p>
                                 </div>
                             )}
 
                             {badges.map((badge, idx) => (
-                                <div key={badge.id} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '12px', border: '1px solid #f1f5f9', borderRadius: '10px' }}>
+                                <div key={badge.id} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '12px 14px', border: '1.5px solid #e2e8f0', borderRadius: '12px', background: '#ffffff', boxShadow: '0 1px 4px rgba(0,0,0,0.02)' }}>
                                     <div onClick={() => document.getElementById(`badge-upload-${badge.id}`).click()}
-                                        style={{ width: '64px', height: '64px', flexShrink: 0, borderRadius: '10px', border: badge.url ? '1px solid #e2e8f0' : '1.5px dashed #cbd5e1', background: badge.url ? '#fff' : '#fafafa', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                        style={{ width: '64px', height: '64px', flexShrink: 0, borderRadius: '10px', border: badge.url ? '1.5px solid #e2e8f0' : '1.5px dashed #cbd5e1', background: badge.url ? '#fff' : '#f8fafc', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                                         {uploadingBadge === badge.id ? (
                                             <div style={{ width: '18px', height: '18px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
                                         ) : badge.url ? (
                                             <img src={badge.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                                         ) : (
-                                            <span style={{ fontSize: '10px', color: '#94a3b8', textAlign: 'center' }}>Upload</span>
+                                            <span style={{ fontSize: '11px', fontWeight: 600, color: tc.primary, textAlign: 'center' }}>Upload</span>
                                         )}
                                     </div>
                                     <input id={`badge-upload-${badge.id}`} type="file" accept="image/png,image/jpg,image/jpeg,image/webp,image/svg+xml" style={{ display: 'none' }}
                                         onChange={e => { const f = e.target.files[0]; e.target.value = ''; if (f) uploadBadgeImage(badge.id, f); }} />
                                     <div style={{ flex: 1 }}>
-                                        <input type="text" value={badge.label} onChange={e => updateBadge(badge.id, 'label', e.target.value)}
+                                        <input className="settings-input" type="text" value={badge.label} onChange={e => updateBadge(badge.id, 'label', e.target.value)}
                                             placeholder="Enter Label (e.g. CBSE Affiliated)" style={inputStyle} />
                                     </div>
                                     <button type="button" onClick={() => removeBadge(badge.id)}
-                                        style={{ background: '#fef2f2', border: '0.5px solid #fecaca', borderRadius: '6px', color: '#ef4444', cursor: 'pointer', fontSize: '14px', width: '28px', height: '28px', flexShrink: 0 }}>×</button>
+                                        style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', color: '#ef4444', cursor: 'pointer', fontSize: '16px', width: '32px', height: '32px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}>×</button>
                                 </div>
                             ))}
 
-                            <div style={{ display: 'flex', gap: '10px' }}>
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                 <button type="button" onClick={addBadgeSlot} disabled={badges.length >= MAX_AFFILIATION_BADGES}
-                                    style={{ padding: '11px 20px', background: '#ffffff', border: `1.5px dashed ${tc.primary}55`, borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: badges.length >= MAX_AFFILIATION_BADGES ? '#cbd5e1' : tc.primary, cursor: badges.length >= MAX_AFFILIATION_BADGES ? 'not-allowed' : 'pointer' }}>
+                                    style={{ padding: '11px 20px', background: '#ffffff', border: `1.5px dashed ${tc.primary}66`, borderRadius: '10px', fontSize: '13px', fontWeight: 700, color: badges.length >= MAX_AFFILIATION_BADGES ? '#cbd5e1' : tc.primary, cursor: badges.length >= MAX_AFFILIATION_BADGES ? 'not-allowed' : 'pointer', transition: 'all 0.15s ease' }}>
                                     + Add Badge
                                 </button>
-                                <button onClick={handleBadgesSave} disabled={savingBadges}
-                                    style={{ padding: '11px 20px', background: savingBadges ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: savingBadges ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                <button className="settings-btn-primary" onClick={handleBadgesSave} disabled={savingBadges}
+                                    style={{ padding: '11px 22px', background: savingBadges ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: savingBadges ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     {savingBadges ? 'Saving...' : 'Save Badges'}
                                 </button>
                             </div>
@@ -1937,25 +2085,21 @@ const AdminSettings = () => {
                      RootRouter/CustomDomainRoutes (host-based routing) and app.js's CORS check
                      already resolve and allow it automatically, no further steps needed. ── */}
                 {activeTab === 'customDomain' && (
-                    <div className="settings-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <div className="settings-section" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-                        {/* ── Free wbpro.in Subdomain — separate, mediated flow from the external
-                             Custom Domain card below: request a label here (or right after a
-                             Billing payment), a Super Admin does the DNS/Vercel work manually and
-                             marks it live, which lands in this same tbl_schools.custom_domain
-                             column — see backend/src/modules/subdomainRequest/. ── */}
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                        {/* ── Free wbpro.in Subdomain ── */}
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                    <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>Free wbpro.in Subdomain</p>
-                                    <p style={{ fontSize: '11px', color: '#94a3b8' }}>Get a branded link like yourschool.wbpro.in — no domain purchase needed</p>
+                                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>Free wbpro.in Subdomain</p>
+                                    <p style={{ fontSize: '11.5px', color: '#64748b' }}>Get a branded link like yourschool.wbpro.in — no domain purchase needed</p>
                                 </div>
                                 {subdomainRequest?.status && (
                                     <span style={{
-                                        fontSize: '10.5px', fontWeight: 700, borderRadius: '999px', padding: '4px 11px', flexShrink: 0,
+                                        fontSize: '11px', fontWeight: 700, borderRadius: '999px', padding: '5px 13px', flexShrink: 0,
                                         color: subdomainRequest.status === 'fulfilled' ? '#15803d' : subdomainRequest.status === 'rejected' ? '#b91c1c' : '#b45309',
                                         background: subdomainRequest.status === 'fulfilled' ? '#f0fdf4' : subdomainRequest.status === 'rejected' ? '#fef2f2' : '#fffbeb',
                                         border: `1px solid ${subdomainRequest.status === 'fulfilled' ? '#bbf7d0' : subdomainRequest.status === 'rejected' ? '#fecaca' : '#fde68a'}`,
@@ -1968,7 +2112,7 @@ const AdminSettings = () => {
                                 {subdomainRequest === null ? (
                                     <p style={{ fontSize: '12.5px', color: '#94a3b8' }}>Loading...</p>
                                 ) : subdomainRequest.status === 'fulfilled' ? (
-                                    <p style={{ fontSize: '13px', color: '#15803d', fontWeight: 600 }}>
+                                    <p style={{ fontSize: '13.5px', color: '#15803d', fontWeight: 600 }}>
                                         Your site is live at{' '}
                                         <a href={`https://${subdomainRequest.requested_label}.wbpro.in`} target="_blank" rel="noopener noreferrer" style={{ color: '#15803d', textDecoration: 'underline' }}>
                                             {subdomainRequest.requested_label}.wbpro.in
@@ -1988,24 +2132,25 @@ const AdminSettings = () => {
                             </div>
                         </div>
 
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                        {/* ── Custom Domain ── */}
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 000 18M12.5 3a17 17 0 010 18"/></svg>
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                    <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>Custom Domain</p>
-                                    <p style={{ fontSize: '11px', color: '#94a3b8' }}>Point your own domain at your school website instead of the default link</p>
+                                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>Custom Domain</p>
+                                    <p style={{ fontSize: '11.5px', color: '#64748b' }}>Point your own domain at your school website instead of the default link</p>
                                 </div>
                                 {customDomain && (
-                                    <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#b45309', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '999px', padding: '4px 11px', flexShrink: 0 }}>
+                                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#b45309', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '999px', padding: '5px 13px', flexShrink: 0 }}>
                                         Pending Verification
                                     </span>
                                 )}
                             </div>
                             <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                 {subdomainRequest?.status === 'fulfilled' && (
-                                    <p style={{ fontSize: '11.5px', color: '#b45309', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '8px', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '7px' }}>
+                                    <p style={{ fontSize: '12px', color: '#b45309', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '10px', padding: '11px 14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <InfoIcon /> Your site is currently live at <strong>{subdomainRequest.requested_label}.wbpro.in</strong>. Saving a domain below will replace it with the domain you enter here.
                                     </p>
                                 )}
@@ -2015,13 +2160,13 @@ const AdminSettings = () => {
                                         placeholder="e.g. www.yourschool.com" style={inputStyle} />
                                 </div>
                                 <div style={{ display: 'flex', gap: '10px' }}>
-                                    <button onClick={handleDomainSave} disabled={savingDomain}
-                                        style={{ padding: '11px 20px', background: savingDomain ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: savingDomain ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                    <button className="settings-btn-primary" onClick={handleDomainSave} disabled={savingDomain}
+                                        style={{ padding: '11px 22px', background: savingDomain ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: savingDomain ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
                                         {savingDomain ? 'Saving...' : 'Save Domain'}
                                     </button>
                                     {customDomain && (
                                         <button type="button" onClick={() => setCustomDomain('')} disabled={savingDomain}
-                                            style={{ padding: '11px 18px', background: '#fef2f2', border: '0.5px solid #fecaca', borderRadius: '6px', fontSize: '13px', fontWeight: 600, color: '#ef4444', cursor: savingDomain ? 'not-allowed' : 'pointer' }}>
+                                            style={{ padding: '11px 18px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', fontSize: '13px', fontWeight: 700, color: '#ef4444', cursor: savingDomain ? 'not-allowed' : 'pointer' }}>
                                             Remove
                                         </button>
                                     )}
@@ -2033,10 +2178,10 @@ const AdminSettings = () => {
                         </div>
 
                         {/* DNS instructions — VPS Direct A Record */}
-                        <div style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)' }}>
-                                <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>How to connect your domain</p>
-                                <p style={{ fontSize: '11px', color: '#94a3b8' }}>Point your DNS records to your VPS server IP at your domain registrar (GoDaddy, Namecheap, Cloudflare, Hostinger, etc.)</p>
+                        <div className="settings-card-premium">
+                            <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)' }}>
+                                <p style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>How to connect your domain</p>
+                                <p style={{ fontSize: '11.5px', color: '#64748b' }}>Point your DNS records to your VPS server IP at your domain registrar (GoDaddy, Namecheap, Cloudflare, Hostinger, etc.)</p>
                             </div>
                             <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '18px' }}>
                                 {/* Quick Server IP Copy Card */}
@@ -2045,17 +2190,17 @@ const AdminSettings = () => {
                                     alignItems: 'center',
                                     justifyContent: 'space-between',
                                     background: '#f8fafc',
-                                    border: '1px solid #e2e8f0',
-                                    borderRadius: '10px',
-                                    padding: '12px 16px',
+                                    border: '1.5px solid #e2e8f0',
+                                    borderRadius: '12px',
+                                    padding: '14px 18px',
                                     flexWrap: 'wrap',
-                                    gap: '10px',
+                                    gap: '12px',
                                 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                        <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px rgba(16,185,129,0.5)' }}></span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 10px rgba(16,185,129,0.6)' }}></span>
                                         <div>
                                             <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>VPS Server IP</div>
-                                            <div style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', fontFamily: 'monospace' }}>165.99.222.209</div>
+                                            <div style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', fontFamily: 'monospace' }}>165.99.222.209</div>
                                         </div>
                                     </div>
                                     <button
@@ -2066,25 +2211,27 @@ const AdminSettings = () => {
                                         }}
                                         style={{
                                             background: '#ffffff',
-                                            border: '1px solid #cbd5e1',
+                                            border: '1.5px solid #cbd5e1',
                                             color: '#0f172a',
-                                            fontSize: '12px',
-                                            fontWeight: 600,
-                                            padding: '6px 14px',
-                                            borderRadius: '8px',
+                                            fontSize: '12.5px',
+                                            fontWeight: 700,
+                                            padding: '8px 16px',
+                                            borderRadius: '9px',
                                             cursor: 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '6px',
-                                            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                                            gap: '7px',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.04)',
                                             transition: 'all 0.15s ease',
                                         }}
                                         onMouseEnter={(e) => {
-                                            e.currentTarget.style.borderColor = '#94a3b8';
-                                            e.currentTarget.style.background = '#f1f5f9';
+                                            e.currentTarget.style.borderColor = tc.primary;
+                                            e.currentTarget.style.color = tc.primary;
+                                            e.currentTarget.style.background = '#f8fafc';
                                         }}
                                         onMouseLeave={(e) => {
                                             e.currentTarget.style.borderColor = '#cbd5e1';
+                                            e.currentTarget.style.color = '#0f172a';
                                             e.currentTarget.style.background = '#ffffff';
                                         }}
                                     >
@@ -2094,30 +2241,30 @@ const AdminSettings = () => {
                                 </div>
 
                                 <div>
-                                    <p style={{ fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>Option 1: For a root domain (e.g. yourschool.com)</p>
+                                    <p style={{ fontSize: '12.5px', fontWeight: 700, color: '#334155', marginBottom: '10px' }}>Option 1: For a root domain (e.g. yourschool.com)</p>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                                         {[['Type', 'A'], ['Host', '@'], ['Value', '165.99.222.209']].map(([k, v]) => (
-                                            <div key={k} style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '8px', padding: '10px 12px' }}>
+                                            <div key={k} style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '10px', padding: '10px 14px' }}>
                                                 <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{k}</div>
-                                                <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginTop: '2px', fontFamily: 'monospace' }}>{v}</div>
+                                                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0f172a', marginTop: '3px', fontFamily: 'monospace' }}>{v}</div>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
 
                                 <div>
-                                    <p style={{ fontSize: '12px', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>Option 2: For a subdomain or www (e.g. www.yourschool.com)</p>
+                                    <p style={{ fontSize: '12.5px', fontWeight: 700, color: '#334155', marginBottom: '10px' }}>Option 2: For a subdomain or www (e.g. www.yourschool.com)</p>
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                                         {[['Type', 'A'], ['Host', 'www'], ['Value', '165.99.222.209']].map(([k, v]) => (
-                                            <div key={k} style={{ background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '8px', padding: '10px 12px' }}>
+                                            <div key={k} style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '10px', padding: '10px 14px' }}>
                                                 <div style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{k}</div>
-                                                <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginTop: '2px', fontFamily: 'monospace' }}>{v}</div>
+                                                <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0f172a', marginTop: '3px', fontFamily: 'monospace' }}>{v}</div>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
 
-                                <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '11px 14px', fontSize: '12px', color: '#1e40af', lineHeight: 1.55 }}>
+                                <div style={{ background: '#eff6ff', border: '1.5px solid #bfdbfe', borderRadius: '10px', padding: '12px 16px', fontSize: '12.5px', color: '#1e40af', lineHeight: 1.6 }}>
                                     <strong>DNS Propagation:</strong> After adding the A record in your domain registrar's DNS panel, DNS propagation typically takes 10 to 30 minutes (up to 24–48 hours). Once saved above, your school website will automatically load under your custom domain.
                                 </div>
                             </div>
@@ -2128,50 +2275,50 @@ const AdminSettings = () => {
                 {/* ── Prospectus — a single PDF, shown as a "Download Prospectus" floating
                      tab on the public site next to Admission/Career Enquiry (only when set). ── */}
                 {activeTab === 'prospectus' && (
-                    <div className="settings-section" style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', maxWidth: '640px' }}>
-                        <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                    <div className="settings-card-premium" style={{ maxWidth: '680px' }}>
+                        <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                                 <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             </div>
                             <div>
-                                <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>School Prospectus</p>
-                                <p style={{ fontSize: '11px', color: '#94a3b8' }}>Optional — shows a "Download Prospectus" tab on your public site, next to Admission/Career Enquiry</p>
+                                <p style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>School Prospectus</p>
+                                <p style={{ fontSize: '11.5px', color: '#64748b' }}>Optional — shows a "Download Prospectus" tab on your public site, next to Admission/Career Enquiry</p>
                             </div>
                         </div>
                         <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             {prospectusUrl && !prospectusFile ? (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 16px', background: '#f0fdf4', border: '0.5px solid #bbf7d0', borderRadius: '10px' }}>
-                                    <span style={{ width: '36px', height: '36px', borderRadius: '9px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                        <svg width="17" height="17" fill="none" stroke="#15803d" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 16px', background: '#f0fdf4', border: '1.5px solid #bbf7d0', borderRadius: '12px' }}>
+                                    <span style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <svg width="18" height="18" fill="none" stroke="#15803d" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                     </span>
                                     <div style={{ flex: 1, minWidth: 0 }}>
-                                        <p style={{ fontSize: '13px', fontWeight: 600, color: '#15803d' }}>Prospectus is live on your website</p>
-                                        <a href={prospectusUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11.5px', color: '#16a34a', textDecoration: 'underline' }}>View current PDF</a>
+                                        <p style={{ fontSize: '13.5px', fontWeight: 700, color: '#15803d' }}>Prospectus is live on your website</p>
+                                        <a href={prospectusUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', color: '#16a34a', textDecoration: 'underline', fontWeight: 500 }}>View current PDF</a>
                                     </div>
                                     <button type="button" onClick={handleProspectusRemove} disabled={removingProspectus}
-                                        style={{ width: '30px', height: '30px', background: '#ffffff', border: '0.5px solid #fecaca', borderRadius: '8px', color: '#ef4444', cursor: removingProspectus ? 'wait' : 'pointer', fontSize: '15px', flexShrink: 0 }}
+                                        style={{ width: '32px', height: '32px', background: '#ffffff', border: '1px solid #fecaca', borderRadius: '8px', color: '#ef4444', cursor: removingProspectus ? 'wait' : 'pointer', fontSize: '16px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                         title="Remove prospectus">×</button>
                                 </div>
                             ) : (
                                 <div onClick={() => document.getElementById('prospectusInput').click()}
-                                    style={{ border: '1.5px dashed #cbd5e1', borderRadius: '10px', padding: '2rem', textAlign: 'center', cursor: 'pointer', background: prospectusFile ? '#f8fafc' : '#fafafa' }}>
-                                    <div style={{ width: '44px', height: '44px', margin: '0 auto 10px', borderRadius: '12px', background: tc.light, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <svg width="20" height="20" fill="none" stroke={tc.primary} strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    style={{ border: '2px dashed #cbd5e1', borderRadius: '14px', padding: '2.5rem 1.5rem', textAlign: 'center', cursor: 'pointer', background: prospectusFile ? '#f8fafc' : '#fafafa', transition: 'all 0.15s ease' }}>
+                                    <div style={{ width: '48px', height: '48px', margin: '0 auto 12px', borderRadius: '12px', background: tc.light, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <svg width="22" height="22" fill="none" stroke={tc.primary} strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                     </div>
                                     {prospectusFile ? (
-                                        <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{prospectusFile.name}</p>
+                                        <p style={{ fontSize: '13.5px', fontWeight: 700, color: '#0f172a' }}>{prospectusFile.name}</p>
                                     ) : (
                                         <>
-                                            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>Click to upload your school prospectus</p>
-                                            <p style={{ fontSize: '11px', color: '#94a3b8' }}>PDF only · Max 3MB</p>
+                                            <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>Click to upload your school prospectus</p>
+                                            <p style={{ fontSize: '11.5px', color: '#94a3b8' }}>PDF only · Max 3MB</p>
                                         </>
                                     )}
                                 </div>
                             )}
                             <input id="prospectusInput" type="file" accept="application/pdf" onChange={handleProspectusChange} style={{ display: 'none' }} />
                             {prospectusFile && (
-                                <button onClick={handleProspectusUpload} disabled={uploadingProspectus}
-                                    style={{ padding: '11px', background: uploadingProspectus ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: uploadingProspectus ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                <button className="settings-btn-primary" onClick={handleProspectusUpload} disabled={uploadingProspectus}
+                                    style={{ padding: '12px', background: uploadingProspectus ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: uploadingProspectus ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     {uploadingProspectus ? <><svg style={{ animation: 'spin 1s linear infinite', width: '16px', height: '16px' }} viewBox="0 0 24 24" fill="none"><circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>Uploading...</> : 'Upload Prospectus'}
                                 </button>
                             )}
@@ -2179,41 +2326,39 @@ const AdminSettings = () => {
                     </div>
                 )}
 
-                {/* ── School App — an optional 4th floating right-edge tab, alongside
-                     Admission/Career Enquiry and Prospectus, that links out to wherever the
-                     school's own app is hosted (Play Store, App Store, or any other page). ── */}
+                {/* ── School App ── */}
                 {activeTab === 'schoolApp' && (
-                    <div className="settings-section" style={{ background: '#ffffff', border: '0.5px solid #f1f5f9', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.04)', maxWidth: '640px' }}>
-                        <div style={{ padding: '1.25rem 1.75rem', borderBottom: '0.5px solid #f8fafc', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
+                    <div className="settings-card-premium" style={{ maxWidth: '680px' }}>
+                        <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid #f1f5f9', background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '38px', height: '38px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.3)}` }}>
                                 <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path strokeLinecap="round" strokeLinejoin="round" d="M11 18h2"/></svg>
                             </div>
                             <div>
-                                <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>School App</p>
-                                <p style={{ fontSize: '11px', color: '#94a3b8' }}>Optional — shows a floating tab on your public site, next to Admission/Career Enquiry and Prospectus, linking to your school's own app (Play Store, App Store, or anywhere else it's hosted)</p>
+                                <p style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: '2px' }}>School App</p>
+                                <p style={{ fontSize: '11.5px', color: '#64748b' }}>Optional — shows a floating tab on your public site, next to Admission/Career Enquiry and Prospectus, linking to your school's own app (Play Store, App Store, or anywhere else it's hosted)</p>
                             </div>
                         </div>
                         <div style={{ padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <div>
-                                <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: '#64748b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Button Name</label>
+                                <label style={labelStyle}>Button Name</label>
                                 <input className="settings-input" type="text" value={schoolAppLabel} onChange={e => setSchoolAppLabel(e.target.value)}
                                     placeholder="Enter button name, e.g. Get Our App"
-                                    style={{ width: '100%', padding: '11px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13.5px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', background: '#f8fafc' }} />
+                                    style={inputStyle} />
                             </div>
                             <div>
-                                <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: '#64748b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Download Link</label>
+                                <label style={labelStyle}>Download Link</label>
                                 <input className="settings-input" type="text" value={schoolAppUrl} onChange={e => setSchoolAppUrl(e.target.value)}
                                     placeholder="Paste your Play Store / App Store / download link"
-                                    style={{ width: '100%', padding: '11px 14px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '13.5px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', background: '#f8fafc' }} />
+                                    style={inputStyle} />
                             </div>
                             <div style={{ display: 'flex', gap: '10px' }}>
-                                <button onClick={handleSchoolAppSave} disabled={savingSchoolApp}
-                                    style={{ padding: '11px 20px', background: savingSchoolApp ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: 600, cursor: savingSchoolApp ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
+                                <button className="settings-btn-primary" onClick={handleSchoolAppSave} disabled={savingSchoolApp}
+                                    style={{ padding: '11px 22px', background: savingSchoolApp ? hexToRgba(tc.primary, 0.3) : `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '10px', fontSize: '13px', fontWeight: 700, cursor: savingSchoolApp ? 'not-allowed' : 'pointer', boxShadow: `0 4px 14px ${hexToRgba(tc.primary, 0.3)}` }}>
                                     {savingSchoolApp ? 'Saving...' : 'Save'}
                                 </button>
                                 {schoolAppUrl && (
                                     <button type="button" onClick={handleSchoolAppClear} disabled={savingSchoolApp}
-                                        style={{ padding: '11px 18px', background: '#fef2f2', border: '0.5px solid #fecaca', borderRadius: '6px', fontSize: '13px', fontWeight: 600, color: '#ef4444', cursor: savingSchoolApp ? 'not-allowed' : 'pointer' }}>
+                                        style={{ padding: '11px 18px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', fontSize: '13px', fontWeight: 700, color: '#ef4444', cursor: savingSchoolApp ? 'not-allowed' : 'pointer' }}>
                                         Clear
                                     </button>
                                 )}

@@ -318,40 +318,96 @@ const TCInformation = () => {
             `}</style>
             <div className="tc-page" style={{ background: bc.surface, margin: '-24px', padding: '24px', minHeight: '100vh' }}>
             <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 16px 60px' }}>
-            {/* ============ Hero header ============ */}
-            <div
-                className="tc-hero"
-                style={{
-                    background: `linear-gradient(135deg, ${tc.dark} 0%, ${tc.primary} 55%, ${tc.dark} 100%)`,
-                    borderRadius: 22,
-                    padding: '36px 32px',
-                    color: '#fff',
-                    margin: '24px 0',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    boxShadow: `0 12px 40px ${hexToRgba(tc.primary, 0.25)}`,
-                }}
-            >
-                <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '24px 24px', pointerEvents: 'none' }}></div>
-                <div className="tc-hero-orb" style={{ position: 'absolute', width: '300px', height: '300px', borderRadius: '50%', background: `radial-gradient(circle, ${hexToRgba(tc.primary, 0.25)} 0%, transparent 70%)`, top: '-140px', right: '4%', pointerEvents: 'none' }}></div>
-                <div className="tc-hero-item tc-hero-inner" style={{ display: 'flex', flexDirection: 'column', gap: 14, position: 'relative', zIndex: 1 }}>
-                    <div className="tc-hero-top" style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div>
-                            <h1 className="tc-hero-title" style={{ fontSize: 26, fontWeight: 800 }}>Transfer Certificates</h1>
-                            <p className="tc-hero-desc" style={{ marginTop: 8, fontSize: 14, color: 'rgba(255,255,255,0.75)', maxWidth: 560 }}>
-                                Add session-wise TC records one student at a time — TC No, Student Name, and the
-                                signed TC as a PDF. Students can then search and download it from the public page.
+            {/* Hero Header */}
+            <div className="tc-hero" style={{
+                background: `linear-gradient(135deg, ${tc.dark} 0%, ${tc.primary} 55%, ${tc.secondary || tc.dark} 100%)`,
+                borderRadius: '24px',
+                padding: '2.25rem 2.75rem',
+                margin: '24px 0 1.75rem',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: `0 16px 40px ${hexToRgba(tc.primary, 0.28)}`
+            }}>
+                <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px', pointerEvents: 'none' }}></div>
+                <div style={{ position: 'absolute', width: '380px', height: '380px', borderRadius: '50%', background: `radial-gradient(circle, ${hexToRgba(tc.secondary || tc.primary, 0.28)} 0%, transparent 70%)`, top: '-140px', right: '-80px', pointerEvents: 'none', filter: 'blur(30px)' }}></div>
+                <div style={{ position: 'absolute', width: '260px', height: '260px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%)', bottom: '-80px', left: '15%', pointerEvents: 'none', filter: 'blur(20px)' }}></div>
+
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '2rem', flexWrap: 'wrap' }}>
+                        <div style={{ flex: '1 1 300px', minWidth: 0 }}>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '4px 12px', background: 'rgba(255,255,255,0.12)', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.22)', marginBottom: '12px' }}>
+                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80' }}></div>
+                                <span style={{ fontSize: '10.5px', color: '#ffffff', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>Admin / TC Portal</span>
+                            </div>
+                            <h1 style={{ fontSize: '30px', fontWeight: 700, color: '#ffffff', marginBottom: '8px', letterSpacing: '-0.5px', lineHeight: 1.2 }}>Transfer Certificates (TC)</h1>
+                            <p style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, maxWidth: '520px', margin: 0 }}>
+                                Issue session-wise TC records with signed PDFs — parents and students can search and verify directly from your public portal.
                             </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px' }}>
+                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: isPublished ? 'rgba(34,197,94,0.18)' : 'rgba(255,255,255,0.12)', border: `1.5px solid ${isPublished ? 'rgba(34,197,94,0.45)' : 'rgba(255,255,255,0.25)'}`, borderRadius: '999px' }}>
+                                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: isPublished ? '#4ade80' : '#facc15' }}></div>
+                                    <span style={{ fontSize: '11px', color: isPublished ? '#bbf7d0' : '#ffffff', fontWeight: 700, letterSpacing: '0.03em' }}>
+                                        {isPublished ? 'Live on Website' : 'Draft (Unpublished)'}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        <div
-                            className="tc-status-badge"
-                            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 11px', background: isPublished ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.08)', border: `1px solid ${isPublished ? 'rgba(34,197,94,0.3)' : 'rgba(255,255,255,0.15)'}`, borderRadius: '999px', flexShrink: 0 }}
-                        >
-                            <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: isPublished ? '#22c55e' : '#94a3b8', flexShrink: 0 }}></div>
-                            <span style={{ fontSize: '10.5px', color: isPublished ? '#86efac' : 'rgba(255,255,255,0.55)', fontWeight: 600, letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>{isPublished ? 'Published' : 'Draft'}</span>
+
+                        {/* Standardized Whiter Frosted Glass Panel */}
+                        <div style={{
+                            background: 'linear-gradient(135deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.13) 100%)',
+                            border: '1.5px solid rgba(255,255,255,0.42)',
+                            borderRadius: '16px',
+                            padding: '0.75rem 1.1rem',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.18), inset 0 1px 1.5px rgba(255,255,255,0.5)',
+                            width: '230px',
+                            minWidth: '230px',
+                            maxWidth: '230px',
+                            flexShrink: 0,
+                            boxSizing: 'border-box'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.18)' }}>
+                                <div style={{
+                                    width: '28px', height: '28px', borderRadius: '8px',
+                                    background: 'rgba(255,255,255,0.22)',
+                                    border: '1px solid rgba(255,255,255,0.38)',
+                                    color: '#ffffff',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                                }}>
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                                </div>
+                                <div style={{ minWidth: 0, flex: 1 }}>
+                                    <p style={{ fontSize: '9.5px', color: 'rgba(255,255,255,0.7)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, lineHeight: 1.2 }}>Issued TCs</p>
+                                    <p style={{ fontSize: '12.5px', fontWeight: 700, color: '#ffffff', margin: 0, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{`${sessions?.reduce((acc, s) => acc + (s.records?.length || 0), 0) || 0} Records`}</p>
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '5px 0' }}>
+                                <div style={{
+                                    width: '28px', height: '28px', borderRadius: '8px',
+                                    background: 'rgba(255,255,255,0.22)',
+                                    border: '1px solid rgba(255,255,255,0.38)',
+                                    color: '#ffffff',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                                }}>
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                </div>
+                                <div style={{ minWidth: 0, flex: 1 }}>
+                                    <p style={{ fontSize: '9.5px', color: 'rgba(255,255,255,0.7)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, lineHeight: 1.2 }}>Search Portal</p>
+                                    <p style={{ fontSize: '12.5px', fontWeight: 700, color: '#ffffff', margin: 0, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Public Verification On</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div className="tc-hero-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+
+                    {/* Hero Bottom Actions */}
+                    <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.16)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>
+                                {isDirty ? '⚠️ You have unsaved changes in this module' : '✓ All changes are currently up to date'}
+                            </span>
+                        </div>
                         <ModuleActionButtons
                             tc={tc}
                             moduleKey={MODULE_KEY}

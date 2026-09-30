@@ -7,6 +7,7 @@ import { moduleRegistry } from "../config/moduleRegistry";
 import { logoutApi } from "../api/auth.api";
 import toast from "react-hot-toast";
 import logo from "../assets/webbuilder-removebg-preview.png";
+import logoWhite from "../assets/webbuilder-white-logo.png";
 import logoCollapsed from "../assets/webbuilder-collapsed-removebg-preview.png";
 import { getFontFamily } from "../constants/fonts";
 
@@ -20,10 +21,10 @@ const pageTitles = {
     "/admin/module/home": "Home Page",
 };
 
-const SectionLabel = ({ children, tc }) => (
+const SectionLabel = ({ children }) => (
     <div style={{ padding: "10px 16px 6px", display: "flex", alignItems: "center", gap: "8px" }}>
-        <span style={{ width: "14px", height: "2px", borderRadius: "2px", background: `linear-gradient(90deg, ${tc.primary}, ${tc.secondary})`, flexShrink: 0 }} />
-        <span style={{ fontSize: "10px", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.1em" }}>{children}</span>
+        <span style={{ width: "14px", height: "2px", borderRadius: "2px", background: "rgba(255,255,255,0.7)", flexShrink: 0 }} />
+        <span style={{ fontSize: "10px", fontWeight: 700, color: "rgba(255,255,255,0.65)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{children}</span>
     </div>
 );
 
@@ -222,34 +223,34 @@ const AdminLayout = () => {
                     margin: "2px 8px", borderRadius: "10px",
                     justifyContent: isCollapsed ? "center" : "flex-start",
                     cursor: "pointer", position: "relative",
-                    background: isActive ? `linear-gradient(135deg, ${theme.sidebarActiveBg}, #ffffff)` : "transparent",
-                    border: isActive ? `1px solid ${hexToRgba(tc.primary, 0.28)}` : "1px solid transparent",
-                    boxShadow: isActive ? `0 2px 8px ${hexToRgba(tc.primary, 0.12)}` : "none",
+                    background: isActive ? (bc?.surface || "#ffffff") : "transparent",
+                    boxShadow: isActive ? "0 4px 14px rgba(0,0,0,0.18)" : "none",
                     animationDelay: `${Math.min(index, 12) * 0.03}s`,
+                    transition: "all 0.18s ease",
                 }}
-                onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.background = theme.sidebarHover; e.currentTarget.style.borderColor = "#e2e8f0"; } }}
-                onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "transparent"; } }}
+                onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; } }}
+                onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.background = "transparent"; } }}
             >
                 {isActive && !isCollapsed && (
-                    <span style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", width: "3px", height: "58%", borderRadius: "0 4px 4px 0", background: `linear-gradient(180deg, ${tc.primary}, ${tc.secondary})` }} />
+                    <span style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", width: "3.5px", height: "58%", borderRadius: "0 4px 4px 0", background: `linear-gradient(180deg, ${tc.primary}, ${tc.secondary})` }} />
                 )}
                 <span className="admin-nav-icon" style={{
                     display: "flex", alignItems: "center", justifyContent: "center",
                     width: "30px", height: "30px", borderRadius: "8px", flexShrink: 0,
-                    background: isActive ? `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})` : hexToRgba(tc.primary, 0.06),
-                    border: isActive ? "1px solid rgba(255,255,255,0.35)" : `1px solid ${hexToRgba(tc.primary, 0.14)}`,
-                    color: isActive ? "#ffffff" : theme.sidebarTextMuted,
-                    boxShadow: isActive ? `0 3px 10px ${hexToRgba(tc.primary, 0.35)}` : "none",
+                    background: isActive ? `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})` : "rgba(255,255,255,0.12)",
+                    border: isActive ? "1px solid rgba(255,255,255,0.4)" : "1px solid rgba(255,255,255,0.15)",
+                    color: isActive ? "#ffffff" : "rgba(255,255,255,0.9)",
+                    boxShadow: isActive ? `0 3px 10px ${hexToRgba(tc.primary, 0.4)}` : "none",
                 }}>
                     {item.icon}
                 </span>
                 {!isCollapsed && (
-                    <span style={{ fontSize: "13px", fontWeight: isActive ? 600 : 500, letterSpacing: "-0.1px", color: isActive ? theme.sidebarActiveText : theme.sidebarText, whiteSpace: "nowrap" }}>
+                    <span style={{ fontSize: "13px", fontWeight: isActive ? 700 : 500, letterSpacing: "-0.1px", color: isActive ? (tc.dark || tc.primary) : "#ffffff", whiteSpace: "nowrap" }}>
                         {item.label}
                     </span>
                 )}
                 {isActive && isCollapsed && (
-                    <span style={{ position: "absolute", bottom: "3px", left: "50%", transform: "translateX(-50%)", width: "4px", height: "4px", borderRadius: "50%", background: tc.primary }} />
+                    <span style={{ position: "absolute", bottom: "3px", left: "50%", transform: "translateX(-50%)", width: "4px", height: "4px", borderRadius: "50%", background: bc?.surface || "#ffffff" }} />
                 )}
             </div>
         );
@@ -280,50 +281,83 @@ const AdminLayout = () => {
                 .admin-nav-item:active .admin-nav-icon { transform: scale(0.94); }
                 @keyframes logoRingPulse { 0%, 100% { box-shadow: 0 0 0 0 ${hexToRgba(tc.primary, 0.35)}; } 50% { box-shadow: 0 0 0 6px ${hexToRgba(tc.primary, 0)}; } }
                 .admin-logo-ring { animation: logoRingPulse 2.6s ease-in-out infinite; border-radius: 10px; }
+
+                /* ── Navbar Logout Button polish ── */
+                .admin-logout-btn {
+                    transition: all 0.18s ease !important;
+                }
+                .admin-logout-btn:hover {
+                    background: #fef2f2 !important;
+                    border-color: #fecaca !important;
+                    color: #dc2626 !important;
+                }
+                .admin-logout-btn:hover svg {
+                    stroke: #dc2626 !important;
+                }
+                .admin-logout-btn:active {
+                    transform: scale(0.96);
+                }
             `}</style>
 
             {/* Sidebar — desktop only below 900px, replaced by the hamburger + drawer */}
             <div className="admin-sidebar" style={{
                 width: collapsed ? "64px" : "260px",
                 minHeight: "100vh",
-                background: theme.sidebarBg,
-                backgroundImage: "radial-gradient(rgba(15,23,42,0.035) 1px, transparent 1px)",
-                backgroundSize: "18px 18px",
+                background: `linear-gradient(180deg, ${tc.dark || tc.primary} 0%, ${tc.primary} 100%)`,
                 display: "flex", flexDirection: "column",
                 transition: "width 0.25s ease",
                 overflow: "hidden", flexShrink: 0,
                 position: "relative",
-                boxShadow: "1px 0 0 rgba(15,23,42,0.06), 4px 0 24px rgba(15,23,42,0.03)",
+                boxShadow: "2px 0 20px rgba(0,0,0,0.15)",
                 fontFamily: "'Inter', system-ui, sans-serif",
             }}>
-                {/* Decorative theme-colored orbs — same visual language as the page hero headers,
-                    so the sidebar doesn't read as a flat, empty column ── */}
-                <div style={{ position: "absolute", width: "220px", height: "220px", borderRadius: "50%", background: `radial-gradient(circle, ${hexToRgba(tc.secondary, 0.16)} 0%, transparent 70%)`, top: "-90px", left: "-70px", pointerEvents: "none" }} />
-                <div style={{ position: "absolute", width: "260px", height: "260px", borderRadius: "50%", background: `radial-gradient(circle, ${hexToRgba(tc.primary, 0.1)} 0%, transparent 70%)`, bottom: "120px", right: "-120px", pointerEvents: "none" }} />
+                {/* Decorative theme-colored orbs */}
+                <div style={{ position: "absolute", width: "220px", height: "220px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%)", top: "-90px", left: "-70px", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", width: "260px", height: "260px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)", bottom: "120px", right: "-120px", pointerEvents: "none" }} />
 
-                {/* Logo */}
+                {/* Logo — using user-provided white logo for theme background */}
                 <div style={{
-                    height: "80px",
+                    height: "70px",
                     padding: collapsed ? "0" : "0 16px",
                     display: "flex", alignItems: "center",
-                    justifyContent: collapsed ? "center" : "flex-start",
+                    justifyContent: "center",
                     flexShrink: 0,
                     position: "relative",
                     zIndex: 1,
-                }}>
+                    cursor: "pointer",
+                }} onClick={() => navigate("/admin/dashboard")}>
                     {collapsed ? (
-                        <img src={logoCollapsed} alt="Logo" style={{ width: "40px", height: "40px", objectFit: "contain" }} />
+                        <img
+                            src={logoCollapsed}
+                            alt="Web Builder Pro"
+                            style={{
+                                width: "32px",
+                                height: "32px",
+                                objectFit: "contain",
+                            }}
+                        />
                     ) : (
-                        <img src={logo} alt="Web Builder Pro" style={{ width: "200px", height: "90px", objectFit: "contain", objectPosition: "left center", display: "block", marginLeft: "8px" }} />
+                        <img
+                            src={logoWhite}
+                            alt="Web Builder Pro"
+                            style={{
+                                height: "38px",
+                                width: "auto",
+                                maxWidth: "185px",
+                                objectFit: "contain",
+                                objectPosition: "center",
+                                display: "block",
+                                margin: "0 auto",
+                            }}
+                        />
                     )}
-                    <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, borderBottom: "1px solid #f1f5f9" }} />
-                    <div style={{ position: "absolute", left: "16px", right: "16px", bottom: 0, height: "2px", borderRadius: "2px", background: `linear-gradient(90deg, ${tc.primary}, ${tc.secondary}, transparent)`, opacity: 0.55 }} />
+                    <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, borderBottom: "1px solid rgba(255,255,255,0.12)" }} />
                 </div>
 
-                {/* Scrollable nav area — fills remaining space so the branding footer below always stays pinned to the bottom */}
+                {/* Scrollable nav area */}
                 <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "10px", padding: "10px 8px 0", zIndex: 1, position: "relative" }}>
                     {/* Core Nav */}
-                    <div style={{ border: "1px solid #f1f5f9", borderRadius: "14px", background: "rgba(255,255,255,0.6)", padding: "4px 0" }}>
+                    <div style={{ border: "1px solid rgba(255,255,255,0.12)", borderRadius: "14px", background: "rgba(255,255,255,0.06)", padding: "4px 0" }}>
                         {!collapsed && (
                             <SectionLabel tc={tc}>Main</SectionLabel>
                         )}
@@ -334,7 +368,7 @@ const AdminLayout = () => {
 
                     {/* Modules Nav */}
                     {hasActivePlan && moduleItems.length > 0 && (
-                        <div style={{ border: "1px solid #f1f5f9", borderRadius: "14px", background: "rgba(255,255,255,0.6)", padding: "4px 0" }}>
+                        <div style={{ border: "1px solid rgba(255,255,255,0.12)", borderRadius: "14px", background: "rgba(255,255,255,0.06)", padding: "4px 0" }}>
                             {!collapsed && (
                                 <SectionLabel tc={tc}>Modules</SectionLabel>
                             )}
@@ -345,30 +379,32 @@ const AdminLayout = () => {
                     )}
                 </div>
 
-                {/* School branding — pinned at the bottom, always visible, never scrolls away */}
+                {/* School branding — pinned at bottom */}
                 {school && (
-                    <div style={{ flexShrink: 0, borderTop: "0.5px solid #f1f5f9", padding: collapsed ? "10px 8px" : "12px", position: "relative", zIndex: 1 }}>
+                    <div style={{ flexShrink: 0, borderTop: "1px solid rgba(255,255,255,0.12)", padding: collapsed ? "10px 8px" : "12px", position: "relative", zIndex: 1 }}>
                         <div style={{
                             padding: collapsed ? "8px 0" : "10px 12px",
                             borderRadius: "14px",
-                            background: `linear-gradient(135deg, ${tc.light}, #ffffff)`,
-                            border: `1px solid ${hexToRgba(tc.primary, 0.14)}`,
+                            background: "rgba(255,255,255,0.12)",
+                            border: "1px solid rgba(255,255,255,0.18)",
                             display: "flex", alignItems: "center", gap: "12px",
                             justifyContent: collapsed ? "center" : "flex-start",
                         }}>
                             <div className="admin-logo-ring" style={{ flexShrink: 0 }}>
                                 {school.logo_url ? (
-                                    <img src={school.logo_url} alt={school.name} style={{ width: "44px", height: "44px", objectFit: "contain", borderRadius: "10px", display: "block" }} />
+                                    <img src={school.logo_url} alt={school.name} style={{ width: "42px", height: "42px", objectFit: "contain", borderRadius: "10px", display: "block" }} />
                                 ) : (
-                                    <div style={{ width: "44px", height: "44px", borderRadius: "10px", background: `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})` }}></div>
+                                    <div style={{ width: "42px", height: "42px", borderRadius: "10px", background: "#ffffff", color: tc.primary, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>
+                                        {school.name?.charAt(0) || "S"}
+                                    </div>
                                 )}
                             </div>
                             {!collapsed && (
                                 <div style={{ minWidth: 0 }}>
-                                    <p style={{ fontSize: "9.5px", fontWeight: 700, color: tc.primary, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px" }}>School Admin</p>
+                                    <p style={{ fontSize: "9.5px", fontWeight: 700, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px" }}>School Admin</p>
                                     <span style={{
-                                        fontFamily: getFontFamily(school.nav_font), fontSize: "14.5px", fontWeight: 700,
-                                        letterSpacing: "-0.1px", color: theme.sidebarText, lineHeight: 1.3,
+                                        fontFamily: getFontFamily(school.nav_font), fontSize: "14px", fontWeight: 700,
+                                        letterSpacing: "-0.1px", color: "#ffffff", lineHeight: 1.3,
                                         minWidth: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
                                     }}>
                                         {school.name}
@@ -569,8 +605,20 @@ const AdminLayout = () => {
                                 </span>
                                 <div style={{ width: "1px", height: "20px", background: "#e2e8f0" }}></div>
                                 <button
+                                    className="admin-logout-btn"
                                     onClick={handleLogout}
-                                    style={{ padding: "6px 12px", background: "transparent", border: "0.5px solid #e2e8f0", borderRadius: "8px", fontSize: "12px", color: "#64748b", cursor: "pointer", display: "flex", alignItems: "center", gap: "5px" }}
+                                    style={{
+                                        padding: "6px 12px",
+                                        background: "transparent",
+                                        border: "0.5px solid #e2e8f0",
+                                        borderRadius: "8px",
+                                        fontSize: "12px",
+                                        color: "#64748b",
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "5px",
+                                    }}
                                 >
                                     <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -618,21 +666,32 @@ const AdminLayout = () => {
                         style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.5)", zIndex: 998, animation: "adminDrawerBackdropIn 0.2s ease" }} />
                     <div style={{
                         position: "fixed", top: 0, left: 0, bottom: 0, width: "min(280px, 84vw)", zIndex: 999,
-                        background: theme.sidebarBg,
-                        backgroundImage: "radial-gradient(rgba(15,23,42,0.035) 1px, transparent 1px)",
-                        backgroundSize: "18px 18px",
+                        background: `linear-gradient(180deg, ${tc.dark || tc.primary} 0%, ${tc.primary} 100%)`,
                         display: "flex", flexDirection: "column", overflow: "hidden",
-                        boxShadow: "0 0 40px rgba(0,0,0,0.25)", animation: "adminDrawerSlideIn 0.25s cubic-bezier(0.16,1,0.3,1)",
+                        boxShadow: "0 0 40px rgba(0,0,0,0.35)", animation: "adminDrawerSlideIn 0.25s cubic-bezier(0.16,1,0.3,1)",
                         fontFamily: "'Inter', system-ui, sans-serif",
                     }}>
-                        <div style={{ position: "absolute", width: "200px", height: "200px", borderRadius: "50%", background: `radial-gradient(circle, ${hexToRgba(tc.secondary, 0.16)} 0%, transparent 70%)`, top: "-80px", left: "-60px", pointerEvents: "none" }} />
-                        <div style={{ position: "absolute", width: "220px", height: "220px", borderRadius: "50%", background: `radial-gradient(circle, ${hexToRgba(tc.primary, 0.1)} 0%, transparent 70%)`, bottom: "100px", right: "-100px", pointerEvents: "none" }} />
+                        <div style={{ position: "absolute", width: "200px", height: "200px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%)", top: "-80px", left: "-60px", pointerEvents: "none" }} />
+                        <div style={{ position: "absolute", width: "220px", height: "220px", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)", bottom: "100px", right: "-100px", pointerEvents: "none" }} />
 
                         {/* Logo + close */}
-                        <div style={{ height: "80px", padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, borderBottom: "0.5px solid #f1f5f9", position: "relative", zIndex: 1 }}>
-                            <img src={logo} alt="Web Builder Pro" style={{ width: "170px", height: "76px", objectFit: "contain", objectPosition: "left center", display: "block" }} />
+                        <div style={{ height: "70px", padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, borderBottom: "1px solid rgba(255,255,255,0.12)", position: "relative", zIndex: 1 }}>
+                            <div style={{ cursor: "pointer", display: "flex", alignItems: "center" }} onClick={() => { setMobileOpen(false); navigate("/admin/dashboard"); }}>
+                                <img
+                                    src={logoWhite}
+                                    alt="Web Builder Pro"
+                                    style={{
+                                        height: "38px",
+                                        width: "auto",
+                                        maxWidth: "185px",
+                                        objectFit: "contain",
+                                        objectPosition: "left center",
+                                        display: "block",
+                                    }}
+                                />
+                            </div>
                             <button onClick={() => setMobileOpen(false)}
-                                style={{ width: "32px", height: "32px", background: "#f8fafc", border: "0.5px solid #e2e8f0", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: theme.navbarText, flexShrink: 0 }}
+                                style={{ width: "32px", height: "32px", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#ffffff", flexShrink: 0 }}
                                 aria-label="Close menu">
                                 <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18"/></svg>
                             </button>
@@ -642,7 +701,7 @@ const AdminLayout = () => {
                         {hasActivePlan && (
                             <div style={{ padding: "10px 12px 4px", position: "relative", zIndex: 2 }}>
                                 <div style={{ position: "relative" }}>
-                                    <svg width="14" height="14" fill="none" stroke="#94a3b8" strokeWidth="2.2" viewBox="0 0 24 24" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                                    <svg width="14" height="14" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2.2" viewBox="0 0 24 24" style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
                                         <circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
                                     </svg>
                                     <input
@@ -652,18 +711,18 @@ const AdminLayout = () => {
                                         placeholder="Search modules..."
                                         style={{
                                             width: "100%", padding: "8px 28px 8px 30px",
-                                            borderRadius: "10px", fontSize: "13px", color: theme.navbarText, outline: "none", boxSizing: "border-box",
-                                            background: "rgba(255,255,255,0.9)", border: "1px solid #e2e8f0",
+                                            borderRadius: "10px", fontSize: "13px", color: "#ffffff", outline: "none", boxSizing: "border-box",
+                                            background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)",
                                         }}
                                     />
                                     {moduleSearch && (
-                                        <button onClick={() => setModuleSearch("")} style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: 0, fontSize: "13px" }}>
+                                        <button onClick={() => setModuleSearch("")} style={{ position: "absolute", right: "8px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.7)", padding: 0, fontSize: "13px" }}>
                                             ✕
                                         </button>
                                     )}
                                 </div>
                                 {moduleSearch.trim() && (
-                                    <div style={{ marginTop: "6px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "10px", overflow: "hidden", maxHeight: "220px", overflowY: "auto", boxShadow: "0 8px 20px rgba(0,0,0,0.1)" }}>
+                                    <div style={{ marginTop: "6px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "10px", overflow: "hidden", maxHeight: "220px", overflowY: "auto", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
                                         {searchResults.length === 0 ? (
                                             <div style={{ padding: "12px", textAlign: "center" }}>
                                                 <p style={{ fontSize: "12px", color: "#94a3b8", margin: 0 }}>No matches found</p>
@@ -676,7 +735,7 @@ const AdminLayout = () => {
                                                     <span style={{ width: "24px", height: "24px", borderRadius: "6px", background: hexToRgba(tc.primary, 0.1), display: "flex", alignItems: "center", justifyContent: "center", color: tc.primary, flexShrink: 0 }}>
                                                         {item.icon}
                                                     </span>
-                                                    <span style={{ fontSize: "13px", fontWeight: 500, color: theme.navbarText, flex: 1 }}>{item.label}</span>
+                                                    <span style={{ fontSize: "13px", fontWeight: 500, color: "#1e293b", flex: 1 }}>{item.label}</span>
                                                 </div>
                                             ))
                                         )}
@@ -686,14 +745,14 @@ const AdminLayout = () => {
                         )}
 
                         <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "10px", padding: "10px 8px 0", position: "relative", zIndex: 1 }}>
-                            <div style={{ border: "1px solid #f1f5f9", borderRadius: "14px", background: "rgba(255,255,255,0.6)", padding: "4px 0" }}>
+                            <div style={{ border: "1px solid rgba(255,255,255,0.12)", borderRadius: "14px", background: "rgba(255,255,255,0.06)", padding: "4px 0" }}>
                                 <SectionLabel tc={tc}>Main</SectionLabel>
                                 <nav style={{ padding: "4px 0" }}>
                                     {visibleCoreItems.map((item, i) => <NavItem key={item.key} item={item} index={i} forceExpanded onNavigate={() => setMobileOpen(false)} />)}
                                 </nav>
                             </div>
                             {hasActivePlan && moduleItems.length > 0 && (
-                                <div style={{ border: "1px solid #f1f5f9", borderRadius: "14px", background: "rgba(255,255,255,0.6)", padding: "4px 0" }}>
+                                <div style={{ border: "1px solid rgba(255,255,255,0.12)", borderRadius: "14px", background: "rgba(255,255,255,0.06)", padding: "4px 0" }}>
                                     <SectionLabel tc={tc}>Modules</SectionLabel>
                                     <nav style={{ padding: "4px 0" }}>
                                         {moduleItems.map((item, i) => <NavItem key={item.key} item={item} index={coreItems.length + i} forceExpanded onNavigate={() => setMobileOpen(false)} />)}
@@ -703,23 +762,25 @@ const AdminLayout = () => {
                         </div>
 
                         {school && (
-                            <div style={{ flexShrink: 0, borderTop: "0.5px solid #f1f5f9", padding: "12px", position: "relative", zIndex: 1 }}>
+                            <div style={{ flexShrink: 0, borderTop: "1px solid rgba(255,255,255,0.12)", padding: "12px", position: "relative", zIndex: 1 }}>
                                 <div style={{
                                     padding: "10px 12px", borderRadius: "14px",
-                                    background: `linear-gradient(135deg, ${tc.light}, #ffffff)`,
-                                    border: `1px solid ${hexToRgba(tc.primary, 0.14)}`,
+                                    background: "rgba(255,255,255,0.12)",
+                                    border: "1px solid rgba(255,255,255,0.18)",
                                     display: "flex", alignItems: "center", gap: "12px",
                                 }}>
                                     <div className="admin-logo-ring" style={{ flexShrink: 0 }}>
                                         {school.logo_url ? (
-                                            <img src={school.logo_url} alt={school.name} style={{ width: "44px", height: "44px", objectFit: "contain", borderRadius: "10px", display: "block" }} />
+                                            <img src={school.logo_url} alt={school.name} style={{ width: "42px", height: "42px", objectFit: "contain", borderRadius: "10px", display: "block" }} />
                                         ) : (
-                                            <div style={{ width: "44px", height: "44px", borderRadius: "10px", background: `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})` }}></div>
+                                            <div style={{ width: "42px", height: "42px", borderRadius: "10px", background: "#ffffff", color: tc.primary, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>
+                                                {school.name?.charAt(0) || "S"}
+                                            </div>
                                         )}
                                     </div>
                                     <div style={{ minWidth: 0 }}>
-                                        <p style={{ fontSize: "9.5px", fontWeight: 700, color: tc.primary, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px" }}>School Admin</p>
-                                        <span style={{ fontFamily: getFontFamily(school.nav_font), fontSize: "14px", fontWeight: 700, letterSpacing: "-0.1px", color: theme.sidebarText, lineHeight: 1.3, minWidth: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                                        <p style={{ fontSize: "9.5px", fontWeight: 700, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "2px" }}>School Admin</p>
+                                        <span style={{ fontFamily: getFontFamily(school.nav_font), fontSize: "14px", fontWeight: 700, letterSpacing: "-0.1px", color: "#ffffff", lineHeight: 1.3, minWidth: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                                             {school.name}
                                         </span>
                                     </div>

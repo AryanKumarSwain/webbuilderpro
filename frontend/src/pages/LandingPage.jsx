@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/webbuilder-removebg-preview.png";
+import logoWhite from "../assets/webbuilder-white-logo.png";
 import schoolHeroBg from "../assets/school-hero-bg.jpg";
 import previewSlide1 from "../assets/preview-slide-1.jpg";
 import previewSlide2 from "../assets/preview-slide-2.jpg";
@@ -2640,14 +2641,21 @@ const LandingPage = () => {
                                 <div style={{
                                     display: 'inline-flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
-                                    background: '#ffffff',
-                                    padding: '2px 8px',
-                                    borderRadius: '8px',
-                                    marginBottom: '10px',
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.25)'
+                                    marginBottom: '14px'
                                 }}>
-                                    <img className="lp-footer-brand-logo" src={logo} alt="Web Builder Pro" style={{ height: '50px', width: 'auto', objectFit: 'contain', display: 'block' }} />
+                                    <img
+                                        className="lp-footer-brand-logo"
+                                        src={logoWhite}
+                                        alt="Web Builder Pro"
+                                        style={{
+                                            height: '46px',
+                                            width: 'auto',
+                                            maxWidth: '220px',
+                                            objectFit: 'contain',
+                                            objectPosition: 'left center',
+                                            display: 'block'
+                                        }}
+                                    />
                                 </div>
                                 <p className="lp-footer-brand-bio" style={{
                                     fontSize: '12.5px',
@@ -2662,22 +2670,17 @@ const LandingPage = () => {
                                     {[
                                         {
                                             label: 'Twitter / X',
-                                            href: 'https://twitter.com',
+                                            href: 'https://x.com/webncodetech',
                                             icon: <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                                         },
                                         {
                                             label: 'LinkedIn',
-                                            href: 'https://linkedin.com',
+                                            href: 'https://www.linkedin.com/company/webncodetechnologies',
                                             icon: <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.75a1.63 1.63 0 1 0 0 3.26 1.63 1.63 0 0 0 0-3.26z"/>
                                         },
                                         {
-                                            label: 'Facebook',
-                                            href: 'https://facebook.com',
-                                            icon: <path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02z"/>
-                                        },
-                                        {
                                             label: 'Instagram',
-                                            href: 'https://instagram.com',
+                                            href: 'https://www.instagram.com/webncodetechnologies',
                                             icon: (
                                                 <>
                                                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
@@ -2781,8 +2784,7 @@ const LandingPage = () => {
                                         { label: 'Fee Structure Tables', href: '#modules' },
                                         { label: 'Contact Support', href: 'tel:+918947919195' },
                                         { label: 'Privacy Policy', href: '#' },
-                                        { label: 'Terms & Conditions', href: '#' },
-                                        { label: 'Super Admin Login', href: '/super-admin/login' }
+                                        { label: 'Terms & Conditions', href: '#' }
                                     ].map((item, idx) => (
                                         <li key={idx}>
                                             <a
@@ -2858,22 +2860,6 @@ const LandingPage = () => {
                                         <span style={{ fontWeight: 600 }}>+91 8947919195</span>
                                     </a>
 
-                                    {/* Location */}
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '7px',
-                                        fontSize: '12.5px',
-                                        color: '#94a3b8'
-                                    }}>
-                                        <span style={{ color: '#f472b6', display: 'flex', alignItems: 'center' }}>
-                                            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-                                                <circle cx="12" cy="10" r="3"/>
-                                            </svg>
-                                        </span>
-                                        <span>Jaipur, Rajasthan</span>
-                                    </div>
                                 </div>
                             </div>
                         </div>

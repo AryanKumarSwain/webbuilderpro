@@ -368,37 +368,43 @@ const AdminDashboard = () => {
                             </p>
                         </div>
 
-                        {/* School Card */}
+                        {/* Standardized School Card */}
                         <div className="hero-item dash-school-card" style={{
-                            background: 'rgba(255,255,255,0.07)',
-                            border: '1px solid rgba(255,255,255,0.12)',
-                            borderRadius: '18px',
-                            padding: '1.35rem 1.6rem',
+                            background: 'linear-gradient(135deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.13) 100%)',
+                            border: '1.5px solid rgba(255,255,255,0.42)',
+                            borderRadius: '16px',
+                            padding: '16px 18px',
                             display: 'flex', flexDirection: 'column', gap: '14px',
-                            backdropFilter: 'blur(14px)',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.18), inset 0 1px 1.5px rgba(255,255,255,0.5)',
+                            width: '260px',
                             minWidth: '260px',
+                            maxWidth: '260px',
+                            flexShrink: 0,
+                            boxSizing: 'border-box',
                             animationDelay: '0.2s',
                         }}>
-                            <div className="dash-school-card-top" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                <div className="school-logo-ring" style={{ borderRadius: '14px', flexShrink: 0 }}>
+                            <div className="dash-school-card-top" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div className="school-logo-ring" style={{ borderRadius: '12px', flexShrink: 0 }}>
                                     {school?.logo_url ? (
-                                        <img className="dash-school-logo" src={school.logo_url} alt="School" style={{ width: '52px', height: '52px', borderRadius: '14px', objectFit: 'cover', border: '1.5px solid rgba(255,255,255,0.18)', display: 'block' }} />
+                                        <img className="dash-school-logo" src={school.logo_url} alt="School" style={{ width: '46px', height: '46px', borderRadius: '12px', objectFit: 'cover', border: '1.5px solid rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.15)', display: 'block' }} />
                                     ) : (
-                                        <div className="dash-school-logo-placeholder" style={{ width: '52px', height: '52px', background: 'rgba(255,255,255,0.08)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.12)' }}>
-                                            <svg width="24" height="24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" viewBox="0 0 24 24">
+                                        <div className="dash-school-logo-placeholder" style={{ width: '46px', height: '46px', background: 'rgba(255,255,255,0.2)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.35)' }}>
+                                            <svg width="22" height="22" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                                             </svg>
                                         </div>
                                     )}
                                 </div>
-                                <div style={{ minWidth: 0 }}>
-                                    <p className="dash-school-name" style={{ fontSize: '13.5px', fontWeight: 600, color: '#ffffff', marginBottom: '7px', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' }}>{school?.name}</p>
+                                <div style={{ minWidth: 0, flex: 1 }}>
+                                    <p className="dash-school-name" style={{ fontSize: '13.5px', fontWeight: 700, color: '#ffffff', margin: 0, lineHeight: 1.3 }}>{school?.name || 'School Name'}</p>
                                     <span className="dash-school-badge" style={{
-                                        fontSize: '11px', padding: '3px 10px 3px 8px', borderRadius: '20px', fontWeight: 600,
+                                        fontSize: '9.5px', padding: '2px 8px', borderRadius: '20px', fontWeight: 600,
                                         background: isLive ? 'rgba(21,128,61,0.25)' : 'rgba(161,98,7,0.25)',
                                         color: isLive ? '#86efac' : '#fde68a',
                                         border: isLive ? '1px solid rgba(134,239,172,0.2)' : '1px solid rgba(253,230,138,0.2)',
-                                        display: 'inline-flex', alignItems: 'center', gap: '6px'
+                                        display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '4px'
                                     }}>
                                         <span className="live-dot" style={{ width: '5px', height: '5px', borderRadius: '50%', background: isLive ? '#4ade80' : '#fbbf24', display: 'inline-block' }}></span>
                                         {isLive ? 'Live' : 'Pending'}
@@ -408,14 +414,14 @@ const AdminDashboard = () => {
                             {school?.slug && (
                                 <a href={school.custom_domain ? `https://${school.custom_domain}` : `/school/${school.slug}`} target="_blank" rel="noreferrer" className="visit-site-link"
                                     style={{
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
-                                        fontSize: '12.5px', fontWeight: 700, color: '#ffffff', textDecoration: 'none',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                                        fontSize: '11.5px', fontWeight: 700, color: '#ffffff', textDecoration: 'none',
                                         background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`,
-                                        borderRadius: '10px', padding: '10px 14px', marginTop: '2px',
-                                        boxShadow: `0 6px 16px ${hexToRgba(tc.primary, 0.4)}`,
+                                        borderRadius: '8px', padding: '8px 10px',
+                                        boxShadow: `0 4px 12px ${hexToRgba(tc.primary, 0.35)}`,
                                         transition: 'transform 0.18s ease, box-shadow 0.18s ease',
                                     }}>
-                                    View Live Website <IconExternalLink size={12} />
+                                    View Live Website <IconExternalLink size={11} />
                                 </a>
                             )}
                         </div>

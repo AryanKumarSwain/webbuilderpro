@@ -160,26 +160,72 @@ const EnquiryList = ({ type, breadcrumb, title, description, extraFields = [] })
             <div style={{ fontFamily: "'Inter', system-ui, sans-serif", background: bc.surface, margin: '-24px', padding: '24px', minHeight: '100vh' }}>
 
                 {/* Hero Header */}
-                <div className="enquiry-hero" style={{ background: `linear-gradient(135deg, ${tc.dark} 0%, ${tc.primary} 55%, ${tc.dark} 100%)`, borderRadius: '22px', padding: '2.25rem 2.5rem', marginBottom: '1.75rem', position: 'relative', overflow: 'hidden', boxShadow: `0 12px 40px ${hexToRgba(tc.primary, 0.25)}` }}>
-                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '24px 24px', pointerEvents: 'none' }}></div>
-                    <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                <div className="enquiry-hero" style={{
+                    background: `linear-gradient(135deg, ${tc.dark} 0%, ${tc.primary} 55%, ${tc.secondary || tc.dark} 100%)`,
+                    borderRadius: '24px',
+                    padding: '2.25rem 2.75rem',
+                    marginBottom: '1.75rem',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    boxShadow: `0 16px 40px ${hexToRgba(tc.primary, 0.28)}`
+                }}>
+                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)', backgroundSize: '24px 24px', pointerEvents: 'none' }}></div>
+                    <div style={{ position: 'absolute', width: '380px', height: '380px', borderRadius: '50%', background: `radial-gradient(circle, ${hexToRgba(tc.secondary || tc.primary, 0.28)} 0%, transparent 70%)`, top: '-140px', right: '-80px', pointerEvents: 'none', filter: 'blur(30px)' }}></div>
+                    <div style={{ position: 'absolute', width: '260px', height: '260px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%)', bottom: '-80px', left: '15%', pointerEvents: 'none', filter: 'blur(20px)' }}></div>
+
+                    <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.5rem' }}>
                         <div>
-                            <p className="enquiry-hero-eyebrow" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>{breadcrumb}</p>
-                            <h1 className="enquiry-hero-title" style={{ fontSize: '26px', fontWeight: 700, color: '#ffffff', marginBottom: '8px', letterSpacing: '-0.4px' }}>{title}</h1>
-                            <p className="enquiry-hero-desc" style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, maxWidth: '440px' }}>{description}</p>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '4px 12px', background: 'rgba(255,255,255,0.12)', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.22)', marginBottom: '12px' }}>
+                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#4ade80' }}></div>
+                                <span style={{ fontSize: '10.5px', color: '#ffffff', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 600 }}>{breadcrumb}</span>
+                            </div>
+                            <h1 style={{ fontSize: '30px', fontWeight: 700, color: '#ffffff', marginBottom: '8px', letterSpacing: '-0.5px', lineHeight: 1.2 }}>{title}</h1>
+                            <p style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, maxWidth: '480px', margin: 0 }}>{description}</p>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div className="enquiry-stat" style={{ textAlign: 'center', padding: '10px 20px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '10px' }}>
-                                <div className="enquiry-stat-num" style={{ fontSize: '22px', fontWeight: 800, color: '#ffffff' }}>{enquiries.length}</div>
-                                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total</div>
-                            </div>
-                            <div className="enquiry-stat" style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '10px 20px', background: newCount > 0 ? hexToRgba('#ffffff', 0.14) : 'rgba(255,255,255,0.08)', border: `1px solid ${newCount > 0 ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.15)'}`, borderRadius: '10px' }}>
-                                {newCount > 0 && <span className="enquiry-new-pulse" style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#ffffff', flexShrink: 0 }}></span>}
-                                <div>
-                                    <div className="enquiry-stat-num" style={{ fontSize: '22px', fontWeight: 800, color: '#ffffff', lineHeight: 1 }}>{newCount}</div>
-                                    <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.65)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '3px' }}>New</div>
+
+                        {/* Standardized Frosted Glass Snapshot Box */}
+                        <div style={{
+                            background: 'linear-gradient(135deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.13) 100%)',
+                            border: '1.5px solid rgba(255,255,255,0.42)',
+                            borderRadius: '16px',
+                            padding: '0.75rem 1.1rem',
+                            backdropFilter: 'blur(20px)',
+                            WebkitBackdropFilter: 'blur(20px)',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.18), inset 0 1px 1.5px rgba(255,255,255,0.5)',
+                            width: '230px',
+                            minWidth: '230px',
+                            maxWidth: '230px',
+                            flexShrink: 0,
+                            boxSizing: 'border-box'
+                        }}>
+                            {[
+                                {
+                                    label: 'Total Submissions',
+                                    value: `${enquiries.length} Enquiries`,
+                                    icon: <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                                },
+                                {
+                                    label: 'New & Unread',
+                                    value: `${newCount} Pending Review`,
+                                    icon: <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                                }
+                            ].map((item, i) => (
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '5px 0', borderBottom: i === 0 ? '1px solid rgba(255,255,255,0.18)' : 'none' }}>
+                                    <div style={{
+                                        width: '28px', height: '28px', borderRadius: '8px',
+                                        background: 'rgba(255,255,255,0.22)',
+                                        border: '1px solid rgba(255,255,255,0.38)',
+                                        color: '#ffffff',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                                    }}>
+                                        {item.icon}
+                                    </div>
+                                    <div style={{ minWidth: 0, flex: 1 }}>
+                                        <p style={{ fontSize: '9.5px', color: 'rgba(255,255,255,0.7)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, lineHeight: 1.2 }}>{item.label}</p>
+                                        <p style={{ fontSize: '12.5px', fontWeight: 700, color: '#ffffff', margin: 0, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.value}</p>
+                                    </div>
                                 </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>
