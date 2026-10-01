@@ -29,11 +29,25 @@ const pool = mysql.createPool({
     ...(sslConfig && { ssl: sslConfig }),
 });
 
+const ensureSchema = async () => {
+    try {
+        const [cols] = await pool.query(`SHOW COLUMNS FROM tbl_module_content LIKE 'draft_content'`);
+        if (cols.length === 0) {
+            console.log('Migrating tbl_module_content: adding draft_content column...');
+            await pool.query(`ALTER TABLE tbl_module_content ADD COLUMN draft_content LONGTEXT NULL AFTER content`);
+            console.log('✅ Added draft_content column to tbl_module_content');
+        }
+    } catch (e) {
+        console.warn('ensureSchema check warning:', e.message);
+    }
+};
+
 const testConnection = async () => {
     try {
         const connection = await pool.getConnection();
         console.log('✅ Database connected successfully');
         connection.release();
+        await ensureSchema();
     } catch (error) {
         console.error('❌ Database connection failed:', error.message);
         process.exit(1);

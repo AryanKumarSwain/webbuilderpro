@@ -23,7 +23,14 @@ const NBSP_ENTITY_RE = /&nbsp;/gi;
 // Cloudinary URLs, which routinely contain hyphens) are left untouched.
 export const noBreakHyphens = (str) => {
     if (!str || typeof str !== 'string') return str;
-    if (/^https?:\/\//i.test(str.trim())) return str; // whole-string URL fields (photo, pdfUrl, etc.)
+    const trimmed = str.trim();
+    if (/^https?:\/\//i.test(trimmed)) return str; // whole-string URL fields (photo, pdfUrl, etc.)
+    if (/^\d{4}[-\u2010-\u2015\u2212]\d{2}[-\u2010-\u2015\u2212]\d{2}/.test(trimmed)) {
+        // Standardize YYYY-MM-DD to standard ASCII hyphens so HTML date inputs and Date.parse don't break
+        return str.replace(/[\u2010\u2011\u2012\u2013\u2014\u2015\u2212]/g, '-');
+    }
+    if (/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(trimmed)) return str; // emails
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(trimmed)) return str; // UUIDs
     return str
         .split(/(<[^>]*>)/g)
         .map((part, i) => (i % 2 === 0
@@ -32,14 +39,22 @@ export const noBreakHyphens = (str) => {
         .join('');
 };
 
+const EXEMPT_KEYS = new Set(['date', 'time', 'id', 'parentId', 'createdAt', 'updatedAt', 'url', 'linkUrl', 'pdfUrl', 'youtubeUrl', 'videoUrl', 'slug']);
+
 // Recursively applies noBreakHyphens to every string in a module's content
 // object/array, regardless of shape (each module's content JSON differs).
-export const noBreakHyphensDeep = (value) => {
-    if (typeof value === 'string') return noBreakHyphens(value);
-    if (Array.isArray(value)) return value.map(noBreakHyphensDeep);
+export const noBreakHyphensDeep = (value, parentKey = '') => {
+    if (typeof value === 'string') {
+        if (EXEMPT_KEYS.has(parentKey)) {
+            // If it's a date or time field, normalize to standard ASCII hyphen
+            return value.replace(/[\u2010\u2011\u2012\u2013\u2014\u2015\u2212]/g, '-');
+        }
+        return noBreakHyphens(value);
+    }
+    if (Array.isArray(value)) return value.map(item => noBreakHyphensDeep(item, parentKey));
     if (value && typeof value === 'object') {
         const result = {};
-        for (const key in value) result[key] = noBreakHyphensDeep(value[key]);
+        for (const key in value) result[key] = noBreakHyphensDeep(value[key], key);
         return result;
     }
     return value;

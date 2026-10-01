@@ -323,7 +323,7 @@ const AnnouncementCard = ({ announcement, onUpdate, onRemove, delay = 0 }) => {
                 <div className="announcements-date-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
                     <div>
                         <label style={labelStyle}>Date</label>
-                        <input className="announcements-input" type="date" value={announcement.date} onChange={e => onUpdate('date', e.target.value)} style={inputStyle} />
+                        <input className="announcements-input" type="date" value={(announcement.date || '').replace(/[\u2010\u2011\u2012\u2013\u2014\u2015\u2212]/g, '-')} onChange={e => onUpdate('date', e.target.value)} style={inputStyle} />
                     </div>
                     <div>
                         <label style={labelStyle}>Time</label>

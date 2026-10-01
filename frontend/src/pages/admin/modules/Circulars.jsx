@@ -319,7 +319,7 @@ const CircularCard = ({ circular, onUpdate, onRemove, onUploadPdf, uploading, de
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <div>
                         <label style={labelStyle}>Date</label>
-                        <input className="circulars-input" type="date" value={circular.date} onChange={e => onUpdate('date', e.target.value)} style={inputStyle} />
+                        <input className="circulars-input" type="date" value={(circular.date || '').replace(/[\u2010\u2011\u2012\u2013\u2014\u2015\u2212]/g, '-')} onChange={e => onUpdate('date', e.target.value)} style={inputStyle} />
                     </div>
                     <div>
                         <label style={labelStyle}>Tag</label>

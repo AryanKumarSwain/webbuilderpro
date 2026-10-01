@@ -49,26 +49,49 @@ const getModuleContentService = async (schoolId, moduleKey) => {
 const saveModuleContentService = async (schoolId, moduleKey, content, shouldPublish = false) => {
     const contentJson = JSON.stringify(content);
 
-    if (shouldPublish) {
-        await pool.query(
-            `INSERT INTO tbl_module_content (school_id, module_key, content, draft_content, is_published)
-             VALUES (?, ?, ?, NULL, 1)
-             ON DUPLICATE KEY UPDATE
-             content = VALUES(content),
-             draft_content = NULL,
-             is_published = 1,
-             updated_at = CURRENT_TIMESTAMP`,
-            [schoolId, moduleKey, contentJson]
-        );
-    } else {
-        await pool.query(
-            `INSERT INTO tbl_module_content (school_id, module_key, content, draft_content, is_published)
-             VALUES (?, ?, ?, ?, 0)
-             ON DUPLICATE KEY UPDATE
-             draft_content = VALUES(draft_content),
-             updated_at = CURRENT_TIMESTAMP`,
-            [schoolId, moduleKey, contentJson, contentJson]
-        );
+    try {
+        if (shouldPublish) {
+            await pool.query(
+                `INSERT INTO tbl_module_content (school_id, module_key, content, draft_content, is_published)
+                 VALUES (?, ?, ?, NULL, 1)
+                 ON DUPLICATE KEY UPDATE
+                 content = VALUES(content),
+                 draft_content = NULL,
+                 is_published = 1,
+                 updated_at = CURRENT_TIMESTAMP`,
+                [schoolId, moduleKey, contentJson]
+            );
+        } else {
+            await pool.query(
+                `INSERT INTO tbl_module_content (school_id, module_key, content, draft_content, is_published)
+                 VALUES (?, ?, ?, ?, 0)
+                 ON DUPLICATE KEY UPDATE
+                 draft_content = VALUES(draft_content),
+                 updated_at = CURRENT_TIMESTAMP`,
+                [schoolId, moduleKey, contentJson, contentJson]
+            );
+        }
+    } catch (dbErr) {
+        if (dbErr?.message?.includes("Unknown column 'draft_content'")) {
+            console.warn("[content.service] draft_content column missing, adding column...");
+            try {
+                await pool.query(`ALTER TABLE tbl_module_content ADD COLUMN draft_content LONGTEXT NULL AFTER content`);
+                return await saveModuleContentService(schoolId, moduleKey, content, shouldPublish);
+            } catch (alterErr) {
+                console.error("[content.service] auto-alter failed:", alterErr?.message);
+                await pool.query(
+                    `INSERT INTO tbl_module_content (school_id, module_key, content, is_published)
+                     VALUES (?, ?, ?, ?)
+                     ON DUPLICATE KEY UPDATE
+                     content = VALUES(content),
+                     is_published = VALUES(is_published),
+                     updated_at = CURRENT_TIMESTAMP`,
+                    [schoolId, moduleKey, contentJson, shouldPublish ? 1 : 0]
+                );
+            }
+        } else {
+            throw dbErr;
+        }
     }
 
     // Free the school's storage quota for any uploads this save removed
@@ -111,8 +134,22 @@ const togglePublishService = async (schoolId, moduleKey, explicitStatus) => {
         params = [schoolId, moduleKey];
     }
 
-    const [result] = await pool.query(query, params);
-    if (result.affectedRows === 0) {
+    try {
+        const [result] = await pool.query(query, params);
+        if (result.affectedRows === 0) {
+            throw new Error('Module not found');
+        }
+    } catch (err) {
+        if (err?.message?.includes("Unknown column 'draft_content'")) {
+            const fallbackQuery = `UPDATE tbl_module_content SET is_published = ?, updated_at = CURRENT_TIMESTAMP WHERE school_id = ? AND module_key = ?`;
+            const [result] = await pool.query(fallbackQuery, [explicitStatus ? 1 : 0, schoolId, moduleKey]);
+            if (result.affectedRows === 0) {
+                throw new Error('Module not found');
+            }
+        } else {
+            throw err;
+        }
+    }
         throw new AppError("Module content not found.", 404);
     }
 

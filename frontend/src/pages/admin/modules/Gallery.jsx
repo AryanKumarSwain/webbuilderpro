@@ -867,7 +867,7 @@ const Gallery = () => {
                                                         <div style={{ width: '145px', flexShrink: 0 }}>
                                                             <input
                                                                 type="date"
-                                                                value={v.date || ''}
+                                                                value={(v.date || '').replace(/[\u2010\u2011\u2012\u2013\u2014\u2015\u2212]/g, '-')}
                                                                 onChange={e => updateVideo(v.id, 'date', e.target.value)}
                                                                 title="Optional Date"
                                                                 style={{ ...inputStyle, background: '#f8fafc' }}

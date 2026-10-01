@@ -524,7 +524,7 @@ const EventCard = ({ event, onUpdate, onRemove, onUploadImage, uploading, delay 
                     <div className="events-date-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
                         <div>
                             <label style={labelStyle}>Date</label>
-                            <input className="events-input" type="date" value={event.date} onChange={e => onUpdate('date', e.target.value)} style={inputStyle} />
+                            <input className="events-input" type="date" value={(event.date || '').replace(/[\u2010\u2011\u2012\u2013\u2014\u2015\u2212]/g, '-')} onChange={e => onUpdate('date', e.target.value)} style={inputStyle} />
                         </div>
                         <div>
                             <label style={labelStyle}>Time</label>
