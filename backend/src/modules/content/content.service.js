@@ -137,20 +137,18 @@ const togglePublishService = async (schoolId, moduleKey, explicitStatus) => {
     try {
         const [result] = await pool.query(query, params);
         if (result.affectedRows === 0) {
-            throw new Error('Module not found');
+            throw new AppError("Module content not found.", 404);
         }
     } catch (err) {
         if (err?.message?.includes("Unknown column 'draft_content'")) {
             const fallbackQuery = `UPDATE tbl_module_content SET is_published = ?, updated_at = CURRENT_TIMESTAMP WHERE school_id = ? AND module_key = ?`;
             const [result] = await pool.query(fallbackQuery, [explicitStatus ? 1 : 0, schoolId, moduleKey]);
             if (result.affectedRows === 0) {
-                throw new Error('Module not found');
+                throw new AppError("Module content not found.", 404);
             }
         } else {
             throw err;
         }
-    }
-        throw new AppError("Module content not found.", 404);
     }
 
     const [rows] = await pool.query(
