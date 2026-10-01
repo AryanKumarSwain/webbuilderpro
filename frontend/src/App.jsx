@@ -118,6 +118,7 @@ const PUBLIC_SCHOOL_ROUTE_DEFS = [
     { path: '/school/:slug/faqs', element: <FaqsPublic /> },
     { path: '/school/:slug/calendar', element: <CalendarPublic /> },
     { path: '/school/:slug/results', element: <ResultsPublic /> },
+    { path: '/school/:slug/courses', element: <CoursesPublic /> },
     { path: '/school/:slug/:levelSlug', element: <SchoolLevelPublic /> },
 ];
 

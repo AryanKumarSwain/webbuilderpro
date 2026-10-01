@@ -231,17 +231,15 @@ const Navbar = forwardRef(({ school, slug, tc, scrollY = 0, activeKey, forceSoli
                 .nav-drop-row + .nav-drop-row { border-top: 1px solid ${tc.primary}14; }
                 .nav-drop-panel { position: relative; }
                 .nav-drop-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, ${tc.primary}, ${tc.secondary}); }
-                @keyframes mobileRowIn { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: translateX(0); } }
-                .mobile-drawer-row-wrap { animation: mobileRowIn 0.4s cubic-bezier(0.16,1,0.3,1) both; }
-                .mobile-submenu { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s cubic-bezier(0.16,1,0.3,1); }
-                .mobile-submenu.open { grid-template-rows: 1fr; }
-                .mobile-submenu > div { overflow: hidden; }
-                .mobile-chevron-btn { transition: background 0.2s ease, color 0.2s ease; }
-                .mobile-drawer-panel::-webkit-scrollbar { width: 5px; }
+                @keyframes mobileRowIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+                @keyframes mobileSubmenuIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: translateY(0); } }
+                .mobile-drawer-row-wrap { animation: mobileRowIn 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+                .mobile-chevron-btn { transition: transform 0.2s ease, color 0.2s ease; }
+                .mobile-drawer-panel::-webkit-scrollbar { width: 4px; }
                 .mobile-drawer-panel::-webkit-scrollbar-thumb { background: ${tc.primary}30; border-radius: 3px; }
             `}</style>
             <nav ref={ref} className="navbar-inner" style={{
-                position: 'fixed', top: `${topOffset}px`, left: 0, right: 0, zIndex: 1000,
+                position: 'fixed', top: `${topOffset}px`, left: 0, right: 0, zIndex: 7000,
                 height: '92px', padding: '0 3rem',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 background: 'rgba(255,255,255,0.95)',
@@ -374,102 +372,83 @@ const Navbar = forwardRef(({ school, slug, tc, scrollY = 0, activeKey, forceSoli
             </nav>
 
             {/* ── Mobile nav — dark backdrop + slide-in drawer from the right, tap-based
-                accordion version of the same nav data (hover dropdowns don't work on touch).
-                Always mounted so both open and close animate; visibility toggled via
-                opacity/transform + pointerEvents rather than conditional rendering. ── */}
+                accordion version of the same nav data. ── */}
             <div onClick={() => setMobileOpen(false)} style={{
-                position: 'fixed', top: `${92 + topOffset}px`, left: 0, right: 0, bottom: 0, zIndex: 998,
+                position: 'fixed', top: `${92 + topOffset}px`, left: 0, right: 0, bottom: 0, zIndex: 6998,
                 background: 'rgba(15,23,42,0.55)', opacity: mobileOpen ? 1 : 0, pointerEvents: mobileOpen ? 'auto' : 'none',
                 transition: 'opacity 0.3s ease',
             }} />
 
             <div className="mobile-drawer-shell" style={{
-                position: 'fixed', top: `${92 + topOffset}px`, right: 0, bottom: 0, zIndex: 999,
+                position: 'fixed', top: `${92 + topOffset}px`, right: 0, bottom: 0, zIndex: 6999,
                 width: 'min(86vw, 340px)', background: '#ffffff', display: 'flex', flexDirection: 'column',
                 boxShadow: '-16px 0 44px rgba(15,23,42,0.28)', overflow: 'hidden',
                 transform: mobileOpen ? 'translateX(0)' : 'translateX(100%)',
                 transition: 'transform 0.35s cubic-bezier(0.16,1,0.3,1)',
             }}>
-                {/* Drawer header — themed gradient banner */}
-                <div style={{ padding: '1.15rem 1.35rem', background: `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '11px', minWidth: 0, cursor: 'pointer' }} onClick={() => go(`/school/${slug}`)}>
-                        {school.logo_url ? (
-                            <img src={school.logo_url} alt={school.name} style={{ height: '38px', width: '38px', objectFit: 'contain', borderRadius: '8px', background: '#fff', padding: '3px', flexShrink: 0 }} />
-                        ) : (
-                            <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: 'rgba(255,255,255,0.25)', flexShrink: 0 }} />
-                        )}
-                        <p style={{ fontFamily: navFont, fontSize: '13.5px', fontWeight: 700, color: '#ffffff', letterSpacing: '0.03em', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
-                            {school.name}
-                        </p>
-                    </div>
-                    <button onClick={() => setMobileOpen(false)} aria-label="Close menu"
-                        style={{ width: '32px', height: '32px', borderRadius: '9px', border: 'none', background: 'rgba(255,255,255,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
-                        <CloseIcon color="#ffffff" />
-                    </button>
-                </div>
-
                 {/* Scrollable nav list — key remounts on open so the row entrance animation replays each time */}
-                <div key={String(mobileOpen)} className="mobile-drawer-panel" style={{ flex: 1, overflowY: 'auto', padding: '0.7rem' }}>
+                <div key={String(mobileOpen)} className="mobile-drawer-panel" style={{ flex: 1, overflowY: 'auto', padding: '12px 14px' }}>
                     {visibleNavItems.map((item, idx) => {
-                        // Plain link
+                        // Plain link (Home, Mandatory Public Disclosure)
                         if (item.path && !item.links && !item.subItems) {
                             const isActive = activeKey === item.key;
                             return (
-                                <div key={item.key} className="mobile-drawer-row-wrap" style={{ marginBottom: '3px', animationDelay: `${idx * 0.04}s` }}>
+                                <div key={item.key} className="mobile-drawer-row-wrap" style={{ marginBottom: '2px', animationDelay: `${idx * 0.03}s` }}>
                                     <div onClick={() => go(item.path(slug))} className="mobile-drawer-row"
-                                        style={{ padding: '13px 14px', position: 'relative', borderRadius: '11px', fontSize: '14px', fontWeight: 700, color: isActive ? tc.primary : '#0f172a', background: isActive ? tc.light : 'transparent', cursor: 'pointer' }}>
-                                        {isActive && <span style={{ position: 'absolute', left: '3px', top: '24%', bottom: '24%', width: '3px', borderRadius: '3px', background: `linear-gradient(180deg, ${tc.primary}, ${tc.secondary})` }} />}
+                                        style={{ padding: '10px 14px', position: 'relative', borderRadius: '8px', fontSize: '13.5px', fontWeight: 650, color: isActive ? tc.primary : '#1e293b', background: isActive ? tc.light : 'transparent', cursor: 'pointer' }}>
+                                        {isActive && <span style={{ position: 'absolute', left: '0px', top: '18%', bottom: '18%', width: '3px', borderRadius: '0 3px 3px 0', background: `linear-gradient(180deg, ${tc.primary}, ${tc.secondary})` }} />}
                                         {item.label}
                                     </div>
                                 </div>
                             );
                         }
 
-                        // Single top-level flyout (Sports) — tap label to navigate, tap chevron to expand subitems
+                        // Single top-level flyout (Sports) — tap entire row or chevron to expand/collapse
                         if (item.subItems && !item.links) {
                             const isExpanded = mobileGroup === item.label;
                             const isActive = activeKey === item.key;
                             return (
-                                <div key={item.label} className="mobile-drawer-row-wrap" style={{ marginBottom: '3px', animationDelay: `${idx * 0.04}s` }}>
-                                    <div className="mobile-drawer-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '13px 14px', position: 'relative', borderRadius: '11px', background: (isActive || isExpanded) ? tc.light : 'transparent' }}>
-                                        {(isActive || isExpanded) && <span style={{ position: 'absolute', left: '3px', top: '24%', bottom: '24%', width: '3px', borderRadius: '3px', background: `linear-gradient(180deg, ${tc.primary}, ${tc.secondary})` }} />}
-                                        <span onClick={() => go(item.path(slug))} style={{ fontSize: '14px', fontWeight: 700, color: isActive ? tc.primary : '#0f172a', cursor: 'pointer' }}>
+                                <div key={item.label} className="mobile-drawer-row-wrap" style={{ marginBottom: '2px', animationDelay: `${idx * 0.03}s` }}>
+                                    <div onClick={() => toggleMobileGroup(item.label)} className="mobile-drawer-row"
+                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', position: 'relative', borderRadius: '8px', cursor: 'pointer', background: (isActive || isExpanded) ? tc.light : 'transparent' }}>
+                                        {(isActive || isExpanded) && <span style={{ position: 'absolute', left: '0px', top: '18%', bottom: '18%', width: '3px', borderRadius: '0 3px 3px 0', background: `linear-gradient(180deg, ${tc.primary}, ${tc.secondary})` }} />}
+                                        <span style={{ fontSize: '13.5px', fontWeight: 650, color: (isActive || isExpanded) ? tc.primary : '#1e293b' }}>
                                             {item.label}
                                         </span>
-                                        <span onClick={() => toggleMobileGroup(item.label)} className="mobile-chevron-btn"
-                                            style={{ width: '28px', height: '28px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: isExpanded ? '#ffffff' : 'transparent', color: isExpanded ? tc.primary : '#94a3b8' }}>
+                                        <span className="mobile-chevron-btn"
+                                            style={{ width: '26px', height: '26px', borderRadius: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isExpanded ? tc.primary : '#94a3b8' }}>
                                             <ChevronDownSm color={isExpanded ? tc.primary : '#94a3b8'} open={isExpanded} />
                                         </span>
                                     </div>
-                                    <div className={`mobile-submenu${isExpanded ? ' open' : ''}`}>
-                                        <div style={{ background: tc.light, borderRadius: '11px', margin: '3px 0 0', padding: '4px' }}>
+                                    {isExpanded && (
+                                        <div style={{ background: tc.light, borderRadius: '8px', margin: '2px 0 5px', padding: '3px 5px', border: `1px solid ${tc.primary}18`, animation: 'mobileSubmenuIn 0.2s ease-out' }}>
                                             {item.subItems.map(sub => (
                                                 <div key={sub.label} onClick={() => go(sub.path(slug))} className="mobile-drawer-row"
-                                                    style={{ padding: '11px 12px', borderRadius: '8px', fontSize: '13.5px', fontWeight: 600, color: '#334155', cursor: 'pointer' }}>
+                                                    style={{ padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 500, color: '#334155', cursor: 'pointer' }}>
                                                     {sub.label}
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
                             );
                         }
 
-                        // Group dropdown (About Us, Academics, Gallery, News & Events, Admissions)
+                        // Group dropdown (About Us, Academics, Gallery, News & Events)
                         const isExpanded = mobileGroup === item.label;
                         const groupHasActive = item.links.some(l => l.key === activeKey);
                         return (
-                            <div key={item.label} className="mobile-drawer-row-wrap" style={{ marginBottom: '3px', animationDelay: `${idx * 0.04}s` }}>
+                            <div key={item.label} className="mobile-drawer-row-wrap" style={{ marginBottom: '2px', animationDelay: `${idx * 0.03}s` }}>
                                 <div onClick={() => toggleMobileGroup(item.label)} className="mobile-drawer-row"
-                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '13px 14px', position: 'relative', borderRadius: '11px', cursor: 'pointer', background: (groupHasActive || isExpanded) ? tc.light : 'transparent' }}>
-                                    {(groupHasActive || isExpanded) && <span style={{ position: 'absolute', left: '3px', top: '24%', bottom: '24%', width: '3px', borderRadius: '3px', background: `linear-gradient(180deg, ${tc.primary}, ${tc.secondary})` }} />}
-                                    <span style={{ fontSize: '14px', fontWeight: 700, color: groupHasActive ? tc.primary : '#0f172a' }}>{item.label}</span>
-                                    <span className="mobile-chevron-btn" style={{ width: '28px', height: '28px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isExpanded ? '#ffffff' : 'transparent', color: isExpanded ? tc.primary : '#94a3b8' }}>
+                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', position: 'relative', borderRadius: '8px', cursor: 'pointer', background: (groupHasActive || isExpanded) ? tc.light : 'transparent' }}>
+                                    {(groupHasActive || isExpanded) && <span style={{ position: 'absolute', left: '0px', top: '18%', bottom: '18%', width: '3px', borderRadius: '0 3px 3px 0', background: `linear-gradient(180deg, ${tc.primary}, ${tc.secondary})` }} />}
+                                    <span style={{ fontSize: '13.5px', fontWeight: 650, color: (groupHasActive || isExpanded) ? tc.primary : '#1e293b' }}>{item.label}</span>
+                                    <span className="mobile-chevron-btn" style={{ width: '26px', height: '26px', borderRadius: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isExpanded ? tc.primary : '#94a3b8' }}>
                                         <ChevronDownSm color={isExpanded ? tc.primary : '#94a3b8'} open={isExpanded} />
                                     </span>
                                 </div>
-                                <div className={`mobile-submenu${isExpanded ? ' open' : ''}`}>
-                                    <div style={{ background: tc.light, borderRadius: '11px', margin: '3px 0 0', padding: '4px' }}>
+                                {isExpanded && (
+                                    <div style={{ background: tc.light, borderRadius: '8px', margin: '2px 0 5px', padding: '3px 5px', border: `1px solid ${tc.primary}18`, animation: 'mobileSubmenuIn 0.2s ease-out' }}>
                                         {item.links.map(link => {
                                             const isCourses = link.key === 'courses';
                                             const subItems = getSubItems(link);
@@ -478,36 +457,38 @@ const Navbar = forwardRef(({ school, slug, tc, scrollY = 0, activeKey, forceSoli
                                             const isActive = activeKey === link.key;
                                             return (
                                                 <div key={link.key}>
-                                                    <div className="mobile-drawer-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 12px', borderRadius: '8px', position: 'relative' }}>
-                                                        {isActive && <span style={{ position: 'absolute', left: '4px', top: '50%', transform: 'translateY(-50%)', width: '5px', height: '5px', borderRadius: '50%', background: tc.primary }} />}
-                                                        <span onClick={() => { if (!isCourses) go(link.path(slug)); else if (hasSub) toggleMobileSub(link.key); }}
-                                                            style={{ fontSize: '13.5px', fontWeight: 600, color: isActive ? tc.primary : '#334155', cursor: 'pointer', paddingLeft: isActive ? '10px' : '0' }}>
+                                                    <div className="mobile-drawer-row"
+                                                        onClick={() => {
+                                                            if (hasSub) toggleMobileSub(link.key);
+                                                            else go(link.path(slug));
+                                                        }}
+                                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', borderRadius: '6px', position: 'relative', cursor: 'pointer', background: (isActive || isSubExpanded) ? 'rgba(255,255,255,0.7)' : 'transparent' }}>
+                                                        {isActive && <span style={{ position: 'absolute', left: '3px', top: '50%', transform: 'translateY(-50%)', width: '4px', height: '4px', borderRadius: '50%', background: tc.primary }} />}
+                                                        <span style={{ fontSize: '13px', fontWeight: 600, color: isActive ? tc.primary : '#334155', paddingLeft: isActive ? '8px' : '0' }}>
                                                             {link.label}
                                                         </span>
                                                         {hasSub && (
-                                                            <span onClick={() => toggleMobileSub(link.key)} className="mobile-chevron-btn"
-                                                                style={{ width: '26px', height: '26px', borderRadius: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: isSubExpanded ? '#ffffff' : 'transparent', color: isSubExpanded ? tc.primary : '#94a3b8' }}>
+                                                            <span className="mobile-chevron-btn"
+                                                                style={{ width: '24px', height: '24px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isSubExpanded ? tc.primary : '#94a3b8' }}>
                                                                 <ChevronDownSm color={isSubExpanded ? tc.primary : '#94a3b8'} open={isSubExpanded} />
                                                             </span>
                                                         )}
                                                     </div>
-                                                    {hasSub && (
-                                                        <div className={`mobile-submenu${isSubExpanded ? ' open' : ''}`}>
-                                                            <div style={{ background: '#ffffff', borderRadius: '8px', padding: '4px', margin: '2px 0 0', borderLeft: `2px solid ${tc.primary}30` }}>
-                                                                {subItems.map(sub => (
-                                                                    <div key={sub.label} onClick={() => go(sub.path(slug))} className="mobile-drawer-row"
-                                                                        style={{ padding: '10px 12px 10px 16px', borderRadius: '7px', fontSize: '13px', fontWeight: 600, color: '#475569', cursor: 'pointer' }}>
-                                                                        {sub.label}
-                                                                    </div>
-                                                                ))}
-                                                            </div>
+                                                    {hasSub && isSubExpanded && (
+                                                        <div style={{ background: '#ffffff', borderRadius: '6px', padding: '2px 3px', margin: '2px 0 4px 8px', borderLeft: `2.5px solid ${tc.primary}`, animation: 'mobileSubmenuIn 0.18s ease-out' }}>
+                                                            {subItems.map(sub => (
+                                                                <div key={sub.label} onClick={() => go(sub.path(slug))} className="mobile-drawer-row"
+                                                                    style={{ padding: '7px 10px', borderRadius: '5px', fontSize: '12px', fontWeight: 500, color: '#475569', cursor: 'pointer' }}>
+                                                                    {sub.label}
+                                                                </div>
+                                                            ))}
                                                         </div>
                                                     )}
                                                 </div>
                                             );
                                         })}
                                     </div>
-                                </div>
+                                )}
                             </div>
                         );
                     })}
@@ -515,7 +496,7 @@ const Navbar = forwardRef(({ school, slug, tc, scrollY = 0, activeKey, forceSoli
 
                 {/* Drawer footer — quick contact + social links */}
                 {(school.phone || school.email || drawerSocials.length > 0) && (
-                    <div style={{ padding: '1rem 1.35rem 1.15rem', borderTop: '1px solid #f1f5f9', background: '#f8fafc', flexShrink: 0 }}>
+                    <div style={{ padding: '0.85rem 1.25rem 1rem', borderTop: '1px solid #f1f5f9', background: '#f8fafc', flexShrink: 0 }}>
                         {school.phone && (
                             <a href={`tel:${school.phone}`} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12.5px', fontWeight: 600, color: '#334155', textDecoration: 'none', marginBottom: '9px' }}>
                                 <span style={{ width: '26px', height: '26px', borderRadius: '7px', background: tc.light, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

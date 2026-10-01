@@ -618,6 +618,7 @@ const Sports = () => {
                     <ModuleActionButtons
                         tc={tc}
                         moduleKey="sports"
+                        subPath={activePage ? `/sports/${activePage}` : '/sports'}
                         content={content}
                         saving={saving}
                         publishing={publishing}

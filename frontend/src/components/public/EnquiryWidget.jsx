@@ -36,7 +36,7 @@ const ModalShell = ({ open, onClose, bc, title, submitted, successTitle, success
     return (
         <div onClick={onClose}
             style={{
-                position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.55)', zIndex: 6000,
+                position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.55)', zIndex: 9000,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px',
             }}>
             <div onClick={e => e.stopPropagation()} className="enq-modal-scroll"
@@ -282,6 +282,7 @@ const EnquiryWidget = ({ customSlug } = {}) => {
     const slug = customSlug || (match ? match[1] : null);
 
     const [school, setSchool] = useState(null);
+    const [mobileExpanded, setMobileExpanded] = useState(false);
 
     useEffect(() => {
         if (!slug) return;
@@ -342,10 +343,57 @@ const EnquiryWidget = ({ customSlug } = {}) => {
                 @media (max-width: 420px) {
                     .enq-2col { grid-template-columns: 1fr !important; }
                 }
+                @media (max-width: 768px) {
+                    .enq-widget-tab {
+                        transform: translateY(-50%) translateX(105%) !important;
+                        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
+                    }
+                    .enq-widget-tab.mobile-open {
+                        transform: translateY(-50%) translateX(0) !important;
+                    }
+                    .enq-mobile-toggle {
+                        display: flex !important;
+                    }
+                }
+                @media (min-width: 769px) {
+                    .enq-mobile-toggle {
+                        display: none !important;
+                    }
+                    .enq-mobile-backdrop {
+                        display: none !important;
+                    }
+                }
             `}</style>
 
-            {/* Floating tabs — fixed to the right edge on every page. Vertical
-                (top-to-bottom) text in a rounded tab, matching the reference design. */}
+            {/* Mobile backdrop when tabs are open */}
+            {mobileExpanded && (
+                <div
+                    className="enq-mobile-backdrop"
+                    onClick={() => setMobileExpanded(false)}
+                    style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', zIndex: 4998 }}
+                />
+            )}
+
+            {/* Mobile toggle button on right edge — clean and unobtrusive */}
+            {floatingTabs.length > 0 && (
+                <button
+                    onClick={() => setMobileExpanded(o => !o)}
+                    className="enq-mobile-toggle"
+                    aria-label="Toggle quick actions"
+                    style={{
+                        position: 'fixed', right: 0, top: '48%', transform: 'translateY(-50%)', zIndex: 5002,
+                        background: `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})`, color: '#ffffff',
+                        border: 'none', borderRadius: '8px 0 0 8px', padding: '10px 6px',
+                        fontSize: '11px', fontWeight: 700, letterSpacing: '0.02em', cursor: 'pointer',
+                        boxShadow: '0 4px 14px rgba(0,0,0,0.25)', fontFamily: "'Inter', system-ui, sans-serif",
+                        writingMode: 'vertical-rl', textOrientation: 'mixed', display: 'none',
+                        alignItems: 'center', justifyContent: 'center', gap: '4px',
+                    }}>
+                    {mobileExpanded ? '✕ Close' : '‹ Quick Links'}
+                </button>
+            )}
+
+            {/* Floating tabs — fixed to the right edge on desktop, expandable on mobile */}
             {floatingTabs.map((t, i) => {
                 const tabStyle = {
                     position: 'fixed', right: 0, top: `${tabTopPercent(i, floatingTabs.length)}%`, transform: 'translateY(-50%)', zIndex: 5000,
@@ -356,12 +404,14 @@ const EnquiryWidget = ({ customSlug } = {}) => {
                     transition: 'filter 0.2s ease', writingMode: 'vertical-rl', textOrientation: 'mixed',
                     textDecoration: 'none', display: 'inline-block',
                 };
+                const tabClass = `enq-widget-tab${mobileExpanded ? ' mobile-open' : ''}`;
                 return t.href ? (
-                    <a key={t.key} href={t.href} target="_blank" rel="noopener noreferrer" className="enq-widget-tab" style={tabStyle}>
+                    <a key={t.key} href={t.href} target="_blank" rel="noopener noreferrer" className={tabClass} style={tabStyle}
+                        onClick={() => setMobileExpanded(false)}>
                         {t.label}
                     </a>
                 ) : (
-                    <button key={t.key} className="enq-widget-tab" onClick={t.onClick} style={tabStyle}>
+                    <button key={t.key} className={tabClass} onClick={(e) => { setMobileExpanded(false); t.onClick(e); }} style={tabStyle}>
                         {t.label}
                     </button>
                 );

@@ -202,6 +202,16 @@ const CalendarPublic = () => {
                     .cal-layout { grid-template-columns: 1fr; }
                     .cal-day-num { font-size: 11px !important; }
                 }
+                @media (max-width: 640px) {
+                    .cal-container { padding: 1rem 0.6rem 6rem !important; }
+                    .cal-card { padding: 12px 6px !important; border-radius: 16px !important; }
+                    .cal-weekdays { gap: 3px !important; }
+                    .cal-grid-anim { gap: 3px !important; }
+                    .cal-day { min-height: 48px !important; padding: 4px 4px 3px !important; border-radius: 8px !important; }
+                    .cal-legend-bar { padding: 8px 10px !important; border-radius: 10px !important; gap: 6px !important; overflow-x: auto !important; flex-wrap: nowrap !important; scrollbar-width: none !important; -webkit-overflow-scrolling: touch; }
+                    .cal-legend-bar::-webkit-scrollbar { display: none !important; }
+                    .cal-chip { padding: 4px 9px !important; white-space: nowrap !important; flex-shrink: 0 !important; }
+                }
                 @media (max-width: 480px) {
                     .cal-stat-tile { min-width: 84px !important; padding: 10px 12px !important; }
                 }
@@ -237,14 +247,14 @@ const CalendarPublic = () => {
                 )}
 
                 {/* ── Calendar ── */}
-                <div style={{ padding: '1.5rem clamp(1.25rem,6vw,3rem) 6rem' }}>
+                <div className="cal-container" style={{ padding: '1.5rem clamp(1.25rem,6vw,3rem) 6rem' }}>
                     <div style={{ maxWidth: '1180px', margin: '0 auto' }}>
 
                         {/* Legend — colored pill per category, doubles as the filter control */}
                         {presentCategories.length > 0 && (
                             <Reveal>
-                                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px', padding: '12px 18px', background: bc.card, border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '1.5rem' }}>
-                                    <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '2px' }}>Legend</span>
+                                <div className="cal-legend-bar" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px', padding: '12px 18px', background: bc.card, border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '1.5rem' }}>
+                                    <span style={{ fontSize: '10.5px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginRight: '2px', flexShrink: 0 }}>Legend</span>
                                     {presentCategories.map(cat => {
                                         const color = CATEGORY_COLORS[cat] || tc.primary;
                                         const isActive = activeCategory === cat;
@@ -257,6 +267,7 @@ const CalendarPublic = () => {
                                                     border: `1px solid ${isActive ? color : '#e2e8f0'}`,
                                                     background: isActive ? `${color}14` : '#ffffff',
                                                     opacity: isDimmed ? 0.45 : 1,
+                                                    flexShrink: 0
                                                 }}>
                                                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: color, flexShrink: 0 }}></span>
                                                 <span style={{ fontSize: '12px', color: '#1e293b', fontWeight: 600 }}>{cat}</span>
@@ -270,7 +281,7 @@ const CalendarPublic = () => {
                         <div className="cal-layout">
                             {/* ── Calendar card ── */}
                             <Reveal>
-                                <div style={{ background: bc.card, borderRadius: '22px', border: '1px solid #e2e8f0', boxShadow: '0 14px 40px rgba(15,23,42,0.09)', padding: 'clamp(1.25rem,4vw,2rem) clamp(1rem,3vw,2.25rem)' }}>
+                                <div className="cal-card" style={{ background: bc.card, borderRadius: '22px', border: '1px solid #e2e8f0', boxShadow: '0 14px 40px rgba(15,23,42,0.09)', padding: 'clamp(1.25rem,4vw,2rem) clamp(1rem,3vw,2.25rem)' }}>
 
                                     {/* Month navigator */}
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', gap: '10px' }}>
@@ -294,7 +305,7 @@ const CalendarPublic = () => {
                                     </div>
 
                                     {/* Weekday header */}
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '6px' }}>
+                                    <div className="cal-weekdays" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '6px' }}>
                                         {WEEKDAYS.map(w => (
                                             <div key={w} style={{ textAlign: 'center', fontSize: '11px', fontWeight: 700, color: w === 'Sun' ? SUNDAY_COLOR : w === 'Sat' ? tc.primary : '#94a3b8', padding: '4px 0' }}>{w}</div>
                                         ))}
@@ -303,7 +314,7 @@ const CalendarPublic = () => {
                                     {/* Day grid */}
                                     <div key={`${year}-${month}`} className="cal-grid-anim" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '5px' }}>
                                         {grid.map((day, i) => {
-                                            if (!day) return <div key={i} style={{ minHeight: 'clamp(56px,9vw,92px)' }}></div>;
+                                            if (!day) return <div key={i} style={{ minHeight: 'clamp(52px,8vw,92px)' }}></div>;
                                             const key = toDateKey(new Date(year, month, day));
                                             const dayItems = (itemsByDate[key] || []).filter(it => !activeCategory || it.category === activeCategory);
                                             const hasAll = (itemsByDate[key] || []).length > 0;
@@ -324,33 +335,44 @@ const CalendarPublic = () => {
                                                     title={dayItems.length ? dayItems.map(it => it.title).join(', ') : undefined}
                                                     style={{
                                                         position: 'relative',
-                                                        minHeight: 'clamp(56px,9vw,92px)', display: 'flex', flexDirection: 'column',
-                                                        alignItems: 'flex-start', padding: '8px 8px 6px', gap: '4px',
-                                                        borderRadius: '12px',
+                                                        minHeight: 'clamp(52px,8vw,92px)', display: 'flex', flexDirection: 'column',
+                                                        alignItems: 'flex-start', padding: '7px 7px 5px', gap: '3px',
+                                                        borderRadius: '10px', overflow: 'hidden',
                                                         border: isSelected ? `1.5px solid ${tc.primary}` : isToday ? `1.5px solid ${tc.primary}` : bgColor ? `1px solid ${bgColor}60` : isWeekend ? `1px solid ${weekendColor}35` : `1px solid ${WORKING_DAY_COLOR}`,
                                                         background: `linear-gradient(160deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 55%), ${bgColor ? `${bgColor}35` : isSelected ? `${tc.primary}14` : isToday ? `${tc.primary}0a` : isWeekend ? `${weekendColor}14` : `${WORKING_DAY_COLOR}55`}`,
                                                     }}>
-                                                    {soloColor && (
-                                                        <span style={{ position: 'absolute', top: '7px', right: '7px', width: '13px', height: '13px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 1px 3px rgba(15,23,42,0.18)' }}></span>
-                                                    )}
-                                                    {isToday && (
-                                                        <span style={{ position: 'absolute', bottom: '6px', right: '7px', fontSize: '8px', fontWeight: 800, color: '#ffffff', background: tc.primary, padding: '1.5px 5px', borderRadius: '999px', letterSpacing: '0.03em', textTransform: 'uppercase' }}>Today</span>
-                                                    )}
-                                                    <span className="cal-day-num" style={{
-                                                        fontSize: '14px', fontWeight: 800,
-                                                        color: isToday && !bgColor ? tc.primary : (!bgColor && isWeekend) ? `${weekendColor}cc` : '#1e293b',
-                                                    }}>{day}</span>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', minHeight: '20px' }}>
+                                                        <span className="cal-day-num" style={{
+                                                            fontSize: isToday ? '11.5px' : '13px', fontWeight: 800,
+                                                            ...(isToday ? {
+                                                                background: tc.primary, color: '#ffffff',
+                                                                width: '21px', height: '21px', borderRadius: '50%',
+                                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                boxShadow: `0 2px 5px ${tc.primary}45`, flexShrink: 0
+                                                            } : {
+                                                                color: (!bgColor && isWeekend) ? `${weekendColor}cc` : '#1e293b'
+                                                            })
+                                                        }}>{day}</span>
+                                                        {isToday && (
+                                                            <span style={{ fontSize: '7px', fontWeight: 800, color: tc.primary, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                                                                Today
+                                                            </span>
+                                                        )}
+                                                        {soloColor && !isToday && (
+                                                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 1px 3px rgba(15,23,42,0.18)', flexShrink: 0 }}></span>
+                                                        )}
+                                                    </div>
                                                     {soloColor ? (
                                                         <span style={{
-                                                            fontSize: '9px', fontWeight: 800, color: soloColor, textTransform: 'uppercase', letterSpacing: '0.02em',
+                                                            fontSize: '8.5px', fontWeight: 800, color: soloColor, textTransform: 'uppercase', letterSpacing: '0.02em',
                                                             maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                                                         }}>{dayItems[0].category}</span>
                                                     ) : visibleDots.length > 0 && (
                                                         <div style={{ display: 'flex', gap: '3px', flexWrap: 'wrap', maxWidth: '100%' }}>
                                                             {visibleDots.map((it, di) => (
-                                                                <span key={di} className="cal-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: CATEGORY_COLORS[it.category] || tc.primary, flexShrink: 0 }} />
+                                                                <span key={di} className="cal-dot" style={{ width: '5px', height: '5px', borderRadius: '50%', background: CATEGORY_COLORS[it.category] || tc.primary, flexShrink: 0 }} />
                                                             ))}
-                                                            {extraCount > 0 && <span style={{ fontSize: '8px', fontWeight: 700, color: '#94a3b8', lineHeight: '6px' }}>+{extraCount}</span>}
+                                                            {extraCount > 0 && <span style={{ fontSize: '7.5px', fontWeight: 700, color: '#94a3b8', lineHeight: '5px' }}>+{extraCount}</span>}
                                                         </div>
                                                     )}
                                                 </div>

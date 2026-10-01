@@ -503,6 +503,7 @@ const Gallery = () => {
                     <ModuleActionButtons
                         tc={tc}
                         moduleKey="gallery"
+                        subPath={activeTree === 'video' ? '/gallery/video' : '/gallery/photo'}
                         content={content}
                         saving={saving}
                         publishing={publishing}

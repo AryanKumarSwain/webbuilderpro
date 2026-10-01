@@ -1,12 +1,15 @@
 // Shared Save / Publish / Unpublish button group for module admin pages.
-// Unifies the flow into a single responsive button:
+// Unifies the flow into responsive buttons:
+// - When published: shows "View Page" button that redirects to the live public page
 // - If dirty (has uncommitted edits): "Save & Publish" (while background autosave protects draft)
 // - If not dirty and published: "Unpublish"
 // - If not dirty and draft: "Publish"
 // Background autosave silently commits working drafts to `draft_content` in DB without page refresh.
 
 import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { saveModuleContentApi } from '../../api/content.api';
+import useSchoolStore from '../../store/schoolStore';
 
 const hexToRgba = (hex, alpha) => {
     const h = (hex || '#1e3a8a').replace('#', '');
@@ -26,6 +29,19 @@ const EyeOffIcon = ({ size = 14, color = 'currentColor' }) => (
     <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.8 21.8 0 015.06-6.06M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 8 11 8a21.77 21.77 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" /><path strokeLinecap="round" strokeLinejoin="round" d="M1 1l22 22" /></svg>
 );
 
+const EyeIcon = ({ size = 14, color = 'currentColor' }) => (
+    <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+    </svg>
+);
+
+const ExternalLinkIcon = ({ size = 12, color = 'currentColor' }) => (
+    <svg width={size} height={size} fill="none" stroke={color} strokeWidth="2.2" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+    </svg>
+);
+
 const Spinner = ({ size = 13, color = 'currentColor' }) => (
     <svg style={{ animation: 'mabSpin 1s linear infinite', width: `${size}px`, height: `${size}px` }} viewBox="0 0 24 24" fill="none">
         <circle style={{ opacity: 0.3 }} cx="12" cy="12" r="10" stroke={color} strokeWidth="3.5" />
@@ -39,10 +55,44 @@ const DEFAULT_TC = {
     dark: '#0f172a',
 };
 
+// Maps admin module keys to their respective public website subpaths
+const MODULE_PAGE_PATHS = {
+    home: '',
+    about: '/about',
+    faculty: '/faculty',
+    infrastructure: '/infrastructure',
+    alumni: '/alumni',
+    testimonials: '/testimonials',
+    disclosure: '/public-disclosure',
+    'public-disclosure': '/public-disclosure',
+    courses: '/courses',
+    fee: '/fee',
+    results: '/results',
+    tc: '/tc',
+    achievements: '/achievements',
+    admissionProcedure: '/admission-procedure',
+    'admission-procedure': '/admission-procedure',
+    bookList: '/book-list',
+    'book-list': '/book-list',
+    parentsCorner: '/parents-corner',
+    'parents-corner': '/parents-corner',
+    sports: '/sports',
+    gallery: '/gallery/photo',
+    'gallery-video': '/gallery/video',
+    announcements: '/announcements',
+    events: '/events',
+    calendar: '/calendar',
+    circulars: '/circulars',
+    faqs: '/faqs',
+};
+
 const ModuleActionButtons = ({
     tc,
     content,
     moduleKey,
+    slug,
+    subPath,
+    viewUrl,
     saving = false,
     publishing = false,
     isPublished = false,
@@ -57,7 +107,28 @@ const ModuleActionButtons = ({
         dark: tc?.dark || DEFAULT_TC.dark,
     };
 
+    const { school, fetchSchool } = useSchoolStore();
+
+    useEffect(() => {
+        if (!school) {
+            fetchSchool?.();
+        }
+    }, [school, fetchSchool]);
+
     const resolvedKey = moduleKey || (typeof window !== 'undefined' ? window.location.pathname.match(/\/admin\/module\/([^/]+)/)?.[1] : '') || '';
+    const resolvedSlug = slug || school?.slug || '';
+
+    const pagePath = subPath !== undefined
+        ? subPath
+        : (MODULE_PAGE_PATHS[resolvedKey] !== undefined
+            ? MODULE_PAGE_PATHS[resolvedKey]
+            : (resolvedKey && resolvedKey !== 'home' ? `/${resolvedKey}` : ''));
+
+    const liveUrl = viewUrl || (resolvedSlug
+        ? (school?.custom_domain
+            ? `https://${school.custom_domain}${pagePath}`
+            : `/school/${resolvedSlug}${pagePath}`)
+        : '');
 
     const [autoSaving, setAutoSaving] = useState(false);
     const [draftSaved, setDraftSaved] = useState(false);
@@ -90,7 +161,7 @@ const ModuleActionButtons = ({
         <div className="mab-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
             <style>{`
                 @keyframes mabSpin { to { transform: rotate(360deg); } }
-                .mab-btn { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; position: relative; overflow: hidden; letter-spacing: 0.01em; transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease, filter 0.25s ease; border: none; }
+                .mab-btn { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; position: relative; overflow: hidden; letter-spacing: 0.01em; transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease, filter 0.25s ease, background 0.2s ease; border: none; }
                 .mab-btn:disabled { cursor: not-allowed; opacity: 0.65; }
                 .mab-btn:active:not(:disabled) { transform: translateY(0) scale(0.96) !important; }
                 .mab-btn-icon { display: inline-flex; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); }
@@ -101,12 +172,40 @@ const ModuleActionButtons = ({
                 .mab-btn-publish::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent); transform: skewX(-20deg); transition: left 0.65s ease; pointer-events: none; }
                 .mab-btn-publish:hover:not(:disabled) { transform: translateY(-1.5px) scale(1.02); filter: brightness(1.08); box-shadow: 0 2px 6px rgba(21,128,61,0.35), 0 12px 26px rgba(34,197,94,0.55) !important; }
                 .mab-btn-publish:hover:not(:disabled)::after { left: 130%; }
+                
+                /* View Live Page CTA */
+                .mab-btn-view {
+                    text-decoration: none;
+                    font-weight: 700;
+                    color: ${safeTc.primary};
+                    background: #ffffff;
+                    border: 1px solid rgba(255, 255, 255, 0.95);
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12), 0 6px 18px rgba(0, 0, 0, 0.14);
+                }
+                .mab-btn-view:hover {
+                    background: #f8fafc !important;
+                    transform: translateY(-1.5px) !important;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18), 0 10px 24px rgba(0, 0, 0, 0.22) !important;
+                    color: ${safeTc.primary} !important;
+                }
+                .mab-btn-view:active {
+                    transform: translateY(0) scale(0.97) !important;
+                }
+                .mab-btn-view:hover .mab-ext-icon {
+                    transform: translate(1.5px, -1.5px);
+                }
+                .mab-btn-view:hover .mab-eye-icon {
+                    transform: scale(1.12);
+                }
+
                 @keyframes mabPulseGlow { 0%, 100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 4px rgba(21,128,61,0.25), 0 8px 24px rgba(34,197,94,0.5); } 50% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), 0 2px 6px rgba(21,128,61,0.35), 0 12px 32px rgba(34,197,94,0.75); } }
                 .mab-btn-dirty { animation: mabPulseGlow 2.5s ease-in-out infinite; }
                 @media (max-width: 640px) {
                     .mab-actions { gap: 6px !important; }
                     .mab-btn { padding: 6px 12px !important; font-size: 11px !important; border-radius: 8px !important; gap: 5px !important; }
                     .mab-btn-icon svg { width: 11px !important; height: 11px !important; }
+                    .mab-btn-view { padding: 6px 12px !important; font-size: 11px !important; border-radius: 8px !important; gap: 5px !important; }
+                    .mab-btn-view svg { width: 11px !important; height: 11px !important; }
                     .mab-autosave-tag { display: none !important; }
                 }
             `}</style>
@@ -124,7 +223,37 @@ const ModuleActionButtons = ({
                 </div>
             ) : null}
 
-            {/* Single Action Button */}
+            {/* View Live Page CTA — shown whenever page is published */}
+            {isPublished && (
+                <a
+                    href={liveUrl || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => {
+                        if (!liveUrl || liveUrl === '#') {
+                            e.preventDefault();
+                            toast.error('School page link not ready yet, please refresh.');
+                        }
+                    }}
+                    className="mab-btn mab-btn-view"
+                    style={{
+                        padding: '10px 20px',
+                        borderRadius: '12px',
+                        fontSize: '12.5px',
+                    }}
+                    title="View live page on website (opens in a new tab)"
+                >
+                    <span className="mab-btn-icon mab-eye-icon">
+                        <EyeIcon size={14} color={safeTc.primary} />
+                    </span>
+                    <span>View Page</span>
+                    <span className="mab-btn-icon mab-ext-icon" style={{ opacity: 0.7, marginLeft: '-1px' }}>
+                        <ExternalLinkIcon size={11} color={safeTc.primary} />
+                    </span>
+                </a>
+            )}
+
+            {/* Action Buttons: Save & Publish, Unpublish, or Publish */}
             {isDirty ? (
                 <button
                     type="button"
