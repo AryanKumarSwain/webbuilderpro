@@ -282,7 +282,6 @@ const EnquiryWidget = ({ customSlug } = {}) => {
     const slug = customSlug || (match ? match[1] : null);
 
     const [school, setSchool] = useState(null);
-    const [mobileExpanded, setMobileExpanded] = useState(false);
 
     useEffect(() => {
         if (!slug) return;
@@ -298,27 +297,33 @@ const EnquiryWidget = ({ customSlug } = {}) => {
     const admissionOn = isModuleEnabled(school, 'admission');
     const careerOn = isModuleEnabled(school, 'career');
 
-    // ── Floating right-edge tabs — built as a list rather than two hardcoded
-    // buttons so a third (or more) tab spaces itself evenly automatically. ──
+    // ── Floating right-edge tabs — directly visible on both mobile and desktop ──
     const floatingTabs = [
-        admissionOn && { key: 'admission', label: 'Enquire Now', onClick: () => window.dispatchEvent(new Event('open-admission-enquiry')) },
-        careerOn && { key: 'career', label: 'Career Enquiry', onClick: () => window.dispatchEvent(new Event('open-career-enquiry')) },
-        school.prospectus_url && { key: 'prospectus', label: 'Prospectus', href: school.prospectus_url },
-        school.school_app_url && { key: 'schoolApp', label: school.school_app_label || 'Get Our App', href: school.school_app_url },
+        admissionOn && {
+            key: 'admission',
+            label: 'Enquire Now',
+            onClick: () => window.dispatchEvent(new Event('open-admission-enquiry')),
+        },
+        careerOn && {
+            key: 'career',
+            label: 'Career Enquiry',
+            onClick: () => window.dispatchEvent(new Event('open-career-enquiry')),
+        },
+        school.prospectus_url && {
+            key: 'prospectus',
+            label: 'Prospectus',
+            href: school.prospectus_url,
+        },
+        school.school_app_url && {
+            key: 'schoolApp',
+            label: school.school_app_label || 'Get Our App',
+            href: school.school_app_url,
+        },
     ].filter(Boolean);
-
-    const tabTopPercent = (index, total) => {
-        if (total <= 1) return 50;
-        if (total === 2) return index === 0 ? 40 : 60;
-        if (total === 3) return [26, 50, 74][index];
-        if (total === 4) return [20, 40, 60, 80][index];
-        return 20 + (index * 60) / (total - 1);
-    };
 
     return (
         <>
             <style>{`
-                .enq-widget-tab:hover { filter: brightness(1.08); transform: translateY(-50%) translateX(-2px); }
                 .enq-widget-close:hover { background: #e2e8f0 !important; }
                 .enq-widget-input:focus { border-color: ${tc.primary} !important; background: #ffffff !important; box-shadow: 0 0 0 3.5px ${tc.primary}1a; }
                 .enq-widget-submit { transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease; }
@@ -340,82 +345,94 @@ const EnquiryWidget = ({ customSlug } = {}) => {
                 @keyframes enqCheckDraw { to { stroke-dashoffset: 0; } }
                 @keyframes enqSpin { to { transform: rotate(360deg); } }
                 .enq-spin { animation: enqSpin 0.7s linear infinite; }
+
+                /* ── Floating right-edge tabs (Desktop & Mobile) ── */
+                .enq-floating-tabs {
+                    position: fixed;
+                    right: 0;
+                    top: 53%;
+                    transform: translateY(-50%);
+                    z-index: 5000;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 6px;
+                    align-items: flex-end;
+                    pointer-events: auto;
+                }
+                .enq-floating-tab {
+                    background: ${tc.primary};
+                    color: #ffffff;
+                    border: none;
+                    border-radius: 8px 0 0 8px;
+                    padding: 12px 7px;
+                    font-size: 11.5px;
+                    font-weight: 700;
+                    letter-spacing: 0.02em;
+                    cursor: pointer;
+                    font-family: 'Inter', system-ui, sans-serif;
+                    writing-mode: vertical-rl;
+                    text-orientation: mixed;
+                    text-decoration: none;
+                    display: inline-block;
+                    box-shadow: -2px 4px 14px rgba(0,0,0,0.22);
+                    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease, box-shadow 0.2s ease;
+                }
+                .enq-floating-tab:hover {
+                    filter: brightness(1.1);
+                    transform: translateX(-4px);
+                    box-shadow: -4px 6px 18px rgba(0,0,0,0.28);
+                }
+
+                @media (max-width: 480px) {
+                    .enq-floating-tabs {
+                        top: 54%;
+                        gap: 5px;
+                    }
+                    .enq-floating-tab {
+                        padding: 9px 5px !important;
+                        font-size: 10.5px !important;
+                        border-radius: 6px 0 0 6px !important;
+                        box-shadow: -2px 3px 10px rgba(0,0,0,0.2) !important;
+                    }
+                }
+                @media (max-height: 600px) {
+                    .enq-floating-tabs {
+                        top: auto !important;
+                        bottom: 40px !important;
+                        transform: none !important;
+                    }
+                }
                 @media (max-width: 420px) {
                     .enq-2col { grid-template-columns: 1fr !important; }
                 }
-                @media (max-width: 768px) {
-                    .enq-widget-tab {
-                        transform: translateY(-50%) translateX(105%) !important;
-                        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease !important;
-                    }
-                    .enq-widget-tab.mobile-open {
-                        transform: translateY(-50%) translateX(0) !important;
-                    }
-                    .enq-mobile-toggle {
-                        display: flex !important;
-                    }
-                }
-                @media (min-width: 769px) {
-                    .enq-mobile-toggle {
-                        display: none !important;
-                    }
-                    .enq-mobile-backdrop {
-                        display: none !important;
-                    }
-                }
             `}</style>
 
-            {/* Mobile backdrop when tabs are open */}
-            {mobileExpanded && (
-                <div
-                    className="enq-mobile-backdrop"
-                    onClick={() => setMobileExpanded(false)}
-                    style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)', zIndex: 4998 }}
-                />
-            )}
-
-            {/* Mobile toggle button on right edge — clean and unobtrusive */}
+            {/* Floating tabs directly visible on right edge */}
             {floatingTabs.length > 0 && (
-                <button
-                    onClick={() => setMobileExpanded(o => !o)}
-                    className="enq-mobile-toggle"
-                    aria-label="Toggle quick actions"
-                    style={{
-                        position: 'fixed', right: 0, top: '48%', transform: 'translateY(-50%)', zIndex: 5002,
-                        background: `linear-gradient(135deg, ${tc.primary}, ${tc.secondary})`, color: '#ffffff',
-                        border: 'none', borderRadius: '8px 0 0 8px', padding: '10px 6px',
-                        fontSize: '11px', fontWeight: 700, letterSpacing: '0.02em', cursor: 'pointer',
-                        boxShadow: '0 4px 14px rgba(0,0,0,0.25)', fontFamily: "'Inter', system-ui, sans-serif",
-                        writingMode: 'vertical-rl', textOrientation: 'mixed', display: 'none',
-                        alignItems: 'center', justifyContent: 'center', gap: '4px',
-                    }}>
-                    {mobileExpanded ? '✕ Close' : '‹ Quick Links'}
-                </button>
+                <div className="enq-floating-tabs">
+                    {floatingTabs.map(t => (
+                        t.href ? (
+                            <a
+                                key={t.key}
+                                href={t.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="enq-floating-tab"
+                            >
+                                {t.label}
+                            </a>
+                        ) : (
+                            <button
+                                key={t.key}
+                                className="enq-floating-tab"
+                                onClick={t.onClick}
+                            >
+                                {t.label}
+                            </button>
+                        )
+                    ))}
+                </div>
             )}
-
-            {/* Floating tabs — fixed to the right edge on desktop, expandable on mobile */}
-            {floatingTabs.map((t, i) => {
-                const tabStyle = {
-                    position: 'fixed', right: 0, top: `${tabTopPercent(i, floatingTabs.length)}%`, transform: 'translateY(-50%)', zIndex: 5000,
-                    background: tc.primary, color: '#ffffff',
-                    border: 'none', borderRadius: '10px 0 0 10px', padding: '13px 8px',
-                    fontSize: '12px', fontWeight: 700, letterSpacing: '0.02em', cursor: 'pointer',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.28)', fontFamily: "'Inter', system-ui, sans-serif",
-                    transition: 'filter 0.2s ease', writingMode: 'vertical-rl', textOrientation: 'mixed',
-                    textDecoration: 'none', display: 'inline-block',
-                };
-                const tabClass = `enq-widget-tab${mobileExpanded ? ' mobile-open' : ''}`;
-                return t.href ? (
-                    <a key={t.key} href={t.href} target="_blank" rel="noopener noreferrer" className={tabClass} style={tabStyle}
-                        onClick={() => setMobileExpanded(false)}>
-                        {t.label}
-                    </a>
-                ) : (
-                    <button key={t.key} className={tabClass} onClick={(e) => { setMobileExpanded(false); t.onClick(e); }} style={tabStyle}>
-                        {t.label}
-                    </button>
-                );
-            })}
 
             <AdmissionEnquiryModal school={school} tc={tc} bc={bc} />
             <CareerEnquiryModal school={school} tc={tc} bc={bc} />

@@ -228,6 +228,14 @@ const Navbar = forwardRef(({ school, slug, tc, scrollY = 0, activeKey, forceSoli
                 }
                 .mobile-drawer-row { transition: background 0.18s ease, transform 0.15s ease; }
                 .mobile-drawer-row:active { transform: scale(0.97); }
+                .mobile-drawer-row-wrap + .mobile-drawer-row-wrap {
+                    border-top: 1px solid #e2e8f0;
+                    padding-top: 4px;
+                    margin-top: 4px;
+                }
+                .mobile-sub-row + .mobile-sub-row {
+                    border-top: 1px solid ${tc.primary}18;
+                }
                 .nav-drop-row + .nav-drop-row { border-top: 1px solid ${tc.primary}14; }
                 .nav-drop-panel { position: relative; }
                 .nav-drop-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, ${tc.primary}, ${tc.secondary}); }
@@ -423,7 +431,7 @@ const Navbar = forwardRef(({ school, slug, tc, scrollY = 0, activeKey, forceSoli
                                     {isExpanded && (
                                         <div style={{ background: tc.light, borderRadius: '8px', margin: '2px 0 5px', padding: '3px 5px', border: `1px solid ${tc.primary}18`, animation: 'mobileSubmenuIn 0.2s ease-out' }}>
                                             {item.subItems.map(sub => (
-                                                <div key={sub.label} onClick={() => go(sub.path(slug))} className="mobile-drawer-row"
+                                                <div key={sub.label} onClick={() => go(sub.path(slug))} className="mobile-drawer-row mobile-sub-row"
                                                     style={{ padding: '8px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 500, color: '#334155', cursor: 'pointer' }}>
                                                     {sub.label}
                                                 </div>
@@ -456,7 +464,7 @@ const Navbar = forwardRef(({ school, slug, tc, scrollY = 0, activeKey, forceSoli
                                             const isSubExpanded = mobileSub === link.key;
                                             const isActive = activeKey === link.key;
                                             return (
-                                                <div key={link.key}>
+                                                <div key={link.key} className="mobile-sub-row">
                                                     <div className="mobile-drawer-row"
                                                         onClick={() => {
                                                             if (hasSub) toggleMobileSub(link.key);
