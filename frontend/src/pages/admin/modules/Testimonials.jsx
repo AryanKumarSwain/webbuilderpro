@@ -36,7 +36,29 @@ const Testimonials = () => {
     const [uploading, setUploading] = useState({});
     const [uploadingThumb, setUploadingThumb] = useState({});
 
-    useEffect(() => { fetchContent(); }, []);
+    useEffect(() => {
+        fetchContent();
+
+        let channel;
+        try {
+            channel = new BroadcastChannel('testimonials_sync');
+            channel.onmessage = (e) => {
+                if (e.data?.type === 'TESTIMONIALS_UPDATED') {
+                    fetchContent();
+                }
+            };
+        } catch (_) {}
+
+        const onFocus = () => {
+            fetchContent();
+        };
+        window.addEventListener('focus', onFocus);
+
+        return () => {
+            if (channel) channel.close();
+            window.removeEventListener('focus', onFocus);
+        };
+    }, []);
 
     const fetchContent = async () => {
         try {
@@ -59,6 +81,11 @@ const Testimonials = () => {
         try {
             await saveModuleContentApi('testimonials', content, publish ? 1 : 0);
             setSavedSnapshot(JSON.stringify(content));
+            try {
+                const channel = new BroadcastChannel('testimonials_sync');
+                channel.postMessage({ type: 'TESTIMONIALS_UPDATED', source: 'testimonials', timestamp: Date.now() });
+                channel.close();
+            } catch (_) {}
             if (publish) {
                 setIsPublished(true);
                 toast.success('Testimonials page published! 🎉');
@@ -172,11 +199,17 @@ const Testimonials = () => {
                         <p style={{ fontSize: '13.5px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, maxWidth: '520px', margin: 0 }}>
                             What parents, alumni, and visitors say about your school — builds trust for prospective admissions.
                         </p>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px', flexWrap: 'wrap' }}>
                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: isPublished ? 'rgba(34,197,94,0.18)' : 'rgba(255,255,255,0.12)', border: `1.5px solid ${isPublished ? 'rgba(34,197,94,0.45)' : 'rgba(255,255,255,0.25)'}`, borderRadius: '999px' }}>
                                 <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: isPublished ? '#4ade80' : '#facc15' }}></div>
                                 <span style={{ fontSize: '11px', color: isPublished ? '#bbf7d0' : '#ffffff', fontWeight: 700, letterSpacing: '0.03em' }}>
                                     {isPublished ? 'Live on Website' : 'Draft (Unpublished)'}
+                                </span>
+                            </div>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', background: 'rgba(255,255,255,0.15)', border: '1.5px solid rgba(255,255,255,0.28)', borderRadius: '999px' }}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#67e8f9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                                <span style={{ fontSize: '11px', color: '#e0f2fe', fontWeight: 700, letterSpacing: '0.02em' }}>
+                                    Synced with Home Page
                                 </span>
                             </div>
                         </div>

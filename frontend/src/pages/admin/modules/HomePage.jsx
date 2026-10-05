@@ -288,7 +288,29 @@ const HomePage = () => {
     const [activeTab, setActiveTab] = useState('hero');
     const [testimonialUploading, setTestimonialUploading] = useState({});
 
-    useEffect(() => { fetchContent(); }, []);
+    useEffect(() => {
+        fetchContent();
+
+        let channel;
+        try {
+            channel = new BroadcastChannel('testimonials_sync');
+            channel.onmessage = (e) => {
+                if (e.data?.type === 'TESTIMONIALS_UPDATED') {
+                    fetchContent();
+                }
+            };
+        } catch (_) {}
+
+        const onFocus = () => {
+            fetchContent();
+        };
+        window.addEventListener('focus', onFocus);
+
+        return () => {
+            if (channel) channel.close();
+            window.removeEventListener('focus', onFocus);
+        };
+    }, []);
 
     useEffect(() => {
         if (school) setVideoTitle(school.hero_video_title || '');
@@ -318,6 +340,11 @@ const HomePage = () => {
         publish ? setPublishing(true) : setSaving(true);
         try {
             await saveModuleContentApi('home', content, publish ? 1 : 0);
+            try {
+                const channel = new BroadcastChannel('testimonials_sync');
+                channel.postMessage({ type: 'TESTIMONIALS_UPDATED', source: 'home', timestamp: Date.now() });
+                channel.close();
+            } catch (_) {}
             if (publish) {
                 setSavedSnapshot(JSON.stringify(content));
                 setIsPublished(true);
@@ -1382,8 +1409,14 @@ const HomePage = () => {
                             <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                         </div>
                         <div>
-                            <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginBottom: '1px' }}>Testimonials</p>
-                            <p style={{ fontSize: '11px', color: '#94a3b8' }}>What parents and visitors say — shown below Campus Glimpses on the home page</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                <p style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', margin: 0 }}>Testimonials</p>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '2px 8px', background: `${tc.primary}12`, border: `1px solid ${tc.primary}33`, borderRadius: '999px', fontSize: '10.5px', fontWeight: 700, color: tc.primary }}>
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                                    Synced with Testimonials Page
+                                </span>
+                            </div>
+                            <p style={{ fontSize: '11px', color: '#94a3b8', margin: '2px 0 0' }}>What parents and visitors say — automatically synced with the Student &amp; Parent Testimonials module</p>
                         </div>
                     </div>
                     <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '20px' }}>
