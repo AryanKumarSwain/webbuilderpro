@@ -58,6 +58,11 @@ const FeeStructure = () => {
     const [activePeriod, setActivePeriod] = useState('annual');
     const [showAddClass, setShowAddClass] = useState(false);
     const [selectedNewClass, setSelectedNewClass] = useState('');
+    const [addClassMode, setAddClassMode] = useState('select'); // 'select' | 'custom'
+    const [customClassName, setCustomClassName] = useState('');
+    const customClassInputRef = useRef(null);
+    const [editingClass, setEditingClass] = useState(null); // { oldName: string, newName: string }
+    const editClassInputRef = useRef(null);
 
     useEffect(() => { fetchContent(); }, []);
 
@@ -116,16 +121,26 @@ const FeeStructure = () => {
     };
 
     // ── Class operations ──
-    const addClass = () => {
-        if (!selectedNewClass) return;
-        if (content.classes.find(c => c.name === selectedNewClass)) {
-            toast.error('Class already added'); return;
+    const addClass = (overrideName) => {
+        const raw = typeof overrideName === 'string' ? overrideName : (addClassMode === 'custom' ? customClassName : selectedNewClass);
+        const nameToAdd = (raw || '').trim();
+        if (!nameToAdd) {
+            toast.error('Please enter or select a class name');
+            return false;
         }
-        const newClass = { name: selectedNewClass, fees: [] };
+        if (content.classes.some(c => c.name.trim().toLowerCase() === nameToAdd.toLowerCase())) {
+            toast.error(`Class "${nameToAdd}" is already added`);
+            return false;
+        }
+        const newClass = { name: nameToAdd, fees: [] };
         setContent(prev => ({ ...prev, classes: [...prev.classes, newClass] }));
-        setActiveClass(selectedNewClass);
+        setActiveClass(nameToAdd);
         setShowAddClass(false);
         setSelectedNewClass('');
+        setCustomClassName('');
+        setAddClassMode('select');
+        toast.success(`Class "${nameToAdd}" added`);
+        return true;
     };
 
     const removeClass = (className) => {
@@ -134,6 +149,26 @@ const FeeStructure = () => {
             const remaining = content.classes.filter(c => c.name !== className);
             setActiveClass(remaining.length > 0 ? remaining[0].name : null);
         }
+    };
+
+    const handleRenameClass = () => {
+        if (!editingClass) return;
+        const trimmed = (editingClass.newName || '').trim();
+        if (!trimmed) {
+            toast.error('Class name cannot be empty');
+            return;
+        }
+        if (trimmed.toLowerCase() !== editingClass.oldName.toLowerCase() && content.classes.some(c => c.name.trim().toLowerCase() === trimmed.toLowerCase())) {
+            toast.error(`Class "${trimmed}" already exists`);
+            return;
+        }
+        setContent(prev => ({
+            ...prev,
+            classes: prev.classes.map(c => c.name === editingClass.oldName ? { ...c, name: trimmed } : c)
+        }));
+        if (activeClass === editingClass.oldName) setActiveClass(trimmed);
+        setEditingClass(null);
+        toast.success(`Class renamed to "${trimmed}"`);
     };
 
     // ── Fee operations ──
@@ -484,24 +519,91 @@ const FeeStructure = () => {
                         <div style={{ padding: '8px', borderTop: '0.5px solid #f1f5f9' }}>
                             {showAddClass ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '4px' }}>
-                                    <select value={selectedNewClass} onChange={e => setSelectedNewClass(e.target.value)}
-                                        style={{ ...inputStyle, fontSize: '12px', padding: '8px 10px' }}>
-                                        <option value="">Select class...</option>
-                                        {availableClasses.map(c => <option key={c} value={c}>{c}</option>)}
-                                    </select>
+                                    <div style={{ display: 'flex', gap: '4px', background: '#f1f5f9', padding: '3px', borderRadius: '8px' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => setAddClassMode('select')}
+                                            style={{
+                                                flex: 1, padding: '4px 6px', fontSize: '11px', fontWeight: addClassMode === 'select' ? 600 : 500,
+                                                borderRadius: '6px', border: 'none',
+                                                background: addClassMode === 'select' ? '#ffffff' : 'transparent',
+                                                color: addClassMode === 'select' ? tc.primary : '#64748b',
+                                                cursor: 'pointer',
+                                                boxShadow: addClassMode === 'select' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                                                transition: 'all 0.15s ease'
+                                            }}>
+                                            Standard
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setAddClassMode('custom');
+                                                setTimeout(() => customClassInputRef.current?.focus(), 50);
+                                            }}
+                                            style={{
+                                                flex: 1, padding: '4px 6px', fontSize: '11px', fontWeight: addClassMode === 'custom' ? 600 : 500,
+                                                borderRadius: '6px', border: 'none',
+                                                background: addClassMode === 'custom' ? '#ffffff' : 'transparent',
+                                                color: addClassMode === 'custom' ? tc.primary : '#64748b',
+                                                cursor: 'pointer',
+                                                boxShadow: addClassMode === 'custom' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                                                transition: 'all 0.15s ease'
+                                            }}>
+                                            + Custom
+                                        </button>
+                                    </div>
+
+                                    {addClassMode === 'select' ? (
+                                        <select
+                                            value={selectedNewClass}
+                                            onChange={e => {
+                                                if (e.target.value === '__custom__') {
+                                                    setAddClassMode('custom');
+                                                    setSelectedNewClass('');
+                                                    setTimeout(() => customClassInputRef.current?.focus(), 50);
+                                                } else {
+                                                    setSelectedNewClass(e.target.value);
+                                                }
+                                            }}
+                                            style={{ ...inputStyle, fontSize: '12px', padding: '8px 10px' }}>
+                                            <option value="">Select class...</option>
+                                            {availableClasses.map(c => <option key={c} value={c}>{c}</option>)}
+                                            <option value="__custom__" style={{ fontWeight: 600, color: tc.primary }}>+ Other (custom name)...</option>
+                                        </select>
+                                    ) : (
+                                        <input
+                                            ref={customClassInputRef}
+                                            type="text"
+                                            value={customClassName}
+                                            onChange={e => setCustomClassName(e.target.value)}
+                                            placeholder="e.g. Pre-KG, Grade 1, Playgroup"
+                                            style={{ ...inputStyle, fontSize: '12px', padding: '8px 10px' }}
+                                            onKeyDown={e => {
+                                                if (e.key === 'Enter') addClass();
+                                                if (e.key === 'Escape') { setAddClassMode('select'); setCustomClassName(''); }
+                                            }}
+                                        />
+                                    )}
+
                                     <div style={{ display: 'flex', gap: '6px' }}>
-                                        <button onClick={addClass}
+                                        <button onClick={() => addClass()}
                                             style={{ flex: 1, padding: '7px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
                                             Add
                                         </button>
-                                        <button onClick={() => { setShowAddClass(false); setSelectedNewClass(''); }}
+                                        <button onClick={() => { setShowAddClass(false); setSelectedNewClass(''); setCustomClassName(''); setAddClassMode('select'); }}
                                             style={{ flex: 1, padding: '7px', background: '#f1f5f9', color: '#64748b', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}>
                                             Cancel
                                         </button>
                                     </div>
                                 </div>
                             ) : (
-                                <button onClick={() => setShowAddClass(true)} disabled={availableClasses.length === 0}
+                                <button onClick={() => {
+                                    setShowAddClass(true);
+                                    if (availableClasses.length === 0) {
+                                        setAddClassMode('custom');
+                                        setTimeout(() => customClassInputRef.current?.focus(), 50);
+                                    }
+                                }}
                                     style={{ width: '100%', padding: '9px', background: 'transparent', border: '1.5px dashed #e2e8f0', borderRadius: '8px', fontSize: '12px', color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                                     <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
                                     Add Class
@@ -529,7 +631,22 @@ const FeeStructure = () => {
                                         <svg width="18" height="18" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                                     </div>
                                     <div>
-                                        <p style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: '22px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.4px' }}>{activeClass}</p>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <p style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: '22px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.4px', margin: 0 }}>{activeClass}</p>
+                                            <button
+                                                type="button"
+                                                title="Rename class"
+                                                onClick={() => {
+                                                    setEditingClass({ oldName: activeClass, newName: activeClass });
+                                                    setTimeout(() => editClassInputRef.current?.focus(), 50);
+                                                }}
+                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'color 0.15s, background 0.15s' }}
+                                                onMouseEnter={e => { e.currentTarget.style.color = tc.primary; e.currentTarget.style.background = '#f1f5f9'; }}
+                                                onMouseLeave={e => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.background = 'none'; }}
+                                            >
+                                                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            </button>
+                                        </div>
                                         <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{activeClassData?.fees.length || 0} fee types added</p>
                                     </div>
                                 </div>
@@ -703,6 +820,42 @@ const FeeStructure = () => {
                 )}
 
             </div>
+
+            {editingClass && createPortal(
+                <div onClick={() => setEditingClass(null)}
+                    style={{ position: 'fixed', inset: 0, zIndex: 5000, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem', animation: 'cftBackdropIn 0.2s ease' }}>
+                    <div onClick={e => e.stopPropagation()}
+                        style={{ width: '100%', maxWidth: '400px', background: '#ffffff', borderRadius: '20px', boxShadow: '0 40px 90px rgba(15,23,42,0.4)', overflow: 'hidden', fontFamily: 'system-ui, sans-serif', animation: 'cftModalIn 0.3s cubic-bezier(0.16,1,0.3,1)' }}>
+                        <div style={{ position: 'relative', background: `linear-gradient(135deg, ${tc.dark} 0%, ${tc.primary} 100%)`, padding: '1.5rem' }}>
+                            <button onClick={() => setEditingClass(null)} className="cft-close-btn"
+                                style={{ position: 'absolute', top: '14px', right: '14px', width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,255,255,0.14)', border: 'none', cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.4" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                            <p style={{ fontSize: '16px', fontWeight: 700, color: '#ffffff', margin: 0 }}>Rename Class</p>
+                            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', margin: '4px 0 0' }}>Update class or grade name</p>
+                        </div>
+                        <div style={{ padding: '1.5rem' }}>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: '#64748b', marginBottom: '6px', textTransform: 'uppercase' }}>Class Name</label>
+                            <input
+                                ref={editClassInputRef}
+                                type="text"
+                                value={editingClass.newName}
+                                onChange={e => setEditingClass(prev => ({ ...prev, newName: e.target.value }))}
+                                style={{ ...inputStyle, width: '100%', fontSize: '14px' }}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') handleRenameClass();
+                                    if (e.key === 'Escape') setEditingClass(null);
+                                }}
+                            />
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '1.25rem' }}>
+                                <button onClick={() => setEditingClass(null)} style={{ padding: '8px 16px', background: '#f1f5f9', color: '#64748b', border: 'none', borderRadius: '8px', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
+                                <button onClick={handleRenameClass} style={{ padding: '8px 18px', background: `linear-gradient(135deg,${tc.primary},${tc.secondary})`, color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
         </>
     );
 };
