@@ -5,6 +5,7 @@ import ImageCropModal from '../../../components/common/ImageCropModal';
 import ReorderButtons from '../../../components/common/ReorderButtons';
 import useSchoolStore from '../../../store/schoolStore';
 import { moveItem } from '../../../utils/reorder';
+import { CropIcon, loadCropSrc } from '../../../components/common/ImageThumbnailCard';
 import toast from 'react-hot-toast';
 
 const hexToRgba = (hex, alpha) => {
@@ -284,11 +285,48 @@ const Faculty = () => {
                                 {/* Photo */}
                                 <div>
                                     <div onClick={() => document.getElementById(`photo-${m.id}`).click()}
-                                        style={{ width: '110px', height: '110px', borderRadius: '12px', border: m.photo ? '1px solid #e2e8f0' : '1.5px dashed #e2e8f0', boxShadow: m.photo ? '0 6px 18px rgba(15,23,42,0.08)' : 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', background: m.photo ? 'transparent' : '#fafafa' }}>
+                                        style={{ position: 'relative', width: '110px', height: '110px', borderRadius: '12px', border: m.photo ? '1px solid #e2e8f0' : '1.5px dashed #e2e8f0', boxShadow: m.photo ? '0 6px 18px rgba(15,23,42,0.08)' : 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', background: m.photo ? 'transparent' : '#fafafa' }}>
                                         {uploading[m.id] ? (
                                             <div style={{ width: '22px', height: '22px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
                                         ) : m.photo ? (
-                                            <img src={m.photo} alt={m.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                                <img src={m.photo} alt={m.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                <button
+                                                    type="button"
+                                                    onClick={async (e) => {
+                                                        e.stopPropagation();
+                                                        const crop = await loadCropSrc(m.photo);
+                                                        setCropTarget({ mode: 'member', id: m.id, src: crop });
+                                                    }}
+                                                    style={{
+                                                        position: 'absolute', top: '5px', left: '5px',
+                                                        padding: '3px 7px', borderRadius: '5px',
+                                                        background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(4px)',
+                                                        color: '#fff', fontSize: '9.5px', fontWeight: 600,
+                                                        border: '1px solid rgba(255,255,255,0.2)',
+                                                        display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', zIndex: 2
+                                                    }}
+                                                >
+                                                    <CropIcon size={11} color="#fff" />
+                                                    <span>Recrop</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        updateMember(m.id, 'photo', '');
+                                                    }}
+                                                    style={{
+                                                        position: 'absolute', top: '5px', right: '5px',
+                                                        width: '20px', height: '20px', borderRadius: '50%',
+                                                        background: 'rgba(239,68,68,0.85)',
+                                                        color: '#fff', border: 'none', cursor: 'pointer',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', zIndex: 2
+                                                    }}
+                                                >
+                                                    ×
+                                                </button>
+                                            </div>
                                         ) : (
                                             <span style={{ fontSize: '13px', color: '#94a3b8' }}>📷 Photo</span>
                                         )}

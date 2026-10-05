@@ -9,6 +9,7 @@ import HeadingStyleField from '../../../components/common/HeadingStyleField';
 import ReorderButtons from '../../../components/common/ReorderButtons';
 import useSchoolStore from '../../../store/schoolStore';
 import { moveItem } from '../../../utils/reorder';
+import { CropIcon, loadCropSrc } from '../../../components/common/ImageThumbnailCard';
 import toast from 'react-hot-toast';
 
 const hexToRgba = (hex, alpha) => {
@@ -422,11 +423,48 @@ const TestimonialCard = ({ testimonial, index, length, onMove, onUpdate, onRemov
                 <div>
                     <label style={labelStyle}>Photo (optional)</label>
                     <div className="test-photobox" onClick={() => document.getElementById(`test-photo-${testimonial.id}`).click()}
-                        style={{ height: '140px', borderRadius: '12px', border: testimonial.photo ? '1px solid #e2e8f0' : '1.5px dashed #e2e8f0', boxShadow: testimonial.photo ? '0 6px 18px rgba(15,23,42,0.08)' : 'none', background: testimonial.photo ? 'transparent' : '#fafafa', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                        style={{ position: 'relative', height: '140px', borderRadius: '12px', border: testimonial.photo ? '1px solid #e2e8f0' : '1.5px dashed #e2e8f0', boxShadow: testimonial.photo ? '0 6px 18px rgba(15,23,42,0.08)' : 'none', background: testimonial.photo ? 'transparent' : '#fafafa', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                         {uploading ? (
                             <div style={{ width: '20px', height: '20px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
                         ) : testimonial.photo ? (
-                            <img src={testimonial.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                <img src={testimonial.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <button
+                                    type="button"
+                                    onClick={async (e) => {
+                                        e.stopPropagation();
+                                        const crop = await loadCropSrc(testimonial.photo);
+                                        setCropSrc(crop);
+                                    }}
+                                    style={{
+                                        position: 'absolute', top: '6px', left: '6px',
+                                        padding: '3px 8px', borderRadius: '6px',
+                                        background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(4px)',
+                                        color: '#fff', fontSize: '10px', fontWeight: 600,
+                                        border: '1px solid rgba(255,255,255,0.2)',
+                                        display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', zIndex: 2
+                                    }}
+                                >
+                                    <CropIcon size={12} color="#fff" />
+                                    <span>Recrop</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onUpdate('photo', '');
+                                    }}
+                                    style={{
+                                        position: 'absolute', top: '6px', right: '6px',
+                                        width: '22px', height: '22px', borderRadius: '50%',
+                                        background: 'rgba(239,68,68,0.85)',
+                                        color: '#fff', border: 'none', cursor: 'pointer',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', zIndex: 2
+                                    }}
+                                >
+                                    ×
+                                </button>
+                            </div>
                         ) : (
                             <span style={{ fontSize: '12px', color: '#94a3b8' }}>👤 Upload</span>
                         )}
@@ -530,9 +568,46 @@ const VideoTestimonialCard = ({ testimonial, index, length, onMove, onUpdate, on
                 {uploading ? (
                     <div style={{ width: '18px', height: '18px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
                 ) : testimonial.thumbnail ? (
-                    <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill={tc.primary}><path d="M8 5v14l11-7z" /></svg>
-                    </div>
+                    <>
+                        <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill={tc.primary}><path d="M8 5v14l11-7z" /></svg>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={async (e) => {
+                                e.stopPropagation();
+                                const crop = await loadCropSrc(testimonial.thumbnail);
+                                setCropSrc(crop);
+                            }}
+                            style={{
+                                position: 'absolute', top: '6px', left: '6px',
+                                padding: '3px 8px', borderRadius: '6px',
+                                background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(4px)',
+                                color: '#fff', fontSize: '10px', fontWeight: 600,
+                                border: '1px solid rgba(255,255,255,0.2)',
+                                display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', zIndex: 2
+                            }}
+                        >
+                            <CropIcon size={12} color="#fff" />
+                            <span>Recrop</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onUpdate('thumbnail', '');
+                            }}
+                            style={{
+                                position: 'absolute', top: '6px', right: '6px',
+                                width: '22px', height: '22px', borderRadius: '50%',
+                                background: 'rgba(239,68,68,0.85)',
+                                color: '#fff', border: 'none', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', zIndex: 2
+                            }}
+                        >
+                            ×
+                        </button>
+                    </>
                 ) : (
                     <span style={{ fontSize: '11px', color: '#94a3b8' }}>🎬 Upload Thumbnail</span>
                 )}

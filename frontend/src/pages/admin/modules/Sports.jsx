@@ -7,6 +7,7 @@ import ImageCropModal from '../../../components/common/ImageCropModal';
 import ItalicToggle from '../../../components/common/ItalicToggle';
 import HeadingStyleField from '../../../components/common/HeadingStyleField';
 import ReorderButtons from '../../../components/common/ReorderButtons';
+import ImageThumbnailCard, { CropIcon, loadCropSrc } from '../../../components/common/ImageThumbnailCard';
 import ImageSizeHint from '../../../components/admin/ImageSizeHint';
 import useSchoolStore from '../../../store/schoolStore';
 import { moveItem } from '../../../utils/reorder';
@@ -169,18 +170,23 @@ const Sports = () => {
     const onCropConfirmed = async (croppedFile) => {
         const target = cropTarget;
         setCropTarget(null);
-        const key = target.mode === 'grid' ? target.field
+        const key = target.mode === 'grid' || target.mode === 'recrop-grid' ? target.field
             : target.mode === 'collageSlot' ? `collage-${target.idx}`
-            : target.mode === 'collageExtra' ? 'collage-extra'
-            : target.mode === 'sport' ? `sport-${target.id}`
-            : target.mode === 'event' ? `event-${target.id}`
-            : target.mode === 'club' ? `club-${target.id}`
+            : target.mode === 'collageExtra' || target.mode === 'recrop-collageExtra' ? 'collage-extra'
+            : target.mode === 'sport' || target.mode === 'recrop-sport' ? `sport-${target.id}`
+            : target.mode === 'event' || target.mode === 'recrop-event' ? `event-${target.id}`
+            : target.mode === 'club' || target.mode === 'recrop-club' ? `club-${target.id}`
             : target.mode === 'proud' ? `proud-${target.id}`
             : `cert-${target.id}`;
         setUploading(prev => ({ ...prev, [key]: true }));
         try {
             const res = await uploadContentImageApi(croppedFile);
-            if (target.mode === 'grid') {
+            if (target.mode === 'recrop-grid') {
+                const current = [...(content[activePage][target.field] || [])];
+                current[target.index] = res.data.url;
+                updateField(target.field, current);
+                toast.success('Image updated!');
+            } else if (target.mode === 'grid') {
                 const current = content[activePage][target.field] || [];
                 updateField(target.field, [...current, res.data.url]);
             } else if (target.mode === 'collageSlot') {
@@ -190,11 +196,31 @@ const Sports = () => {
                 while (current.length <= target.idx) current.push('');
                 current[target.idx] = res.data.url;
                 updateField('collageImages', { ...collageImages, [layout]: current });
+                toast.success('Slot updated!');
+            } else if (target.mode === 'recrop-collageExtra') {
+                const layout = content.sportsAt.collageLayout || DEFAULT_COLLAGE_LAYOUT;
+                const collageImages = content.sportsAt.collageImages || emptyCollageImages();
+                const slotsCount = (COLLAGE_LAYOUTS[layout]?.slots || []).length;
+                const current = [...(collageImages[layout] || [])];
+                current[slotsCount + target.index] = res.data.url;
+                updateField('collageImages', { ...collageImages, [layout]: current });
+                toast.success('Image updated!');
             } else if (target.mode === 'collageExtra') {
                 const layout = content.sportsAt.collageLayout || DEFAULT_COLLAGE_LAYOUT;
                 const collageImages = content.sportsAt.collageImages || emptyCollageImages();
                 const current = [...(collageImages[layout] || [])];
                 updateField('collageImages', { ...collageImages, [layout]: [...current, res.data.url] });
+            } else if (target.mode === 'recrop-sport') {
+                const list = content[activePage].offeredSports || [];
+                const i = list.findIndex(s => s.id === target.id);
+                if (i !== -1) {
+                    const updated = [...list];
+                    const images = [...(updated[i].images || [])];
+                    images[target.index] = res.data.url;
+                    updated[i] = { ...updated[i], images };
+                    updateField('offeredSports', updated);
+                    toast.success('Image updated!');
+                }
             } else if (target.mode === 'sport') {
                 const list = content[activePage].offeredSports || [];
                 const i = list.findIndex(s => s.id === target.id);
@@ -203,6 +229,17 @@ const Sports = () => {
                     updated[i] = { ...updated[i], images: [...(updated[i].images || []), res.data.url] };
                     updateField('offeredSports', updated);
                 }
+            } else if (target.mode === 'recrop-event') {
+                const list = content[activePage].events || [];
+                const i = list.findIndex(e => e.id === target.id);
+                if (i !== -1) {
+                    const updated = [...list];
+                    const images = [...(updated[i].images || [])];
+                    images[target.index] = res.data.url;
+                    updated[i] = { ...updated[i], images };
+                    updateField('events', updated);
+                    toast.success('Image updated!');
+                }
             } else if (target.mode === 'event') {
                 const list = content[activePage].events || [];
                 const i = list.findIndex(e => e.id === target.id);
@@ -210,6 +247,17 @@ const Sports = () => {
                     const updated = [...list];
                     updated[i] = { ...updated[i], images: [...(updated[i].images || []), res.data.url] };
                     updateField('events', updated);
+                }
+            } else if (target.mode === 'recrop-club') {
+                const list = content[activePage].clubs || [];
+                const i = list.findIndex(c => c.id === target.id);
+                if (i !== -1) {
+                    const updated = [...list];
+                    const images = [...(updated[i].images || [])];
+                    images[target.index] = res.data.url;
+                    updated[i] = { ...updated[i], images };
+                    updateField('clubs', updated);
+                    toast.success('Image updated!');
                 }
             } else if (target.mode === 'club') {
                 const list = content[activePage].clubs || [];
@@ -276,18 +324,29 @@ const Sports = () => {
     };
 
     const ImageGrid = ({ field = 'images', label = 'Images', max = null }) => {
-        const count = (content[activePage][field] || []).length;
+        const list = content[activePage][field] || [];
+        const count = list.length;
         const atLimit = max != null && count >= max;
         return (
             <div>
                 <label style={labelStyle}>{label}{max != null ? ` — ${count} / ${max}` : ''}</label>
                 <div className="sports-grid-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '14px', marginBottom: '1.25rem' }}>
-                    {(content[activePage][field] || []).map((img, i) => (
-                        <div key={i} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', aspectRatio: '1' }}>
-                            <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            <button onClick={() => removeImage(i, field)}
-                                style={{ position: 'absolute', top: '6px', right: '6px', width: '24px', height: '24px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
-                        </div>
+                    {list.map((img, i) => (
+                        <ImageThumbnailCard
+                            key={i}
+                            src={img}
+                            index={i}
+                            total={list.length}
+                            aspect={1}
+                            onRecrop={async (src) => {
+                                const cropSrc = await loadCropSrc(src);
+                                setCropTarget({ src: cropSrc, aspect: 1, meta: { mode: 'recrop-grid', field, index: i } });
+                            }}
+                            onRemove={() => removeImage(i, field)}
+                            onMove={(dir) => {
+                                updateField(field, moveItem(list, i, dir));
+                            }}
+                        />
                     ))}
                 </div>
                 {atLimit ? (
@@ -364,9 +423,28 @@ const Sports = () => {
                                     ) : url ? (
                                         <>
                                             <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                                            <div style={{ position: 'absolute', top: '6px', left: '6px', padding: '2px 8px', background: 'rgba(0,0,0,0.55)', borderRadius: '6px', fontSize: '10px', color: '#fff', fontWeight: 600 }}>{SHAPE_LABELS[slot.shape]}</div>
+                                            <div style={{ position: 'absolute', bottom: '6px', left: '6px', padding: '2px 8px', background: 'rgba(0,0,0,0.55)', borderRadius: '6px', fontSize: '10px', color: '#fff', fontWeight: 600 }}>{SHAPE_LABELS[slot.shape]}</div>
+                                            <button
+                                                type="button"
+                                                onClick={async (e) => {
+                                                    e.stopPropagation();
+                                                    const cropSrc = await loadCropSrc(url);
+                                                    setCropTarget({ src: cropSrc, aspect: null, meta: { mode: 'collageSlot', idx: i, aspect: null } });
+                                                }}
+                                                style={{
+                                                    position: 'absolute', top: '6px', left: '6px',
+                                                    padding: '3px 8px', borderRadius: '6px',
+                                                    background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(4px)',
+                                                    color: '#fff', fontSize: '10px', fontWeight: 600,
+                                                    border: '1px solid rgba(255,255,255,0.2)',
+                                                    display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', zIndex: 3
+                                                }}
+                                            >
+                                                <CropIcon size={12} color="#fff" />
+                                                <span>Recrop</span>
+                                            </button>
                                             <button onClick={e => { e.stopPropagation(); clearCollageSlot(i); }}
-                                                style={{ position: 'absolute', top: '6px', right: '6px', width: '22px', height: '22px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+                                                style={{ position: 'absolute', top: '6px', right: '6px', width: '22px', height: '22px', background: 'rgba(239,68,68,0.85)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3 }}>×</button>
                                         </>
                                     ) : (
                                         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', padding: '6px', textAlign: 'center' }}>
@@ -401,9 +479,28 @@ const Sports = () => {
                                     ) : url ? (
                                         <>
                                             <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                                            <div style={{ position: 'absolute', top: '6px', left: '6px', padding: '2px 8px', background: 'rgba(0,0,0,0.55)', borderRadius: '6px', fontSize: '10px', color: '#fff', fontWeight: 600 }}>{SHAPE_LABELS[slot.shape]}</div>
+                                            <div style={{ position: 'absolute', bottom: '6px', left: '6px', padding: '2px 8px', background: 'rgba(0,0,0,0.55)', borderRadius: '6px', fontSize: '10px', color: '#fff', fontWeight: 600 }}>{SHAPE_LABELS[slot.shape]}</div>
+                                            <button
+                                                type="button"
+                                                onClick={async (e) => {
+                                                    e.stopPropagation();
+                                                    const cropSrc = await loadCropSrc(url);
+                                                    setCropTarget({ src: cropSrc, aspect: null, meta: { mode: 'collageSlot', idx: i, aspect: null } });
+                                                }}
+                                                style={{
+                                                    position: 'absolute', top: '6px', left: '6px',
+                                                    padding: '3px 8px', borderRadius: '6px',
+                                                    background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(4px)',
+                                                    color: '#fff', fontSize: '10px', fontWeight: 600,
+                                                    border: '1px solid rgba(255,255,255,0.2)',
+                                                    display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', zIndex: 3
+                                                }}
+                                            >
+                                                <CropIcon size={12} color="#fff" />
+                                                <span>Recrop</span>
+                                            </button>
                                             <button onClick={e => { e.stopPropagation(); clearCollageSlot(i); }}
-                                                style={{ position: 'absolute', top: '6px', right: '6px', width: '22px', height: '22px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+                                                style={{ position: 'absolute', top: '6px', right: '6px', width: '22px', height: '22px', background: 'rgba(239,68,68,0.85)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3 }}>×</button>
                                         </>
                                     ) : (
                                         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', padding: '6px', textAlign: 'center' }}>
@@ -440,11 +537,25 @@ const Sports = () => {
                         <p style={{ fontSize: '10.5px', color: '#94a3b8', marginBottom: '10px' }}>Shown in a plain row below the collage — freely cropped, no fixed shape. JPG, PNG, WEBP · Max 1MB each.</p>
                         <div className="sports-grid-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '14px', marginBottom: '1.25rem' }}>
                             {extraImages.map((img, i) => (
-                                <div key={i} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', aspectRatio: '1' }}>
-                                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                    <button onClick={() => removeExtraImage(i)}
-                                        style={{ position: 'absolute', top: '6px', right: '6px', width: '24px', height: '24px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
-                                </div>
+                                <ImageThumbnailCard
+                                    key={i}
+                                    src={img}
+                                    index={i}
+                                    total={extraImages.length}
+                                    aspect={null}
+                                    onRecrop={async (src) => {
+                                        const cropSrc = await loadCropSrc(src);
+                                        setCropTarget({ src: cropSrc, aspect: null, meta: { mode: 'recrop-collageExtra', index: i } });
+                                    }}
+                                    onRemove={() => removeExtraImage(i)}
+                                    onMove={(dir) => {
+                                        const currentExtras = [...extraImages];
+                                        const reordered = moveItem(currentExtras, i, dir);
+                                        const currentAll = [...images];
+                                        currentAll.splice(slots.length, currentExtras.length, ...reordered);
+                                        updateField('collageImages', { ...collageImages, [layout]: currentAll });
+                                    }}
+                                />
                             ))}
                         </div>
                         <div onClick={() => document.getElementById('collage-extra-input').click()}
@@ -711,6 +822,14 @@ const Sports = () => {
                                     updated[idx] = { ...updated[idx], images: updated[idx].images.filter((_, i) => i !== imgIdx) };
                                     updateField('offeredSports', updated);
                                 }}
+                                onRecropImage={(imgIdx, src) => {
+                                    setCropTarget({ src, aspect: 1, meta: { mode: 'recrop-sport', id: sp.id, index: imgIdx } });
+                                }}
+                                onMoveImage={(imgIdx, dir) => {
+                                    const updated = [...pageData.offeredSports];
+                                    updated[idx] = { ...updated[idx], images: moveItem(updated[idx].images || [], imgIdx, dir) };
+                                    updateField('offeredSports', updated);
+                                }}
                                 uploading={uploading[`sport-${sp.id}`]}
                             />
                         ))}
@@ -760,6 +879,14 @@ const Sports = () => {
                                 onRemoveImage={(imgIdx) => {
                                     const updated = [...pageData.clubs];
                                     updated[idx] = { ...updated[idx], images: updated[idx].images.filter((_, i) => i !== imgIdx) };
+                                    updateField('clubs', updated);
+                                }}
+                                onRecropImage={(imgIdx, src) => {
+                                    setCropTarget({ src, aspect: 1, meta: { mode: 'recrop-club', id: cl.id, index: imgIdx } });
+                                }}
+                                onMoveImage={(imgIdx, dir) => {
+                                    const updated = [...pageData.clubs];
+                                    updated[idx] = { ...updated[idx], images: moveItem(updated[idx].images || [], imgIdx, dir) };
                                     updateField('clubs', updated);
                                 }}
                                 uploading={uploading[`club-${cl.id}`]}
@@ -813,6 +940,14 @@ const Sports = () => {
                                     updated[idx] = { ...updated[idx], images: updated[idx].images.filter((_, i) => i !== imgIdx) };
                                     updateField('events', updated);
                                 }}
+                                onRecropImage={(imgIdx, src) => {
+                                    setCropTarget({ src, aspect: 1, meta: { mode: 'recrop-event', id: ev.id, index: imgIdx } });
+                                }}
+                                onMoveImage={(imgIdx, dir) => {
+                                    const updated = [...pageData.events];
+                                    updated[idx] = { ...updated[idx], images: moveItem(updated[idx].images || [], imgIdx, dir) };
+                                    updateField('events', updated);
+                                }}
                                 uploading={uploading[`event-${ev.id}`]}
                             />
                         ))}
@@ -863,6 +998,10 @@ const Sports = () => {
                                         }}
                                         onRemove={() => updateField('certifications', pageData.certifications.filter((_, idx) => idx !== i))}
                                         onUpload={(file) => startCropQueue([file], { mode: 'cert', id: cert.id })}
+                                        onRecrop={async (imgSrc) => {
+                                            const cropSrc = await loadCropSrc(imgSrc);
+                                            setCropTarget({ src: cropSrc, aspect: 4 / 3, meta: { mode: 'cert', id: cert.id } });
+                                        }}
                                         uploading={uploading[`cert-${cert.id}`]}
                                     />
                                 ))}
@@ -888,6 +1027,10 @@ const Sports = () => {
                                         }}
                                         onRemove={() => updateField('proud', pageData.proud.filter((_, idx) => idx !== i))}
                                         onAddImage={(file) => startCropQueue([file], { mode: 'proud', id: stu.id })}
+                                        onRecrop={async (imgSrc) => {
+                                            const cropSrc = await loadCropSrc(imgSrc);
+                                            setCropTarget({ src: cropSrc, aspect: 1, meta: { mode: 'proud', id: stu.id } });
+                                        }}
                                         uploading={uploading[`proud-${stu.id}`]}
                                     />
                                 ))}
@@ -934,7 +1077,7 @@ const Sports = () => {
 };
 
 // ── Event Card Component (used for Sporting Events) ──
-const EventCard = ({ event, index, length, onMove, onUpdate, onRemove, onAddImages, onRemoveImage, uploading }) => {
+const EventCard = ({ event, index, length, onMove, onUpdate, onRemove, onAddImages, onRemoveImage, onRecropImage, onMoveImage, uploading }) => {
     const { tc } = useSchoolStore();
     const inputStyle = { width: '100%', padding: '10px 13px', border: '1px solid #e5e9f0', borderRadius: '10px', fontSize: '13px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', background: '#f8fafc', transition: 'border 0.2s, box-shadow 0.2s, background 0.2s' };
     const labelStyle = { display: 'block', fontSize: '11px', fontWeight: 600, color: '#64748b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' };
@@ -963,10 +1106,21 @@ const EventCard = ({ event, index, length, onMove, onUpdate, onRemove, onAddImag
                     <p style={{ fontSize: '10.5px', color: '#94a3b8', marginBottom: '8px' }}>Square photos work best · JPG, PNG, WEBP · Max 1MB each · Up to {MAX_SPORT_EVENT_IMAGES} images.</p>
                     <div className="sports-grid-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '12px', marginBottom: '10px' }}>
                         {(event.images || []).map((img, i) => (
-                            <div key={i} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', aspectRatio: '1' }}>
-                                <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                <button onClick={() => onRemoveImage(i)} style={{ position: 'absolute', top: '4px', right: '4px', width: '20px', height: '20px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', fontSize: '12px' }}>×</button>
-                            </div>
+                            <ImageThumbnailCard
+                                key={i}
+                                src={img}
+                                index={i}
+                                total={(event.images || []).length}
+                                aspect={1}
+                                onRecrop={async (src) => {
+                                    const cropSrc = await loadCropSrc(src);
+                                    if (onRecropImage) onRecropImage(i, cropSrc);
+                                }}
+                                onRemove={() => onRemoveImage(i)}
+                                onMove={(dir) => {
+                                    if (onMoveImage) onMoveImage(i, dir);
+                                }}
+                            />
                         ))}
                     </div>
                     {(event.images || []).length >= MAX_SPORT_EVENT_IMAGES ? (
@@ -989,7 +1143,7 @@ const EventCard = ({ event, index, length, onMove, onUpdate, onRemove, onAddImag
 };
 
 // ── Sport Item Card Component (used for Sports Offered) — identical pattern to EventCard, relabeled ──
-const SportItemCard = ({ sport, index, length, onMove, onUpdate, onRemove, onAddImages, onRemoveImage, uploading }) => {
+const SportItemCard = ({ sport, index, length, onMove, onUpdate, onRemove, onAddImages, onRemoveImage, onRecropImage, onMoveImage, uploading }) => {
     const { tc } = useSchoolStore();
     const inputStyle = { width: '100%', padding: '10px 13px', border: '1px solid #e5e9f0', borderRadius: '10px', fontSize: '13px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', background: '#f8fafc', transition: 'border 0.2s, box-shadow 0.2s, background 0.2s' };
     const labelStyle = { display: 'block', fontSize: '11px', fontWeight: 600, color: '#64748b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' };
@@ -1018,10 +1172,21 @@ const SportItemCard = ({ sport, index, length, onMove, onUpdate, onRemove, onAdd
                     <p style={{ fontSize: '10.5px', color: '#94a3b8', marginBottom: '8px' }}>Square photos work best · JPG, PNG, WEBP · Max 1MB each · Up to {MAX_SPORT_EVENT_IMAGES} images.</p>
                     <div className="sports-grid-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '12px', marginBottom: '10px' }}>
                         {(sport.images || []).map((img, i) => (
-                            <div key={i} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', aspectRatio: '1' }}>
-                                <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                <button onClick={() => onRemoveImage(i)} style={{ position: 'absolute', top: '4px', right: '4px', width: '20px', height: '20px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', fontSize: '12px' }}>×</button>
-                            </div>
+                            <ImageThumbnailCard
+                                key={i}
+                                src={img}
+                                index={i}
+                                total={(sport.images || []).length}
+                                aspect={1}
+                                onRecrop={async (src) => {
+                                    const cropSrc = await loadCropSrc(src);
+                                    if (onRecropImage) onRecropImage(i, cropSrc);
+                                }}
+                                onRemove={() => onRemoveImage(i)}
+                                onMove={(dir) => {
+                                    if (onMoveImage) onMoveImage(i, dir);
+                                }}
+                            />
                         ))}
                     </div>
                     {(sport.images || []).length >= MAX_SPORT_EVENT_IMAGES ? (
@@ -1044,7 +1209,7 @@ const SportItemCard = ({ sport, index, length, onMove, onUpdate, onRemove, onAdd
 };
 
 // ── Club Card Component (used for Clubs & Activities) — identical pattern to SportItemCard/EventCard, relabeled ──
-const ClubCard = ({ club, index, length, onMove, onUpdate, onRemove, onAddImages, onRemoveImage, uploading }) => {
+const ClubCard = ({ club, index, length, onMove, onUpdate, onRemove, onAddImages, onRemoveImage, onRecropImage, onMoveImage, uploading }) => {
     const { tc } = useSchoolStore();
     const inputStyle = { width: '100%', padding: '10px 13px', border: '1px solid #e5e9f0', borderRadius: '10px', fontSize: '13px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', background: '#f8fafc', transition: 'border 0.2s, box-shadow 0.2s, background 0.2s' };
     const labelStyle = { display: 'block', fontSize: '11px', fontWeight: 600, color: '#64748b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' };
@@ -1073,10 +1238,21 @@ const ClubCard = ({ club, index, length, onMove, onUpdate, onRemove, onAddImages
                     <p style={{ fontSize: '10.5px', color: '#94a3b8', marginBottom: '8px' }}>Square photos work best · JPG, PNG, WEBP · Max 1MB each · Up to {MAX_SPORT_EVENT_IMAGES} images.</p>
                     <div className="sports-grid-2col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '12px', marginBottom: '10px' }}>
                         {(club.images || []).map((img, i) => (
-                            <div key={i} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', aspectRatio: '1' }}>
-                                <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                <button onClick={() => onRemoveImage(i)} style={{ position: 'absolute', top: '4px', right: '4px', width: '20px', height: '20px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', fontSize: '12px' }}>×</button>
-                            </div>
+                            <ImageThumbnailCard
+                                key={i}
+                                src={img}
+                                index={i}
+                                total={(club.images || []).length}
+                                aspect={1}
+                                onRecrop={async (src) => {
+                                    const cropSrc = await loadCropSrc(src);
+                                    if (onRecropImage) onRecropImage(i, cropSrc);
+                                }}
+                                onRemove={() => onRemoveImage(i)}
+                                onMove={(dir) => {
+                                    if (onMoveImage) onMoveImage(i, dir);
+                                }}
+                            />
                         ))}
                     </div>
                     {(club.images || []).length >= MAX_SPORT_EVENT_IMAGES ? (
@@ -1099,17 +1275,56 @@ const ClubCard = ({ club, index, length, onMove, onUpdate, onRemove, onAddImages
 };
 
 // ── Certification Card ──
-const CertCard = ({ cert, index, length, onMove, onUpdate, onRemove, onUpload, uploading }) => {
+const CertCard = ({ cert, index, length, onMove, onUpdate, onRemove, onUpload, onRecrop, uploading }) => {
     const { tc } = useSchoolStore();
     const inputStyle = { width: '100%', padding: '8px 10px', border: '1px solid #e5e9f0', borderRadius: '8px', fontSize: '12px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', background: '#f8fafc', transition: 'border 0.2s, box-shadow 0.2s, background 0.2s' };
     return (
         <div style={{ border: '0.5px solid #f1f5f9', borderRadius: '12px', overflow: 'hidden' }}>
-            <div onClick={() => document.getElementById(`cert-img-${cert.id}`).click()}
-                style={{ height: '120px', background: '#fafafa', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                {uploading ? <div style={{ width: '20px', height: '20px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                    : cert.image ? <img src={cert.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: '12px', color: '#94a3b8' }}>📜 Upload</span>}
+            <div style={{ position: 'relative', height: '120px', background: '#fafafa', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                {uploading ? (
+                    <div style={{ width: '20px', height: '20px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                ) : cert.image ? (
+                    <>
+                        <img src={cert.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <button
+                            type="button"
+                            onClick={async (e) => {
+                                e.stopPropagation();
+                                if (onRecrop) onRecrop(cert.image);
+                            }}
+                            style={{
+                                position: 'absolute', top: '6px', left: '6px',
+                                padding: '3px 8px', borderRadius: '6px',
+                                background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(4px)',
+                                color: '#fff', fontSize: '10px', fontWeight: 600,
+                                border: '1px solid rgba(255,255,255,0.2)',
+                                display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', zIndex: 2
+                            }}
+                        >
+                            <CropIcon size={12} color="#fff" />
+                            <span>Recrop</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => document.getElementById(`cert-img-${cert.id}`).click()}
+                            style={{
+                                position: 'absolute', top: '6px', right: '6px',
+                                padding: '3px 8px', borderRadius: '6px',
+                                background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(4px)',
+                                color: '#fff', fontSize: '10px', fontWeight: 600,
+                                border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', zIndex: 2
+                            }}
+                        >
+                            Replace
+                        </button>
+                    </>
+                ) : (
+                    <div onClick={() => document.getElementById(`cert-img-${cert.id}`).click()} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                        <span style={{ fontSize: '12px', color: '#94a3b8' }}>📜 Upload</span>
+                    </div>
+                )}
             </div>
-            <input id={`cert-img-${cert.id}`} type="file" accept="image/*" onChange={e => { const f = e.target.files[0]; if (f) onUpload(f); }} style={{ display: 'none' }} />
+            <input id={`cert-img-${cert.id}`} type="file" accept="image/*" onChange={e => { const f = e.target.files[0]; e.target.value = ''; if (f) onUpload(f); }} style={{ display: 'none' }} />
             <div style={{ padding: '10px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <input type="text" value={cert.title} onChange={e => onUpdate('title', e.target.value)} placeholder="Title" style={inputStyle} />
                 <input type="text" value={cert.info} onChange={e => onUpdate('info', e.target.value)} placeholder="Basic info" style={inputStyle} />
@@ -1123,21 +1338,54 @@ const CertCard = ({ cert, index, length, onMove, onUpdate, onRemove, onUpload, u
 };
 
 // ── Making Us Proud Card ──
-// Photo upload routes through the parent's shared cropTarget/ImageCropModal flow
-// (onAddImage) rather than rendering its own modal in-place — a modal rendered
-// this deep inside `.sports-section` (which has a `transform`-based CSS
-// animation, still applying `translateY(0)` via fill-mode: forwards even after
-// it finishes) becomes a containing block for `position: fixed`, so a locally
-// rendered modal opens pinned to that section's box instead of the viewport.
-const ProudCard = ({ student, index, length, onMove, onUpdate, onRemove, onAddImage, uploading }) => {
+const ProudCard = ({ student, index, length, onMove, onUpdate, onRemove, onAddImage, onRecrop, uploading }) => {
     const { tc } = useSchoolStore();
     const inputStyle = { width: '100%', padding: '8px 10px', border: '1px solid #e5e9f0', borderRadius: '8px', fontSize: '12px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', background: '#f8fafc', transition: 'border 0.2s, box-shadow 0.2s, background 0.2s' };
     return (
         <div style={{ border: '0.5px solid #f1f5f9', borderRadius: '12px', overflow: 'hidden' }}>
-            <div onClick={() => document.getElementById(`proud-img-${student.id}`).click()}
-                style={{ height: '120px', background: '#fafafa', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                {uploading ? <div style={{ width: '20px', height: '20px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                    : student.photo ? <img src={student.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: '12px', color: '#94a3b8' }}>👤 Upload</span>}
+            <div style={{ position: 'relative', height: '120px', background: '#fafafa', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                {uploading ? (
+                    <div style={{ width: '20px', height: '20px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                ) : student.photo ? (
+                    <>
+                        <img src={student.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <button
+                            type="button"
+                            onClick={async (e) => {
+                                e.stopPropagation();
+                                if (onRecrop) onRecrop(student.photo);
+                            }}
+                            style={{
+                                position: 'absolute', top: '6px', left: '6px',
+                                padding: '3px 8px', borderRadius: '6px',
+                                background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(4px)',
+                                color: '#fff', fontSize: '10px', fontWeight: 600,
+                                border: '1px solid rgba(255,255,255,0.2)',
+                                display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', zIndex: 2
+                            }}
+                        >
+                            <CropIcon size={12} color="#fff" />
+                            <span>Recrop</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => document.getElementById(`proud-img-${student.id}`).click()}
+                            style={{
+                                position: 'absolute', top: '6px', right: '6px',
+                                padding: '3px 8px', borderRadius: '6px',
+                                background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(4px)',
+                                color: '#fff', fontSize: '10px', fontWeight: 600,
+                                border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', zIndex: 2
+                            }}
+                        >
+                            Replace
+                        </button>
+                    </>
+                ) : (
+                    <div onClick={() => document.getElementById(`proud-img-${student.id}`).click()} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                        <span style={{ fontSize: '12px', color: '#94a3b8' }}>👤 Upload</span>
+                    </div>
+                )}
             </div>
             <input id={`proud-img-${student.id}`} type="file" accept="image/*"
                 onChange={e => {

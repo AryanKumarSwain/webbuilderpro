@@ -15,6 +15,7 @@ import HeadingStyleField from "../../../components/common/HeadingStyleField";
 import ReorderButtons from "../../../components/common/ReorderButtons";
 import useSchoolStore from "../../../store/schoolStore";
 import { moveItem } from "../../../utils/reorder";
+import ImageThumbnailCard, { CropIcon, loadCropSrc } from "../../../components/common/ImageThumbnailCard";
 
 const hexToRgba = (hex, alpha) => {
   const h = hex.replace("#", "");
@@ -55,7 +56,7 @@ const defaultContent = {
   awards: [],
 };
 
-const CROP_ASPECTS = { history: null, leader: null, historyGallery: null, affiliation: null, award: null };
+const CROP_ASPECTS = { history: null, leader: null, historyGallery: null, "recrop-historyGallery": null, affiliation: null, award: null };
 
 const AboutUs = () => {
   const { tc, bc } = useSchoolStore();
@@ -261,6 +262,10 @@ const AboutUs = () => {
       else if (target.mode === "award") updateAward(target.id, "image", res.data.url);
       else if (target.mode === "historyGallery") {
         setContent((prev) => ({ ...prev, historyGalleryImages: [...(prev.historyGalleryImages || []), res.data.url] }));
+      } else if (target.mode === "recrop-historyGallery") {
+        const updated = [...(content.historyGalleryImages || [])];
+        updated[target.index] = res.data.url;
+        setContent((prev) => ({ ...prev, historyGalleryImages: updated }));
       }
       toast.success("Image uploaded!");
     } catch (e) {
@@ -435,7 +440,7 @@ const AboutUs = () => {
     },
   ];
 
-  const CropImageBox = ({ label, value, uploadKey, aspectHint, onFileSelected, onRemove, previewAspect, previewMaxWidth, boxClassName }) => {
+  const CropImageBox = ({ label, value, uploadKey, aspectHint, onFileSelected, onRecrop, onRemove, previewAspect, previewMaxWidth, boxClassName }) => {
     const isUploading = uploading[uploadKey];
     // previewAspect/previewMaxWidth make the field preview the same shape (e.g. portrait 3/4)
     // as the image renders on the live site, instead of the default wide banner box.
@@ -477,9 +482,32 @@ const AboutUs = () => {
               >
                 <span style={{ color: "#fff", fontSize: "12px", fontWeight: 600 }}>Click to change</span>
               </div>
+              {onRecrop && (
+                <button
+                  type="button"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    const cropSrc = await loadCropSrc(value);
+                    onRecrop(cropSrc);
+                  }}
+                  style={{
+                    position: "absolute", top: "8px", left: "8px",
+                    padding: "3px 8px", borderRadius: "6px",
+                    background: "rgba(15,23,42,0.75)", backdropFilter: "blur(4px)",
+                    color: "#fff", fontSize: "10.5px", fontWeight: 600,
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    display: "flex", alignItems: "center", gap: "4px",
+                    cursor: "pointer", zIndex: 3
+                  }}
+                  title="Recrop image"
+                >
+                  <CropIcon size={12} color="#fff" />
+                  <span>Recrop</span>
+                </button>
+              )}
               {onRemove && (
                 <button type="button" onClick={(e) => { e.stopPropagation(); onRemove(); }}
-                  style={{ position: "absolute", top: "8px", right: "8px", width: "24px", height: "24px", background: "rgba(15,23,42,0.7)", color: "#fff", border: "none", borderRadius: "50%", cursor: "pointer", fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                  style={{ position: "absolute", top: "8px", right: "8px", width: "24px", height: "24px", background: "rgba(15,23,42,0.7)", color: "#fff", border: "none", borderRadius: "50%", cursor: "pointer", fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 3 }}
                   title="Remove image">×</button>
               )}
             </div>
@@ -839,6 +867,7 @@ const AboutUs = () => {
                     uploadKey="history"
                     aspectHint="Crop is freely adjustable from every side after upload — pick exactly how much to keep · Shows beside the history text"
                     onFileSelected={(file) => setCropTarget({ mode: "history", src: URL.createObjectURL(file) })}
+                    onRecrop={(cropSrc) => setCropTarget({ mode: "history", src: cropSrc })}
                     onRemove={() => handleChange("historyImage", "")}
                     previewAspect="3/4"
                     previewMaxWidth="260px"
@@ -879,15 +908,24 @@ const AboutUs = () => {
                 </p>
                 <div className="au-gallery-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "14px", marginBottom: "1.25rem" }}>
                   {(content.historyGalleryImages || []).map((img, i) => (
-                    <div key={i} style={{ position: "relative", borderRadius: "10px", overflow: "hidden", aspectRatio: "16/9" }}>
-                      <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      <button
-                        onClick={() => removeHistoryGalleryImage(i)}
-                        style={{ position: "absolute", top: "6px", right: "6px", width: "24px", height: "24px", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", borderRadius: "50%", cursor: "pointer", fontSize: "14px", display: "flex", alignItems: "center", justifyContent: "center" }}
-                      >
-                        ×
-                      </button>
-                    </div>
+                    <ImageThumbnailCard
+                      key={i}
+                      src={img}
+                      index={i}
+                      total={(content.historyGalleryImages || []).length}
+                      aspect={16 / 9}
+                      onRecrop={async (src) => {
+                        const cropSrc = await loadCropSrc(src);
+                        setCropTarget({ mode: "recrop-historyGallery", index: i, src: cropSrc });
+                      }}
+                      onRemove={() => removeHistoryGalleryImage(i)}
+                      onMove={(dir) => {
+                        setContent((prev) => ({
+                          ...prev,
+                          historyGalleryImages: moveItem(prev.historyGalleryImages || [], i, dir),
+                        }));
+                      }}
+                    />
                   ))}
                 </div>
                 {(content.historyGalleryImages || []).length < HISTORY_GALLERY_MAX && (
@@ -986,6 +1024,7 @@ const AboutUs = () => {
                       uploadKey={`leader-${m.id}`}
                       aspectHint="Portrait crop (4:5) after upload"
                       onFileSelected={(file) => setCropTarget({ mode: "leader", id: m.id, src: URL.createObjectURL(file) })}
+                      onRecrop={(cropSrc) => setCropTarget({ mode: "leader", id: m.id, src: cropSrc })}
                       onRemove={() => updateLeader(m.id, "photo", "")}
                       previewAspect="4/5"
                       previewMaxWidth="220px"
@@ -1173,6 +1212,7 @@ const AboutUs = () => {
                       uploadKey={`award-${item.id}`}
                       aspectHint="Square crop works best"
                       onFileSelected={(file) => setCropTarget({ mode: "award", id: item.id, src: URL.createObjectURL(file) })}
+                      onRecrop={(cropSrc) => setCropTarget({ mode: "award", id: item.id, src: cropSrc })}
                       onRemove={() => updateAward(item.id, "image", "")}
                       previewAspect="1/1"
                       previewMaxWidth="100%"
@@ -1284,6 +1324,7 @@ const AboutUs = () => {
                     uploadKey={`affiliation-${item.id}`}
                     aspectHint="Square crop works best (logo/badge/certificate)"
                     onFileSelected={(file) => setCropTarget({ mode: "affiliation", id: item.id, src: URL.createObjectURL(file) })}
+                    onRecrop={(cropSrc) => setCropTarget({ mode: "affiliation", id: item.id, src: cropSrc })}
                     onRemove={() => updateAffiliation(item.id, "image", "")}
                     previewAspect="1/1"
                     previewMaxWidth="160px"

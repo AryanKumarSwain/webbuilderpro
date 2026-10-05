@@ -8,6 +8,7 @@ import HeadingStyleField from '../../../components/common/HeadingStyleField';
 import ReorderButtons from '../../../components/common/ReorderButtons';
 import useSchoolStore from '../../../store/schoolStore';
 import { moveItem } from '../../../utils/reorder';
+import { CropIcon, loadCropSrc } from '../../../components/common/ImageThumbnailCard';
 import toast from 'react-hot-toast';
 
 const hexToRgba = (hex, alpha) => {
@@ -394,7 +395,44 @@ const Achievements = () => {
                                                 {uploading[photoKey] ? (
                                                     <div style={{ width: '22px', height: '22px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
                                                 ) : a.photo ? (
-                                                    <img src={a.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                                        <img src={a.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        <button
+                                                            type="button"
+                                                            onClick={async (e) => {
+                                                                e.stopPropagation();
+                                                                const cropSrc = await loadCropSrc(a.photo);
+                                                                setCropTarget({ mode: 'achievement', id: a.id, src: cropSrc });
+                                                            }}
+                                                            style={{
+                                                                position: 'absolute', top: '8px', left: '8px',
+                                                                padding: '3px 8px', borderRadius: '6px',
+                                                                background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(4px)',
+                                                                color: '#fff', fontSize: '10.5px', fontWeight: 600,
+                                                                border: '1px solid rgba(255,255,255,0.2)',
+                                                                display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', zIndex: 2
+                                                            }}
+                                                        >
+                                                            <CropIcon size={12} color="#fff" />
+                                                            <span>Recrop</span>
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                updateAchievement(a.id, 'photo', '');
+                                                            }}
+                                                            style={{
+                                                                position: 'absolute', top: '8px', right: '8px',
+                                                                width: '24px', height: '24px', borderRadius: '50%',
+                                                                background: 'rgba(239,68,68,0.85)',
+                                                                color: '#fff', border: 'none', cursor: 'pointer',
+                                                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', zIndex: 2
+                                                            }}
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </div>
                                                 ) : (
                                                     <span style={{ fontSize: '12px', color: '#94a3b8' }}>Click to upload</span>
                                                 )}
@@ -459,11 +497,48 @@ const Achievements = () => {
                         {content.certifications.map((c, ci) => (
                             <div key={c.id} className="ach-cert-card" style={{ border: '1px solid #f1f5f9', borderRadius: '14px', animationDelay: `${Math.min(ci, 8) * 0.05}s` }}>
                                 <div className="ach-cert-card-photo" onClick={() => document.getElementById(`cert-img-${c.id}`).click()}
-                                    style={{ height: '130px', background: '#fafbfc', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                    style={{ height: '130px', background: '#fafbfc', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
                                     {uploading[`cert-${c.id}`] ? (
                                         <div style={{ width: '20px', height: '20px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
                                     ) : c.image ? (
-                                        <img className="ach-cert-img" src={c.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                            <img className="ach-cert-img" src={c.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            <button
+                                                type="button"
+                                                onClick={async (e) => {
+                                                    e.stopPropagation();
+                                                    const cropSrc = await loadCropSrc(c.image);
+                                                    setCropTarget({ mode: 'cert', id: c.id, src: cropSrc });
+                                                }}
+                                                style={{
+                                                    position: 'absolute', top: '6px', left: '6px',
+                                                    padding: '3px 8px', borderRadius: '6px',
+                                                    background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(4px)',
+                                                    color: '#fff', fontSize: '10px', fontWeight: 600,
+                                                    border: '1px solid rgba(255,255,255,0.2)',
+                                                    display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', zIndex: 2
+                                                }}
+                                            >
+                                                <CropIcon size={12} color="#fff" />
+                                                <span>Recrop</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    updateCertification(c.id, 'image', '');
+                                                }}
+                                                style={{
+                                                    position: 'absolute', top: '6px', right: '6px',
+                                                    width: '22px', height: '22px', borderRadius: '50%',
+                                                    background: 'rgba(239,68,68,0.85)',
+                                                    color: '#fff', border: 'none', cursor: 'pointer',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', zIndex: 2
+                                                }}
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
                                     ) : (
                                         <span style={{ fontSize: '12px', color: '#94a3b8' }}>Upload</span>
                                     )}

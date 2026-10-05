@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { getModuleContentApi, saveModuleContentApi, togglePublishApi, uploadContentImageApi } from '../../../api/content.api';
 import ModuleActionButtons from '../../../components/admin/ModuleActionButtons';
 import ImageCropModal from '../../../components/common/ImageCropModal';
+import ImageThumbnailCard, { CropIcon, loadCropSrc } from '../../../components/common/ImageThumbnailCard';
+import { moveItem } from '../../../utils/reorder';
 import useSchoolStore from '../../../store/schoolStore';
 import toast from 'react-hot-toast';
 import { getYouTubeVideoId, getYouTubeThumbnail } from '../../../utils/youtube';
@@ -312,6 +314,12 @@ const Gallery = () => {
     };
 
     const removeImage = (idx) => updateNodes(nodes.map(n => n.id === currentFolderId ? { ...n, images: n.images.filter((_, i) => i !== idx) } : n));
+    const moveImage = (index, direction) => {
+        const folder = nodes.find(n => n.id === currentFolderId);
+        if (!folder || !folder.images) return;
+        const updated = moveItem(folder.images, index, direction);
+        updateNodes(nodes.map(n => n.id === currentFolderId ? { ...n, images: updated } : n));
+    };
 
     // ── Video ops ──
     // Each video item: { id, title, date, sourceType: 'youtube' | 'upload', youtubeUrl, videoUrl, thumbnail }
@@ -683,78 +691,22 @@ const Gallery = () => {
                                 <p style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', marginBottom: '1.25rem' }}>Photos in "{currentFolder.name}" <span style={{ color: '#94a3b8', fontWeight: 400 }}>({(currentFolder.images || []).length} / {MAX_PHOTOS_PER_FOLDER})</span></p>
                                 <div className="gallery-photo-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: '12px', marginBottom: '1.25rem' }}>
                                     {(currentFolder.images || []).map((img, i) => (
-                                        <div key={i} className="photo-card" style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', aspectRatio: '1', background: '#0f172a', boxShadow: '0 2px 8px rgba(15,23,42,0.08)' }}>
-                                            <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-
-                                            {/* Top gradient overlay for action button contrast */}
-                                            <div style={{ position: 'absolute', inset: '0 0 auto 0', height: '44px', background: 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, transparent 100%)', pointerEvents: 'none' }}></div>
-
+                                        <ImageThumbnailCard
+                                            key={i}
+                                            url={img}
+                                            index={i}
+                                            total={(currentFolder.images || []).length}
+                                            onRecrop={() => handleRecropPhoto(i, img)}
+                                            onRemove={() => removeImage(i)}
+                                            onMove={moveImage}
+                                            aspectRatio="1"
+                                        >
                                             {uploading[`photo-${i}`] && (
                                                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3 }}>
                                                     <IconSpinner size={24} color={tc.primary} />
                                                 </div>
                                             )}
-
-                                            {/* Re-crop button */}
-                                            <button
-                                                type="button"
-                                                onClick={() => handleRecropPhoto(i, img)}
-                                                title="Re-crop this photo"
-                                                style={{
-                                                    position: 'absolute',
-                                                    top: '6px',
-                                                    left: '6px',
-                                                    padding: '4px 9px',
-                                                    background: 'rgba(15,23,42,0.75)',
-                                                    color: '#fff',
-                                                    border: 'none',
-                                                    borderRadius: '20px',
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '4px',
-                                                    fontSize: '11px',
-                                                    fontWeight: 600,
-                                                    backdropFilter: 'blur(6px)',
-                                                    zIndex: 2,
-                                                    transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
-                                                }}
-                                                onMouseEnter={e => { e.currentTarget.style.background = tc.primary; e.currentTarget.style.transform = 'scale(1.05)'; }}
-                                                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.75)'; e.currentTarget.style.transform = 'scale(1)'; }}
-                                            >
-                                                <IconCrop size={11} color="#fff" />
-                                                <span>Crop</span>
-                                            </button>
-
-                                            {/* Delete button */}
-                                            <button
-                                                type="button"
-                                                onClick={() => removeImage(i)}
-                                                title="Delete photo"
-                                                style={{
-                                                    position: 'absolute',
-                                                    top: '6px',
-                                                    right: '6px',
-                                                    width: '24px',
-                                                    height: '24px',
-                                                    background: 'rgba(15,23,42,0.75)',
-                                                    color: '#fff',
-                                                    border: 'none',
-                                                    borderRadius: '50%',
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    backdropFilter: 'blur(6px)',
-                                                    zIndex: 2,
-                                                    transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
-                                                }}
-                                                onMouseEnter={e => { e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.transform = 'scale(1.08)'; }}
-                                                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.75)'; e.currentTarget.style.transform = 'scale(1)'; }}
-                                            >
-                                                <IconClose size={10} />
-                                            </button>
-                                        </div>
+                                        </ImageThumbnailCard>
                                     ))}
                                 </div>
                                 {(currentFolder.images || []).length >= MAX_PHOTOS_PER_FOLDER ? (
@@ -820,9 +772,30 @@ const Gallery = () => {
                                                                 <span style={{ position: 'absolute', bottom: '5px', right: '5px', background: 'rgba(15,23,42,0.8)', color: '#ffffff', fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', backdropFilter: 'blur(4px)' }}>
                                                                     {isAutoYt ? 'AUTO' : 'CUSTOM'}
                                                                 </span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={async (e) => {
+                                                                        e.stopPropagation();
+                                                                        try {
+                                                                            const safe = await loadCropSrc(activeThumb);
+                                                                            setCropTarget({ mode: 'vidThumb', videoId: v.id, src: safe });
+                                                                        } catch {
+                                                                            toast.error('Failed to load thumbnail for cropping');
+                                                                        }
+                                                                    }}
+                                                                    style={{
+                                                                        position: 'absolute', top: '5px', left: '5px',
+                                                                        display: 'inline-flex', alignItems: 'center', gap: '3px',
+                                                                        padding: '2px 5px', borderRadius: '4px', fontSize: '9px', fontWeight: 600,
+                                                                        color: '#ffffff', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                                                        border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', zIndex: 3,
+                                                                    }}
+                                                                >
+                                                                    <CropIcon size={9} /> Recrop
+                                                                </button>
                                                                 {v.thumbnail && (
                                                                     <button onClick={e => { e.stopPropagation(); updateVideo(v.id, 'thumbnail', ''); }}
-                                                                        style={{ position: 'absolute', top: '5px', right: '5px', width: '20px', height: '20px', background: 'rgba(15,23,42,0.75)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                                        style={{ position: 'absolute', top: '5px', right: '5px', width: '20px', height: '20px', background: 'rgba(15,23,42,0.75)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3 }}
                                                                         title="Reset to YouTube thumbnail">
                                                                         <IconClose size={9} />
                                                                     </button>

@@ -8,6 +8,8 @@ import {
 import RichTextEditor from "../../../components/common/RichTextEditor";
 import ModuleActionButtons from "../../../components/admin/ModuleActionButtons";
 import ImageCropModal from "../../../components/common/ImageCropModal";
+import ImageThumbnailCard, { loadCropSrc } from "../../../components/common/ImageThumbnailCard";
+import { moveItem } from "../../../utils/reorder";
 import ItalicToggle from "../../../components/common/ItalicToggle";
 import HeadingStyleField from "../../../components/common/HeadingStyleField";
 import useSchoolStore from "../../../store/schoolStore";
@@ -190,20 +192,56 @@ const Infrastructure = () => {
     setCropTarget({ mode: "horizontal", src: URL.createObjectURL(toQueue[0]) });
   };
 
+  const recropImage = async (idx, url) => {
+    setImageQueue([]);
+    const src = await loadCropSrc(url);
+    setCropTarget({ mode: "recrop-image", index: idx, src });
+  };
+
+  const recropHorizontalImage = async (idx, url) => {
+    setImageQueue([]);
+    const src = await loadCropSrc(url);
+    setCropTarget({ mode: "recrop-horizontal", index: idx, src });
+  };
+
+  const moveImage = (index, direction) => {
+    const cat = getActiveCategoryData();
+    const updated = moveItem(cat?.images || [], index, direction);
+    updateField("images", updated);
+  };
+
+  const moveHorizontalImage = (index, direction) => {
+    const cat = getActiveCategoryData();
+    const updated = moveItem(cat?.horizontalImages || [], index, direction);
+    updateField("horizontalImages", updated);
+  };
+
   const onCropConfirmed = async (croppedFile) => {
     const target = cropTarget;
     setCropTarget(null);
-    const key = target.mode === "horizontal" ? "horizontalImage" : "image";
+    const isHoriz = target.mode === "horizontal" || target.mode === "recrop-horizontal";
+    const key = isHoriz ? "horizontalImage" : "image";
     setUploading((prev) => ({ ...prev, [key]: true }));
     try {
       const res = await uploadContentImageApi(croppedFile);
       const cat = getActiveCategoryData();
-      if (target.mode === "horizontal") {
+      if (target.mode === "recrop-image") {
+        const next = [...(cat.images || [])];
+        next[target.index] = res.data.url;
+        updateField("images", next);
+        toast.success("Image updated!");
+      } else if (target.mode === "recrop-horizontal") {
+        const next = [...(cat.horizontalImages || [])];
+        next[target.index] = res.data.url;
+        updateField("horizontalImages", next);
+        toast.success("Image updated!");
+      } else if (target.mode === "horizontal") {
         updateField("horizontalImages", [...(cat.horizontalImages || []), res.data.url]);
+        toast.success("Image uploaded!");
       } else {
         updateField("images", [...(cat.images || []), res.data.url]);
+        toast.success("Image uploaded!");
       }
-      toast.success("Image uploaded!");
     } catch (e) {
       toast.error(e?.response?.data?.message || "Failed to upload image");
     } finally {
@@ -732,46 +770,16 @@ const Infrastructure = () => {
                     }}
                   >
                     {(activeData.images || []).map((img, i) => (
-                      <div
+                      <ImageThumbnailCard
                         key={i}
-                        style={{
-                          position: "relative",
-                          borderRadius: "10px",
-                          overflow: "hidden",
-                          aspectRatio: "3/4",
-                        }}
-                      >
-                        <img
-                          src={img}
-                          alt=""
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
-                        />
-                        <button
-                          onClick={() => removeImage(i)}
-                          style={{
-                            position: "absolute",
-                            top: "6px",
-                            right: "6px",
-                            width: "24px",
-                            height: "24px",
-                            background: "rgba(0,0,0,0.6)",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "50%",
-                            cursor: "pointer",
-                            fontSize: "14px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          ×
-                        </button>
-                      </div>
+                        url={img}
+                        index={i}
+                        total={(activeData.images || []).length}
+                        onRecrop={recropImage}
+                        onRemove={removeImage}
+                        onMove={moveImage}
+                        aspectRatio="3/4"
+                      />
                     ))}
                   </div>
                   {(activeData.images || []).length >= MAX_CATEGORY_IMAGES ? (
@@ -835,46 +843,16 @@ const Infrastructure = () => {
                     }}
                   >
                     {(activeData.horizontalImages || []).map((img, i) => (
-                      <div
+                      <ImageThumbnailCard
                         key={i}
-                        style={{
-                          position: "relative",
-                          borderRadius: "10px",
-                          overflow: "hidden",
-                          aspectRatio: "16/9",
-                        }}
-                      >
-                        <img
-                          src={img}
-                          alt=""
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
-                        />
-                        <button
-                          onClick={() => removeHorizontalImage(i)}
-                          style={{
-                            position: "absolute",
-                            top: "6px",
-                            right: "6px",
-                            width: "24px",
-                            height: "24px",
-                            background: "rgba(0,0,0,0.6)",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "50%",
-                            cursor: "pointer",
-                            fontSize: "14px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          ×
-                        </button>
-                      </div>
+                        url={img}
+                        index={i}
+                        total={(activeData.horizontalImages || []).length}
+                        onRecrop={recropHorizontalImage}
+                        onRemove={removeHorizontalImage}
+                        onMove={moveHorizontalImage}
+                        aspectRatio="16/9"
+                      />
                     ))}
                   </div>
                   {(activeData.horizontalImages || []).length >= MAX_HORIZONTAL_IMAGES ? (

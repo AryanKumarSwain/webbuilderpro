@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import ModuleActionButtons from '../../../components/admin/ModuleActionButtons';
 import RichTextEditor from '../../../components/common/RichTextEditor';
 import ImageCropModal from '../../../components/common/ImageCropModal';
+import { loadCropSrc } from '../../../components/common/ImageThumbnailCard';
 import ReorderButtons from '../../../components/common/ReorderButtons';
 import ScrollTabs from '../../../components/admin/ScrollTabs';
 import useSchoolStore from '../../../store/schoolStore';
@@ -131,16 +132,16 @@ const ItalicField = ({ label = 'Italic', checked, onChange }) => (
 // Highlight photos — same visual language as the banner grid tiles below.
 // `shield` clips the preview to the same shield shape used on the public page,
 // so the admin sees a true preview of the final framed photo. ──
-const SingleImageUploadBox = ({ label, url, inputId, onSelect, onRemove, uploading, tc, shield = false }) => (
+const SingleImageUploadBox = ({ label, url, inputId, onSelect, onRecrop, onRemove, uploading, tc, shield = false }) => (
     <div>
         <label style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', marginBottom: '6px', display: 'block' }}>{label}</label>
-        <div onClick={() => document.getElementById(inputId).click()}
+        <div onClick={() => !url && document.getElementById(inputId).click()}
             style={{
                 position: 'relative', width: shield ? '70%' : '100%', maxWidth: shield ? '180px' : undefined,
                 aspectRatio: shield ? `${SHIELD_ASPECT}` : '16/9', margin: shield ? '0 auto' : 0,
                 borderRadius: shield ? 0 : '8px', clipPath: shield ? 'url(#admin-shield-clip)' : 'none',
                 overflow: 'hidden', border: shield ? 'none' : (url ? '0.5px solid #e2e8f0' : '1.5px dashed #e2e8f0'),
-                cursor: uploading ? 'not-allowed' : 'pointer', background: url ? '#f8fafc' : '#fafafa',
+                cursor: uploading ? 'not-allowed' : (url ? 'default' : 'pointer'), background: url ? '#f8fafc' : '#fafafa',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 boxShadow: shield && url ? '0 6px 18px rgba(0,0,0,0.14)' : 'none',
             }}>
@@ -155,8 +156,32 @@ const SingleImageUploadBox = ({ label, url, inputId, onSelect, onRemove, uploadi
                 </div>
             )}
             {url && (
+                <div style={{ position: 'absolute', top: shield ? '10%' : '6px', left: shield ? '10%' : '6px', zIndex: 2 }}>
+                    <button
+                        type="button"
+                        onClick={async (e) => {
+                            e.stopPropagation();
+                            try {
+                                const safe = await loadCropSrc(url);
+                                onRecrop(safe);
+                            } catch {
+                                toast.error('Failed to load image for cropping');
+                            }
+                        }}
+                        style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '3px',
+                            padding: '3px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 600,
+                            color: '#ffffff', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                            border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer',
+                        }}
+                    >
+                        <CropIcon size={10} /> Recrop
+                    </button>
+                </div>
+            )}
+            {url && (
                 <button type="button" onClick={e => { e.stopPropagation(); onRemove(); }}
-                    style={{ position: 'absolute', top: shield ? '10%' : '6px', right: shield ? '10%' : '6px', width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '13px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    style={{ position: 'absolute', top: shield ? '10%' : '6px', right: shield ? '10%' : '6px', width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '13px', lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
                     ✕
                 </button>
             )}
@@ -188,14 +213,58 @@ const TestimonialEntryCard = ({ tc, testimonial, index, length, onMove, onUpdate
             <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '1.5rem' }}>
                 <div>
                     <label style={labelStyle}>Photo (optional)</label>
-                    <div onClick={() => document.getElementById(`hp-test-photo-${testimonial.id}`).click()}
-                        style={{ height: '140px', borderRadius: '12px', border: testimonial.photo ? '1px solid #e2e8f0' : '1.5px dashed #e2e8f0', background: testimonial.photo ? 'transparent' : '#fafafa', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                        {uploading ? (
-                            <div style={{ width: '20px', height: '20px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                        ) : testimonial.photo ? (
-                            <img src={testimonial.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        ) : (
-                            <span style={{ fontSize: '12px', color: '#94a3b8' }}>👤 Upload</span>
+                    <div style={{ position: 'relative' }}>
+                        <div onClick={() => !testimonial.photo && document.getElementById(`hp-test-photo-${testimonial.id}`).click()}
+                            style={{ height: '140px', borderRadius: '12px', border: testimonial.photo ? '1px solid #e2e8f0' : '1.5px dashed #e2e8f0', background: testimonial.photo ? 'transparent' : '#fafafa', cursor: testimonial.photo ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            {uploading ? (
+                                <div style={{ width: '20px', height: '20px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                            ) : testimonial.photo ? (
+                                <img src={testimonial.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                <span style={{ fontSize: '12px', color: '#94a3b8' }}>👤 Upload</span>
+                            )}
+                        </div>
+                        {testimonial.photo && !uploading && (
+                            <div style={{ position: 'absolute', top: '6px', left: '6px', display: 'flex', gap: '4px' }}>
+                                <button
+                                    type="button"
+                                    onClick={async (e) => {
+                                        e.stopPropagation();
+                                        try {
+                                            const safe = await loadCropSrc(testimonial.photo);
+                                            setCropSrc(safe);
+                                        } catch {
+                                            toast.error('Failed to load photo for cropping');
+                                        }
+                                    }}
+                                    style={{
+                                        display: 'inline-flex', alignItems: 'center', gap: '3px',
+                                        padding: '3px 6px', borderRadius: '4px', fontSize: '9.5px', fontWeight: 600,
+                                        color: '#ffffff', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                        border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer',
+                                    }}
+                                >
+                                    <CropIcon size={10} /> Recrop
+                                </button>
+                            </div>
+                        )}
+                        {testimonial.photo && !uploading && (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onUpdate('photo', '');
+                                }}
+                                style={{
+                                    position: 'absolute', top: '6px', right: '6px',
+                                    width: '20px', height: '20px', borderRadius: '50%',
+                                    background: 'rgba(239, 68, 68, 0.9)', color: '#fff', border: 'none',
+                                    fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center',
+                                    justifyContent: 'center', cursor: 'pointer',
+                                }}
+                            >
+                                ✕
+                            </button>
                         )}
                     </div>
                     <input id={`hp-test-photo-${testimonial.id}`} type="file" accept="image/*"
@@ -1177,10 +1246,14 @@ const HomePage = () => {
                         <div className="hp-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                             <SingleImageUploadBox label="Photo 1 (main)" inputId="introImage1Input" url={content.introImage1} shield
                                 uploading={uploadingImage && cropTarget === 'intro1'} tc={tc}
-                                onSelect={e => openImageCrop(e, 'intro1')} onRemove={() => handleChange('introImage1', '')} />
+                                onSelect={e => openImageCrop(e, 'intro1')}
+                                onRecrop={(safeSrc) => { setCropTarget('intro1'); setCropSrc(safeSrc); }}
+                                onRemove={() => handleChange('introImage1', '')} />
                             <SingleImageUploadBox label="Photo 2 (overlapping)" inputId="introImage2Input" url={content.introImage2} shield
                                 uploading={uploadingImage && cropTarget === 'intro2'} tc={tc}
-                                onSelect={e => openImageCrop(e, 'intro2')} onRemove={() => handleChange('introImage2', '')} />
+                                onSelect={e => openImageCrop(e, 'intro2')}
+                                onRecrop={(safeSrc) => { setCropTarget('intro2'); setCropSrc(safeSrc); }}
+                                onRemove={() => handleChange('introImage2', '')} />
                         </div>
                         <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '-10px' }}>Portrait-oriented photos work best — the crop tool shows the shield-shaped frame they'll appear in on the public page.</p>
                         <div>

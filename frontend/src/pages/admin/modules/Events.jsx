@@ -3,6 +3,7 @@ import { getModuleContentApi, saveModuleContentApi, togglePublishApi, uploadCont
 import ModuleActionButtons from '../../../components/admin/ModuleActionButtons';
 import RichTextEditor from '../../../components/common/RichTextEditor';
 import ImageCropModal from '../../../components/common/ImageCropModal';
+import { CropIcon, loadCropSrc } from '../../../components/common/ImageThumbnailCard';
 import ItalicToggle from '../../../components/common/ItalicToggle';
 import HeadingStyleField from '../../../components/common/HeadingStyleField';
 import OrientedImagesEditor from '../../../components/admin/OrientedImagesEditor';
@@ -376,21 +377,64 @@ const VideoSlotsEditor = ({ videos, onChange, max = 3 }) => {
                         <ReorderButtons index={idx} length={videos.length} onMove={moveSlot} />
                     </div>
                     {/* Thumbnail preview / upload */}
-                    <label style={{
-                        flexShrink: 0, display: 'block', width: '108px', height: '72px', borderRadius: '10px', overflow: 'hidden',
-                        border: v.thumbnail ? '1px solid #e5e9f0' : '1.5px dashed #cbd5e1', background: v.thumbnail ? 'transparent' : '#fafbfc',
-                        cursor: 'pointer', position: 'relative',
-                    }}>
-                        {v.thumbnail ? (
-                            <img src={v.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        ) : (
-                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#94a3b8', textAlign: 'center', padding: '4px', lineHeight: 1.3 }}>
-                                {uploadingThumbId === v.id ? 'Uploading...' : 'Thumbnail'}
-                            </div>
+                    <div style={{ position: 'relative', flexShrink: 0 }}>
+                        <label onClick={e => { if (uploadingThumbId === v.id) e.preventDefault(); }} style={{
+                            display: 'block', width: '108px', height: '72px', borderRadius: '10px', overflow: 'hidden',
+                            border: v.thumbnail ? '1px solid #e5e9f0' : '1.5px dashed #cbd5e1', background: v.thumbnail ? 'transparent' : '#fafbfc',
+                            cursor: 'pointer', position: 'relative',
+                        }}>
+                            {v.thumbnail ? (
+                                <img src={v.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#94a3b8', textAlign: 'center', padding: '4px', lineHeight: 1.3 }}>
+                                    {uploadingThumbId === v.id ? 'Uploading...' : 'Thumbnail'}
+                                </div>
+                            )}
+                            <input type="file" accept="image/*" style={{ display: 'none' }}
+                                onChange={e => { const f = e.target.files[0]; e.target.value = ''; if (f) setThumbCropTarget({ videoId: v.id, src: URL.createObjectURL(f) }); }} />
+                        </label>
+                        {v.thumbnail && uploadingThumbId !== v.id && (
+                            <button
+                                type="button"
+                                onClick={async (e) => {
+                                    e.stopPropagation();
+                                    try {
+                                        const safeSrc = await loadCropSrc(v.thumbnail);
+                                        setThumbCropTarget({ videoId: v.id, src: safeSrc });
+                                    } catch (err) {
+                                        toast.error('Failed to load image for cropping');
+                                    }
+                                }}
+                                style={{
+                                    position: 'absolute', top: '4px', left: '4px',
+                                    display: 'inline-flex', alignItems: 'center', gap: '3px',
+                                    padding: '3px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 600,
+                                    color: '#ffffff', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                    border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer',
+                                }}
+                            >
+                                <CropIcon size={10} /> Recrop
+                            </button>
                         )}
-                        <input type="file" accept="image/*" style={{ display: 'none' }}
-                            onChange={e => { const f = e.target.files[0]; e.target.value = ''; if (f) setThumbCropTarget({ videoId: v.id, src: URL.createObjectURL(f) }); }} />
-                    </label>
+                        {v.thumbnail && uploadingThumbId !== v.id && (
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateSlot(v.id, 'thumbnail', '');
+                                }}
+                                style={{
+                                    position: 'absolute', top: '4px', right: '4px',
+                                    width: '18px', height: '18px', borderRadius: '50%',
+                                    background: 'rgba(239, 68, 68, 0.9)', color: '#fff', border: 'none',
+                                    fontSize: '10px', fontWeight: 'bold', display: 'flex', alignItems: 'center',
+                                    justifyContent: 'center', cursor: 'pointer',
+                                }}
+                            >
+                                ✕
+                            </button>
+                        )}
+                    </div>
 
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', minWidth: 0 }}>
                         <div style={{ display: 'flex', gap: '6px' }}>
@@ -500,14 +544,69 @@ const EventCard = ({ event, onUpdate, onRemove, onUploadImage, uploading, delay 
                 {/* Image upload (optional) */}
                 <div>
                     <label style={labelStyle}>Image (optional)</label>
-                    <div className="event-image-drop" onClick={() => document.getElementById(`evt-image-${event.id}`).click()}
-                        style={{ height: '110px', borderRadius: '12px', border: '1.5px solid #e2e8f0', background: '#fafafa', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                        {uploading ? (
-                            <div style={{ width: '20px', height: '20px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                        ) : event.image ? (
-                            <img src={event.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        ) : (
-                            <span style={{ fontSize: '11px', color: '#94a3b8' }}>🖼️ Upload</span>
+                    <div style={{ position: 'relative' }}>
+                        <div className="event-image-drop" onClick={() => !event.image && document.getElementById(`evt-image-${event.id}`).click()}
+                            style={{ height: '110px', borderRadius: '12px', border: '1.5px solid #e2e8f0', background: '#fafafa', cursor: event.image ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            {uploading ? (
+                                <div style={{ width: '20px', height: '20px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                            ) : event.image ? (
+                                <img src={event.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                <span style={{ fontSize: '11px', color: '#94a3b8' }}>🖼️ Upload</span>
+                            )}
+                        </div>
+                        {event.image && !uploading && (
+                            <div style={{ position: 'absolute', top: '6px', left: '6px', display: 'flex', gap: '5px' }}>
+                                <button
+                                    type="button"
+                                    onClick={async (e) => {
+                                        e.stopPropagation();
+                                        try {
+                                            const safeSrc = await loadCropSrc(event.image);
+                                            setCropSrc(safeSrc);
+                                        } catch (err) {
+                                            toast.error('Failed to load image for cropping');
+                                        }
+                                    }}
+                                    style={{
+                                        display: 'inline-flex', alignItems: 'center', gap: '3px',
+                                        padding: '4px 7px', borderRadius: '5px', fontSize: '10px', fontWeight: 600,
+                                        color: '#ffffff', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                        border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer',
+                                    }}
+                                >
+                                    <CropIcon size={10} /> Recrop
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        document.getElementById(`evt-image-${event.id}`).click();
+                                    }}
+                                    style={{
+                                        padding: '4px 7px', borderRadius: '5px', fontSize: '10px', fontWeight: 600,
+                                        color: '#ffffff', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                        border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer',
+                                    }}
+                                >
+                                    Change
+                                </button>
+                            </div>
+                        )}
+                        {event.image && !uploading && (
+                            <button
+                                type="button"
+                                onClick={() => onUpdate('image', '')}
+                                style={{
+                                    position: 'absolute', top: '6px', right: '6px',
+                                    width: '22px', height: '22px', borderRadius: '50%',
+                                    background: 'rgba(239, 68, 68, 0.9)', color: '#fff', border: 'none',
+                                    fontSize: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center',
+                                    justifyContent: 'center', cursor: 'pointer',
+                                }}
+                            >
+                                ✕
+                            </button>
                         )}
                     </div>
                     <input id={`evt-image-${event.id}`} type="file" accept="image/*"

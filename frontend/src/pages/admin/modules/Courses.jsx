@@ -5,6 +5,8 @@ import ScrollTabs from '../../../components/admin/ScrollTabs';
 import toast from 'react-hot-toast';
 import RichTextEditor from '../../../components/common/RichTextEditor';
 import ImageCropModal from '../../../components/common/ImageCropModal';
+import ImageThumbnailCard, { CropIcon, loadCropSrc } from '../../../components/common/ImageThumbnailCard';
+import { moveItem } from '../../../utils/reorder';
 import ItalicToggle from '../../../components/common/ItalicToggle';
 import HeadingStyleField from '../../../components/common/HeadingStyleField';
 import useSchoolStore from '../../../store/schoolStore';
@@ -182,6 +184,18 @@ const Courses = () => {
         updateField('gallery', current.filter((_, i) => i !== idx));
     };
 
+    const recropGalleryImage = async (idx, url) => {
+        setImageQueue([]);
+        const src = await loadCropSrc(url);
+        setCropTarget({ kind: 'recropGallery', index: idx, aspect: null, src });
+    };
+
+    const moveGalleryImage = (idx, direction) => {
+        const current = content[activeLevel].gallery || [];
+        const updated = moveItem(current, idx, direction);
+        updateField('gallery', updated);
+    };
+
     // Each file is cropped one at a time (freeform, no locked aspect — adjustable from
     // every side) before upload. Once confirmed, the next queued file automatically
     // opens in the crop modal.
@@ -204,8 +218,24 @@ const Courses = () => {
     const onCropConfirmed = async (croppedFile) => {
         const t = cropTarget;
         setCropTarget(null);
-        if (t.kind === 'field') await handleImageUpload(croppedFile, t.field);
-        else if (t.kind === 'gallery') await addGalleryImage(croppedFile);
+        if (t.kind === 'field') {
+            await handleImageUpload(croppedFile, t.field);
+        } else if (t.kind === 'recropGallery') {
+            setUploading(prev => ({ ...prev, gallery: true }));
+            try {
+                const res = await uploadContentImageApi(croppedFile);
+                const current = [...(content[activeLevel].gallery || [])];
+                current[t.index] = res.data.url;
+                updateField('gallery', current);
+                toast.success('Image updated!');
+            } catch (e) {
+                toast.error('Failed to update image');
+            } finally {
+                setUploading(prev => ({ ...prev, gallery: false }));
+            }
+        } else if (t.kind === 'gallery') {
+            await addGalleryImage(croppedFile);
+        }
         if (t.kind === 'gallery' && imageQueue.length > 0) {
             const [next, ...rest] = imageQueue;
             setImageQueue(rest);
@@ -247,9 +277,30 @@ const Courses = () => {
                 ) : value ? (
                     <>
                         <img src={value} alt="" style={shaped ? { width: '100%', height: '100%', objectFit: 'cover', display: 'block' } : { width: '100%', height: '160px', objectFit: 'cover', display: 'block' }} />
+                        <button
+                            type="button"
+                            onClick={async (e) => {
+                                e.stopPropagation();
+                                const src = await loadCropSrc(value);
+                                setCropTarget({ kind: 'field', field, aspect, src });
+                            }}
+                            title="Recrop this image"
+                            style={{
+                                position: 'absolute', top: '8px', left: '8px',
+                                padding: '3px 8px', borderRadius: '5px',
+                                background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                color: '#ffffff', border: '1px solid rgba(255,255,255,0.25)',
+                                cursor: 'pointer', fontSize: '11px', fontWeight: 600,
+                                display: 'flex', alignItems: 'center', gap: '4px',
+                                zIndex: 2,
+                            }}
+                        >
+                            <CropIcon size={11} color="#ffffff" />
+                            <span>Recrop</span>
+                        </button>
                         <button type="button" onClick={e => { e.stopPropagation(); updateField(field, ''); }}
-                            style={{ position: 'absolute', top: '8px', right: '8px', width: '24px', height: '24px', background: 'rgba(15,23,42,0.7)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                            title="Remove image">×</button>
+                            style={{ position: 'absolute', top: '8px', right: '8px', width: '24px', height: '24px', background: 'rgba(239, 68, 68, 0.85)', color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}
+                            title="Remove image">✕</button>
                     </>
                 ) : (
                     <>
@@ -563,11 +614,16 @@ const Courses = () => {
                                     <p style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '1rem' }}>{(activeData.gallery || []).length} / {GALLERY_LIMIT} images added</p>
                                     <div className="crs-gallery-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '14px', marginBottom: '1.25rem' }}>
                                         {(activeData.gallery || []).map((img, i) => (
-                                            <div key={i} style={{ position: 'relative', borderRadius: '6px', overflow: 'hidden', aspectRatio: '1' }}>
-                                                <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                <button onClick={() => removeGalleryImage(i)}
-                                                    style={{ position: 'absolute', top: '6px', right: '6px', width: '24px', height: '24px', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
-                                            </div>
+                                            <ImageThumbnailCard
+                                                key={i}
+                                                url={img}
+                                                index={i}
+                                                total={(activeData.gallery || []).length}
+                                                onRecrop={recropGalleryImage}
+                                                onRemove={removeGalleryImage}
+                                                onMove={moveGalleryImage}
+                                                aspectRatio="1"
+                                            />
                                         ))}
                                     </div>
                                     {(activeData.gallery || []).length >= GALLERY_LIMIT ? (

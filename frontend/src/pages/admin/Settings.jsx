@@ -7,6 +7,7 @@ import { getActivePlansApi } from '../../api/plans.api';
 import SubdomainRequestForm from '../../components/admin/SubdomainRequestForm';
 import useSchoolStore from '../../store/schoolStore';
 import ImageCropModal from '../../components/common/ImageCropModal';
+import { CropIcon, loadCropSrc } from '../../components/common/ImageThumbnailCard';
 import { FONT_OPTIONS, GOOGLE_FONTS_URL, getFontFamily } from '../../constants/fonts';
 import { BASE_COLOR_OPTIONS } from '../../constants/publicNav';
 import { MUSIC_TRACKS } from '../../constants/musicTracks';
@@ -1240,12 +1241,37 @@ const AdminSettings = () => {
                                 <div onClick={() => document.getElementById('schoolLogoInput').click()}
                                     style={{ position: 'relative', border: '1.5px dashed #cbd5e1', borderRadius: '10px', padding: '2rem', textAlign: 'center', cursor: 'pointer', background: logoFile ? '#f8fafc' : '#fafafa', transition: 'all 0.2s' }}>
                                     {logoFile || settingsData.logo_url ? (
-                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-                                            <img src={logoPreview || settingsData.logo_url} alt="Logo" style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '10px', border: '1px solid #e2e8f0' }} />
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', position: 'relative' }}>
+                                            <div style={{ position: 'relative' }}>
+                                                <img src={logoPreview || settingsData.logo_url} alt="Logo" style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '10px', border: '1px solid #e2e8f0', display: 'block' }} />
+                                                {(logoPreview || settingsData.logo_url) && !uploadingLogo && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={async (e) => {
+                                                            e.stopPropagation();
+                                                            try {
+                                                                const safe = await loadCropSrc(logoPreview || settingsData.logo_url);
+                                                                setLogoCropSrc(safe);
+                                                            } catch {
+                                                                toast.error('Failed to load logo for cropping');
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            position: 'absolute', top: '4px', left: '4px',
+                                                            display: 'inline-flex', alignItems: 'center', gap: '3px',
+                                                            padding: '3px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: 600,
+                                                            color: '#ffffff', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                                            border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <CropIcon size={10} /> Recrop
+                                                    </button>
+                                                )}
+                                            </div>
                                             <p style={{ fontSize: '12px', color: '#64748b' }}>Click to change logo</p>
                                             {settingsData.logo_url && !logoFile && (
                                                 <button type="button" onClick={e => { e.stopPropagation(); handleLogoRemove(); }} disabled={removingLogo}
-                                                    style={{ position: 'absolute', top: '10px', right: '10px', width: '26px', height: '26px', background: 'rgba(15,23,42,0.7)', color: '#fff', border: 'none', borderRadius: '50%', cursor: removingLogo ? 'wait' : 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                    style={{ position: 'absolute', top: '0', right: '0', width: '26px', height: '26px', background: 'rgba(15,23,42,0.7)', color: '#fff', border: 'none', borderRadius: '50%', cursor: removingLogo ? 'wait' : 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                                     title="Remove logo">×</button>
                                             )}
                                         </div>
@@ -1719,6 +1745,29 @@ const AdminSettings = () => {
                                         {bannerPreview || bannerData.welcome_banner_url ? (
                                             <>
                                                 <img src={bannerPreview || bannerData.welcome_banner_url} alt="Welcome banner" style={{ width: '100%', maxHeight: '260px', objectFit: 'contain', display: 'block', background: '#0f172a' }} />
+                                                {(bannerPreview || bannerData.welcome_banner_url) && !uploadingBanner && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={async (e) => {
+                                                            e.stopPropagation();
+                                                            try {
+                                                                const safe = await loadCropSrc(bannerPreview || bannerData.welcome_banner_url);
+                                                                setBannerCropSrc(safe);
+                                                            } catch {
+                                                                toast.error('Failed to load banner for cropping');
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            position: 'absolute', top: '10px', left: '10px',
+                                                            display: 'inline-flex', alignItems: 'center', gap: '4px',
+                                                            padding: '5px 9px', borderRadius: '6px', fontSize: '11px', fontWeight: 600,
+                                                            color: '#ffffff', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                                            border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        <CropIcon size={12} /> Recrop
+                                                    </button>
+                                                )}
                                                 {bannerData.welcome_banner_url && !bannerFile && (
                                                     <button type="button" onClick={e => { e.stopPropagation(); handleBannerRemove(); }} disabled={removingBanner}
                                                         style={{ position: 'absolute', top: '10px', right: '10px', width: '26px', height: '26px', background: 'rgba(15,23,42,0.7)', color: '#fff', border: 'none', borderRadius: '50%', cursor: removingBanner ? 'wait' : 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -1819,6 +1868,29 @@ const AdminSettings = () => {
                                     {footerBgPreview || footerBgUrl ? (
                                         <>
                                             <img src={footerBgPreview || footerBgUrl} alt="Footer background" style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', display: 'block' }} />
+                                            {(footerBgPreview || footerBgUrl) && !uploadingFooterBg && (
+                                                <button
+                                                    type="button"
+                                                    onClick={async (e) => {
+                                                        e.stopPropagation();
+                                                        try {
+                                                            const safe = await loadCropSrc(footerBgPreview || footerBgUrl);
+                                                            setFooterBgCropSrc(safe);
+                                                        } catch {
+                                                            toast.error('Failed to load background for cropping');
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        position: 'absolute', top: '10px', left: '10px',
+                                                        display: 'inline-flex', alignItems: 'center', gap: '4px',
+                                                        padding: '5px 9px', borderRadius: '6px', fontSize: '11px', fontWeight: 600,
+                                                        color: '#ffffff', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                                        border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer',
+                                                    }}
+                                                >
+                                                    <CropIcon size={12} /> Recrop
+                                                </button>
+                                            )}
                                             {footerBgUrl && !footerBgFile && (
                                                 <button type="button" onClick={e => { e.stopPropagation(); handleFooterBgRemove(); }} disabled={removingFooterBg}
                                                     style={{ position: 'absolute', top: '10px', right: '10px', width: '26px', height: '26px', background: 'rgba(15,23,42,0.7)', color: '#fff', border: 'none', borderRadius: '50%', cursor: removingFooterBg ? 'wait' : 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}

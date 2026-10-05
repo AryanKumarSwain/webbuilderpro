@@ -6,6 +6,7 @@ import ItalicToggle from '../../../components/common/ItalicToggle';
 import HeadingStyleField from '../../../components/common/HeadingStyleField';
 import ImageSizeHint from '../../../components/admin/ImageSizeHint';
 import ImageCropModal from '../../../components/common/ImageCropModal';
+import { CropIcon, loadCropSrc } from '../../../components/common/ImageThumbnailCard';
 import useSchoolStore from '../../../store/schoolStore';
 import toast from 'react-hot-toast';
 
@@ -297,6 +298,7 @@ const Results = () => {
                                 }}
                                 onRemove={() => updateField('results', content.results.filter((_, i) => i !== idx))}
                                 onFileSelected={(file) => setCropTarget({ id: r.id, src: URL.createObjectURL(file) })}
+                                onRecrop={(cropSrc) => setCropTarget({ id: r.id, src: cropSrc })}
                                 uploading={uploading[r.id]}
                             />
                         ))}
@@ -319,7 +321,7 @@ const Results = () => {
 };
 
 // ── Result Card ──
-const ResultCard = ({ result, onUpdate, onRemove, onFileSelected, uploading, delay = 0 }) => {
+const ResultCard = ({ result, onUpdate, onRemove, onFileSelected, onRecrop, uploading, delay = 0 }) => {
     const inputStyle = { width: '100%', padding: '10px 13px', border: '1px solid #e5e9f0', borderRadius: '10px', fontSize: '13px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', background: '#f8fafc', transition: 'border 0.2s, box-shadow 0.2s, background 0.2s' };
     const labelStyle = { display: 'block', fontSize: '11px', fontWeight: 600, color: '#64748b', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' };
 
@@ -351,13 +353,35 @@ const ResultCard = ({ result, onUpdate, onRemove, onFileSelected, uploading, del
                         onChange={e => { const f = e.target.files[0]; e.target.value = ''; if (f) onFileSelected(f); }} />
                 </label>
                 {result.imageUrl && !uploading && (
-                    <>
-                        <img src={result.imageUrl} alt="" style={{ marginTop: '10px', width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e5e9f0' }} />
+                    <div style={{ position: 'relative', marginTop: '10px' }}>
+                        <img src={result.imageUrl} alt="" style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e5e9f0', display: 'block' }} />
+                        <div style={{ position: 'absolute', top: '8px', left: '8px', display: 'flex', gap: '6px' }}>
+                            <button
+                                type="button"
+                                onClick={async (e) => {
+                                    e.stopPropagation();
+                                    try {
+                                        const safeSrc = await loadCropSrc(result.imageUrl);
+                                        onRecrop(safeSrc);
+                                    } catch (err) {
+                                        toast.error('Failed to load image for cropping');
+                                    }
+                                }}
+                                style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: '4px',
+                                    padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 600,
+                                    color: '#ffffff', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                    border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer',
+                                }}
+                            >
+                                <CropIcon size={12} /> Recrop
+                            </button>
+                        </div>
                         <button type="button" onClick={() => onUpdate('imageUrl', '')}
                             style={{ marginTop: '6px', fontSize: '11.5px', fontWeight: 600, color: '#dc2626', background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 0' }}>
                             Remove Image
                         </button>
-                    </>
+                    </div>
                 )}
                 <ImageSizeHint>Crop is freely adjustable from every side after upload — pick exactly how much to keep. Under 5MB.</ImageSizeHint>
             </div>

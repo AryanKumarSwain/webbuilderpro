@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createSchoolWithAdminApi } from '../../api/superAdmin.api';
 import ImageCropModal from '../../components/common/ImageCropModal';
+import { CropIcon, loadCropSrc } from '../../components/common/ImageThumbnailCard';
 import { sanitizePhoneDigits, isValidPhone } from '../../utils/phone';
 import toast from 'react-hot-toast';
 
@@ -171,15 +172,60 @@ const CreateSchool = () => {
                                     <div className="cs-logo-row" style={{ gridColumn: '1 / -1', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
                                         <div style={{ flexShrink: 0 }}>
                                             <label style={labelStyle}>School Logo</label>
-                                            <div onClick={() => document.getElementById('schoolImageInput').click()}
-                                                style={{ width: '132px', height: '132px', border: '1.5px dashed #cbd5e1', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: '#ffffff', overflow: 'hidden', transition: 'all 0.2s' }}>
-                                                {imagePreview ? (
-                                                    <img src={imagePreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                ) : (
-                                                    <>
-                                                        <svg width="20" height="20" fill="none" stroke="#94a3b8" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                                        <p style={{ fontSize: '10.5px', color: '#64748b', marginTop: '8px', textAlign: 'center', padding: '0 10px', lineHeight: 1.3 }}>Click to upload</p>
-                                                    </>
+                                            <div style={{ position: 'relative' }}>
+                                                <div onClick={() => !imagePreview && document.getElementById('schoolImageInput').click()}
+                                                    style={{ width: '132px', height: '132px', border: '1.5px dashed #cbd5e1', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: imagePreview ? 'default' : 'pointer', background: '#ffffff', overflow: 'hidden', transition: 'all 0.2s' }}>
+                                                    {imagePreview ? (
+                                                        <img src={imagePreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    ) : (
+                                                        <>
+                                                            <svg width="20" height="20" fill="none" stroke="#94a3b8" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                            <p style={{ fontSize: '10.5px', color: '#64748b', marginTop: '8px', textAlign: 'center', padding: '0 10px', lineHeight: 1.3 }}>Click to upload</p>
+                                                        </>
+                                                    )}
+                                                </div>
+                                                {imagePreview && (
+                                                    <div style={{ position: 'absolute', top: '6px', left: '6px', display: 'flex', gap: '4px' }}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={async (e) => {
+                                                                e.stopPropagation();
+                                                                try {
+                                                                    const safe = await loadCropSrc(imagePreview);
+                                                                    setImageCropSrc(safe);
+                                                                } catch {
+                                                                    toast.error('Failed to load image for cropping');
+                                                                }
+                                                            }}
+                                                            style={{
+                                                                display: 'inline-flex', alignItems: 'center', gap: '3px',
+                                                                padding: '3px 6px', borderRadius: '4px', fontSize: '9.5px', fontWeight: 600,
+                                                                color: '#ffffff', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                                                border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer',
+                                                            }}
+                                                        >
+                                                            <CropIcon size={10} /> Recrop
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                {imagePreview && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setImagePreview(null);
+                                                            setSchoolImage(null);
+                                                        }}
+                                                        style={{
+                                                            position: 'absolute', top: '6px', right: '6px',
+                                                            width: '20px', height: '20px', borderRadius: '50%',
+                                                            background: 'rgba(239, 68, 68, 0.9)', color: '#fff', border: 'none',
+                                                            fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center',
+                                                            justifyContent: 'center', cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        ✕
+                                                    </button>
                                                 )}
                                             </div>
                                             <input id="schoolImageInput" type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />

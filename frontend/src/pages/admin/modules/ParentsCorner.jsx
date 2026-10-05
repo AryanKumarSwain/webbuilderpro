@@ -5,6 +5,7 @@ import RichTextEditor from '../../../components/common/RichTextEditor';
 import ItalicToggle from '../../../components/common/ItalicToggle';
 import HeadingStyleField from '../../../components/common/HeadingStyleField';
 import ImageCropModal from '../../../components/common/ImageCropModal';
+import { CropIcon, loadCropSrc } from '../../../components/common/ImageThumbnailCard';
 import ReorderButtons from '../../../components/common/ReorderButtons';
 import { moveItem } from '../../../utils/reorder';
 import useSchoolStore from '../../../store/schoolStore';
@@ -322,18 +323,43 @@ const ParentsCorner = () => {
                                         <div>
                                             <label style={labelStyle}>Photo (optional)</label>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                                                <label className="pc-photobox" onClick={e => { if (uploadingPhoto[idx]) e.preventDefault(); }}
-                                                    style={{ width: '96px', height: '96px', borderRadius: '12px', flexShrink: 0, border: section.photo ? '1px solid #e2e8f0' : '1.5px dashed #cbd5e1', boxShadow: section.photo ? '0 6px 18px rgba(15,23,42,0.08)' : 'none', background: section.photo ? 'transparent' : '#fafafa', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                                                    {uploadingPhoto[idx] ? (
-                                                        <div style={{ width: '18px', height: '18px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                                                    ) : section.photo ? (
-                                                        <img src={section.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                    ) : (
-                                                        <span style={{ fontSize: '10.5px', color: '#94a3b8', textAlign: 'center', padding: '0 6px' }}>+ Upload</span>
+                                                <div style={{ position: 'relative' }}>
+                                                    <label className="pc-photobox" onClick={e => { if (uploadingPhoto[idx]) e.preventDefault(); }}
+                                                        style={{ width: '96px', height: '96px', borderRadius: '12px', flexShrink: 0, border: section.photo ? '1px solid #e2e8f0' : '1.5px dashed #cbd5e1', boxShadow: section.photo ? '0 6px 18px rgba(15,23,42,0.08)' : 'none', background: section.photo ? 'transparent' : '#fafafa', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                                        {uploadingPhoto[idx] ? (
+                                                            <div style={{ width: '18px', height: '18px', border: '3px solid #f0c4c4', borderTop: `3px solid ${tc.primary}`, borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                                                        ) : section.photo ? (
+                                                            <img src={section.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        ) : (
+                                                            <span style={{ fontSize: '10.5px', color: '#94a3b8', textAlign: 'center', padding: '0 6px' }}>+ Upload</span>
+                                                        )}
+                                                        <input type="file" accept="image/*" style={{ display: 'none' }}
+                                                            onChange={e => { const f = e.target.files[0]; e.target.value = ''; if (f) handlePhotoSelected(idx, f); }} />
+                                                    </label>
+                                                    {section.photo && !uploadingPhoto[idx] && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={async (e) => {
+                                                                e.stopPropagation();
+                                                                try {
+                                                                    const safeSrc = await loadCropSrc(section.photo);
+                                                                    setCropTarget({ idx, src: safeSrc });
+                                                                } catch (err) {
+                                                                    toast.error('Failed to load image for cropping');
+                                                                }
+                                                            }}
+                                                            style={{
+                                                                position: 'absolute', top: '4px', left: '4px',
+                                                                display: 'inline-flex', alignItems: 'center', gap: '3px',
+                                                                padding: '3px 6px', borderRadius: '4px', fontSize: '9.5px', fontWeight: 600,
+                                                                color: '#ffffff', background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)',
+                                                                border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer',
+                                                            }}
+                                                        >
+                                                            <CropIcon size={10} /> Recrop
+                                                        </button>
                                                     )}
-                                                    <input type="file" accept="image/*" style={{ display: 'none' }}
-                                                        onChange={e => { const f = e.target.files[0]; e.target.value = ''; if (f) handlePhotoSelected(idx, f); }} />
-                                                </label>
+                                                </div>
                                                 {section.photo && (
                                                     <button type="button" onClick={() => updateSection(idx, 'photo', '')}
                                                         style={{ fontSize: '11.5px', fontWeight: 600, color: '#dc2626', background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 0' }}>
