@@ -35,10 +35,10 @@ const getModuleContentService = async (schoolId, moduleKey) => {
         ? (typeof row.draft_content === 'string' ? JSON.parse(row.draft_content) : row.draft_content)
         : null;
 
-    // The admin editor loads draftContent if present, else publishedContent:
-    row.content = draftContent !== null ? draftContent : publishedContent;
+    // The admin editor prioritizes publishedContent when published, so stale ghost drafts never override live data:
+    row.content = (row.is_published === 1 && publishedContent) ? publishedContent : (draftContent !== null ? draftContent : publishedContent);
     row.published_content = publishedContent;
-    row.has_draft_changes = draftContent !== null && JSON.stringify(draftContent) !== JSON.stringify(publishedContent);
+    row.has_draft_changes = row.is_published !== 1 && draftContent !== null && JSON.stringify(draftContent) !== JSON.stringify(publishedContent);
     row.is_published = row.is_published === 1 ? 1 : 0;
     return row;
 };

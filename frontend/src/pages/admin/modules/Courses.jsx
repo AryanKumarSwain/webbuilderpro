@@ -512,11 +512,11 @@ const Courses = () => {
                                         />
                                     </div>
                                     <div>
-    <label style={labelStyle}>Quote / Description</label>
-    <RichTextEditor value={activeData.aboutQuote} onChange={val => updateField('aboutQuote', val)}
-        placeholder="Write a warm description about this section of the school..." minHeight="150px"
-        maxWidth="745px" fontSize="16px" fontFamily="'Inter', system-ui, sans-serif" />
-</div>
+                                        <label style={labelStyle}>Quote / Description</label>
+                                        <RichTextEditor key={`${activeLevel}-about`} value={activeData.aboutQuote} onChange={val => updateField('aboutQuote', val)}
+                                            placeholder="Write a warm description about this section of the school..." minHeight="150px"
+                                            maxWidth="745px" fontSize="16px" fontFamily="'Inter', system-ui, sans-serif" />
+                                    </div>
                                     <div className="crs-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                                         <div>
                                             <label style={labelStyle}>Author Name</label>
@@ -549,11 +549,11 @@ const Courses = () => {
                                         />
                                     </div>
                                     <div>
-    <label style={labelStyle}>Description</label>
-    <RichTextEditor value={activeData.uniqueText} onChange={val => updateField('uniqueText', val)}
-        placeholder="What makes this section of your school special..." minHeight="180px"
-        maxWidth="745px" fontSize="16px" fontFamily="'Inter', system-ui, sans-serif" />
-</div>
+                                        <label style={labelStyle}>Description</label>
+                                        <RichTextEditor key={`${activeLevel}-unique`} value={activeData.uniqueText} onChange={val => updateField('uniqueText', val)}
+                                            placeholder="What makes this section of your school special..." minHeight="180px"
+                                            maxWidth="745px" fontSize="16px" fontFamily="'Inter', system-ui, sans-serif" />
+                                    </div>
                                 </div>
                             )}
 

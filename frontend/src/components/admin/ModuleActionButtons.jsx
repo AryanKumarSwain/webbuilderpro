@@ -143,16 +143,23 @@ const ModuleActionButtons = ({
         const timer = setTimeout(async () => {
             setAutoSaving(true);
             try {
-                await saveModuleContentApi(resolvedKey, contentRef.current, 0);
+                // Autosave directly as live (1) so the admin editor & public site always stay 100% in sync
+                await saveModuleContentApi(resolvedKey, contentRef.current, 1);
                 setDraftSaved(true);
             } catch (err) {
-                console.error('[autosave] draft failed:', err?.message);
+                console.error('[autosave] live save failed:', err?.message);
             } finally {
                 setAutoSaving(false);
             }
-        }, 1200);
+        }, 1000);
 
-        return () => clearTimeout(timer);
+        return () => {
+            clearTimeout(timer);
+            // If user navigates away before debounce finishes, flush immediately
+            if (isDirty && contentRef.current && resolvedKey) {
+                saveModuleContentApi(resolvedKey, contentRef.current, 1).catch(() => {});
+            }
+        };
     }, [content, isDirty, resolvedKey, publishing]);
 
     const isBusy = publishing || saving || autoSaving;
